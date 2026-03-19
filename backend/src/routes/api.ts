@@ -1,5 +1,10 @@
 import { Router, Request, Response } from 'express';
+import { z } from 'zod';
 import { ProductRepository, SupermarketRepository } from '../repositories';
+
+const OptimizeCartSchema = z.object({
+    productIds: z.array(z.number().positive())
+});
 
 const router = Router();
 
@@ -24,6 +29,37 @@ router.get('/products/:id/history/:supermarketId', (req: Request, res: Response)
     const supermarketId = String(req.params.supermarketId);
     const history = ProductRepository.getPriceHistory(id, supermarketId);
     res.json(history);
+});
+
+// POST /api/optimize-cart
+router.post('/optimize-cart', (req: Request, res: Response) => {
+    const parseResult = OptimizeCartSchema.safeParse(req.body);
+
+    if (!parseResult.success) {
+        res.status(400).json({
+            error: 'Payload inválido o malicioso',
+            details: parseResult.error.issues
+        });
+        return;
+    }
+
+    const { productIds } = parseResult.data;
+    const products = ProductRepository.findByIds(productIds);
+    const supermarkets = SupermarketRepository.findAll();
+
+    const totals: Record<string, number> = {};
+    supermarkets.forEach(s => totals[s.id] = 0);
+
+    products.forEach(item => {
+        Object.entries(item.prices).forEach(([sup, price]) => {
+            if (totals[sup] !== undefined) totals[sup] += price as number;
+        });
+    });
+
+    const sortedTotals = Object.entries(totals).sort((a, b) => a[1] - b[1]);
+    const maxSavings = sortedTotals.length > 0 ? sortedTotals[sortedTotals.length - 1][1] - sortedTotals[0][1] : 0;
+
+    res.json({ sortedTotals, maxSavings });
 });
 
 export default router;

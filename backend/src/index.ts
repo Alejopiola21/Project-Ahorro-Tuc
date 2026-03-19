@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { runMigrations } from './db/migrations';
 import { seedDatabase } from './db/seed';
 import apiRoutes from './routes/api';
@@ -21,7 +23,27 @@ seedDatabase();
 const app = express();
 const port = process.env.PORT || 3001;
 
-app.use(cors());
+// Seguridad
+app.use(helmet());
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 100, // Limita a 100 peticiones por ventana de 15 minutos por IP
+    message: 'Demasiadas peticiones desde esta IP, por favor intenta de nuevo más tarde.'
+});
+app.use(limiter);
+
+const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:5173'];
+app.use(cors({
+    origin: (origin, callback) => {
+        // En desarrollo local a veces el origen viene undefined usando postman
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Bloqueado nativamente por la política CORS'));
+        }
+    }
+}));
 app.use(express.json());
 
 // Routes
@@ -30,6 +52,12 @@ app.get('/api/health', (_req: Request, res: Response) => {
 });
 
 app.use('/api', apiRoutes);
+
+// ── Manejador Global de Errores (Silenciador) ─────────────────────────────────
+app.use((err: any, req: Request, res: Response, next: express.NextFunction) => {
+    console.error('[💥 Error Event]', new Date().toISOString(), err.message || err);
+    res.status(500).json({ error: 'Error Interno del Servidor' });
+});
 
 app.listen(port, () => {
     console.log(`[🚀] AhorroTuc Backend running on http://localhost:${port}`);

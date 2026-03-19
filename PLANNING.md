@@ -13,21 +13,27 @@
 
 ### FASE 1: Estructura Base y Mock Data (Actual)
 - [x] Inicializar repositorio local monorepo (`frontend/` y `backend/`).
-- [ ] Configurar TypeScript y CSS en el frontend, preparando un sistema de variables globales modernas.
-- [ ] Configurar Express en el backend con TypeScript.
-- [ ] Crear un catálogo de productos mockeados (JSON) que simulen tener diferentes precios en distintas cadenas.
-- [ ] Conectar frontend y backend usando fetch o axios.
+- [x] Configurar TypeScript y CSS en el frontend, preparando un sistema de variables globales modernas.
+- [x] Configurar Express en el backend con TypeScript.
+- [x] Crear un catálogo de productos mockeados (JSON) que simulen tener diferentes precios en distintas cadenas. (Hecho con SQLite)
+- [x] Conectar frontend y backend usando fetch o axios.
 
 ### FASE 2: UI Principal y Buscador (MVP Frontend)
-- [ ] Diseñar Navbar y layout responsivo.
-- [ ] Crear la página de Inicio con el **Buscador de autocompletado**.
-- [ ] Crear tarjeta de Producto (Product Card) que muestre el precio en las distintas cadenas.
-- [ ] Crear el "Carrito de Compras / Mi Lista".
+- [x] Diseñar Navbar y layout responsivo.
+- [x] Crear la página de Inicio con el **Buscador de autocompletado**.
+- [x] Crear tarjeta de Producto (Product Card) que muestre el precio en las distintas cadenas.
+- [x] Crear el "Carrito de Compras / Mi Lista".
 
-### FASE 3: Lógica de Optimización
-- [ ] Implementar la lógica en el backend que reciba una "Lista de productos deseados".
-- [ ] El backend calculará, para esa lista particular, cuál supermercado ofrece el precio total más bajo.
-- [ ] Mostrar en el frontend el Supermercado recomendado, el precio total, y el "Ahorro" vs la opción más cara.
+### FASE 3: Lógica de Optimización (Completada)
+- [x] Implementar la lógica en el backend que reciba una "Lista de productos deseados".
+- [x] El backend calculará, para esa lista particular, cuál supermercado ofrece el precio total más bajo.
+- [x] Mostrar en el frontend el Supermercado recomendado, el precio total, y el "Ahorro" vs la opción más cara.
+
+### FASE 3.5: Refactorización y Seguridad Extrema (Completada)
+- [x] Mover el monstruoso `App.tsx` a múltiples componentes ordenados (`Navbar`, `Sidebar`, etc.)
+- [x] Implementar memoria caché (`localStorage`) estricta para guardar el changecart de usuario.
+- [x] Implementar **Zod** para saneamiento estricto de endpoints POST.
+- [x] Configurar CORS rígido y un silenciador de errores globales de Express (para no filtrar stack-traces).
 
 ### FASE 4: Base de Datos y APIs reales
 - [ ] Configurar PostgreSQL local o en la nube (ej. Supabase o Neon).
