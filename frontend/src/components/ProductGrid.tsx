@@ -1,5 +1,4 @@
 import React from 'react';
-import { Loader2 } from 'lucide-react';
 import { ProductCard } from './ProductCard';
 import type { Product, Supermarket } from '../types';
 
@@ -12,6 +11,18 @@ interface Props {
     onAddToCart: (p: Product) => void;
 }
 
+const ProductSkeleton = () => (
+    <div className="skeleton-card">
+        <div className="skeleton img-skeleton skeleton-img"></div>
+        <div className="skeleton-content">
+            <div className="skeleton skeleton-text-sm"></div>
+            <div className="skeleton skeleton-text-md"></div>
+            <div className="skeleton skeleton-box"></div>
+            <div className="skeleton skeleton-btn"></div>
+        </div>
+    </div>
+);
+
 export const ProductGrid: React.FC<Props> = ({
     loading, products, debouncedQuery, getSup, getCheapest, onAddToCart
 }) => {
@@ -23,9 +34,10 @@ export const ProductGrid: React.FC<Props> = ({
             </div>
 
             {loading ? (
-                <div className="loader-container">
-                    <Loader2 size={48} className="spinner" />
-                    <p>Buscando los mejores precios...</p>
+                <div className="products-grid">
+                    {[1, 2, 3, 4, 5, 6].map((n) => (
+                        <ProductSkeleton key={n} />
+                    ))}
                 </div>
             ) : products.length === 0 ? (
                 <div className="empty-state">

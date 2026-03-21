@@ -35,6 +35,15 @@
 - [x] Implementar **Zod** para saneamiento estricto de endpoints POST.
 - [x] Configurar CORS rígido y un silenciador de errores globales de Express (para no filtrar stack-traces).
 
+### FASE 3.8: Arquitectura Escalable y UX Premium (Completada)
+- [x] **Backend**: Implementar patrón Controlador-Servicio (`controllers` y `services`).
+- [x] **Backend**: Preparar ORM (Prisma) y esqueleto base para PostgreSQL (`docker-compose.yml`).
+- [x] **Backend**: Configurar `Vitest` y escribir tests unitarios para `OptimizationService`.
+- [x] **Frontend**: Refactorizar llamadas de backend usando `Axios` e Interceptores globales.
+- [x] **Frontend**: Centralizar el estado del carrito usando `Zustand` globalmente (`store.ts`).
+- [x] **Frontend**: Añadir Toast Notifications (`Sonner`) y Skeleton Loaders (animaciones completas en CSS) para UX.
+
+
 ### FASE 4: Base de Datos y APIs reales
 - [ ] Configurar PostgreSQL local o en la nube (ej. Supabase o Neon).
 - [ ] Crear esquemas: `Product`, `Supermarket`, `PriceHistory`, `UserList`.

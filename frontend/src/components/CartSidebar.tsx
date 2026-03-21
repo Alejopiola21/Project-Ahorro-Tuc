@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, ShoppingCart, Trash2, TrendingDown, Award, ArrowRight } from 'lucide-react';
-import type { Product, Supermarket } from '../types';
+import type { Supermarket } from '../types';
+import { useCartStore } from '../store';
 
 interface CartTotals {
     sortedTotals: [string, number][];
@@ -10,16 +11,15 @@ interface CartTotals {
 interface Props {
     isOpen: boolean;
     onClose: () => void;
-    cart: Product[];
-    removeFromCart: (idx: number) => void;
-    clearCart: () => void;
     cartTotals: CartTotals | null;
     getSup: (id: string) => Supermarket | undefined;
 }
 
-export const CartSidebar: React.FC<Props> = ({
-    isOpen, onClose, cart, removeFromCart, clearCart, cartTotals, getSup
-}) => {
+export const CartSidebar: React.FC<Props> = ({ isOpen, onClose, cartTotals, getSup }) => {
+    const cart = useCartStore(state => state.cart);
+    const removeFromCart = useCartStore(state => state.removeFromCart);
+    const clearCart = useCartStore(state => state.clearCart);
+
     return (
         <>
             {isOpen && <div className="cart-overlay" onClick={onClose}></div>}
@@ -46,7 +46,9 @@ export const CartSidebar: React.FC<Props> = ({
                                             <span className="item-name">{item.name}</span>
                                             <span className="item-category">{item.category}</span>
                                         </div>
-                                        <button className="remove-btn" onClick={() => removeFromCart(idx)}><Trash2 size={18} /></button>
+                                        <button className="remove-btn" onClick={() => removeFromCart(idx)}>
+                                            <Trash2 size={18} />
+                                        </button>
                                     </div>
                                 ))}
                             </div>
