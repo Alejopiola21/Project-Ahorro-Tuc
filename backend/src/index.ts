@@ -8,6 +8,7 @@ import rateLimit from 'express-rate-limit';
 import { runMigrations } from './db/migrations';
 import { seedDatabase } from './db/seed';
 import apiRoutes from './routes/api';
+import { setupSwagger } from './swagger';
 
 dotenv.config();
 
@@ -45,6 +46,9 @@ app.use(cors({
     }
 }));
 app.use(express.json());
+
+// Activar Swagger
+setupSwagger(app);
 
 // Routes
 app.get('/api/health', (_req: Request, res: Response) => {

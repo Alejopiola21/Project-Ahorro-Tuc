@@ -1,5 +1,13 @@
 # Changelog - Ahorro Tuc
 
+## [1.0.0-alpha.5] - Fase 3.9: Pulido para Producción
+### UX Premium, Testing y DevOps
+* **Modo Oscuro**: Implementado esquema de paletas de CSS orientadas a Dark Mode con toggle en el componente Header y guardado local.
+* **PWA (Progressive Web App)**: La aplicación ahora es plenamente instalable local o móvil mediante `vite-plugin-pwa` generando assets super livianos en el caché nativo.
+* **Playwright E2E**: Agregadas las aserciones de integración frontend-backend simulando un usuario buscando "Leche", agregándolo al carrito y verificando el "winner" (ahorro total).
+* **Swagger API Docs**: Aislado el decorador `@openapi` e interactiva UI de Swagger incrustada como middleware en ruta estandarizada `/api/docs`.
+* **GitHub Actions CI/CD**: Archivo maestro `.github/workflows/ci.yml` configurado que dispara en cascada chequeos sobre TypeScript, Prisma, Vitest y finaliza simulando un navegador Chrome Headless contra la base compilada.
+
 ## [1.0.0-alpha.4] - Fase 3.8: Arquitectura Escalable y UX Premium
 ### Refactorización, Service Pattern, Zustand y Skeletons
 * **Backend Controlador-Servicio**: Movida la lógica de negocio densa (`/optimize-cart`) a `OptimizationService.ts` puramente testeable. Creados `ProductController` y `SupermarketController`.

@@ -43,6 +43,13 @@
 - [x] **Frontend**: Centralizar el estado del carrito usando `Zustand` globalmente (`store.ts`).
 - [x] **Frontend**: Añadir Toast Notifications (`Sonner`) y Skeleton Loaders (animaciones completas en CSS) para UX.
 
+### FASE 3.9: Pulido para Producción (Completada)
+- [x] **Frontend**: Implementar Modo Oscuro (CSS Variables y `useTheme` hook).
+- [x] **Frontend**: Convertir app a PWA instalable con `vite-plugin-pwa` e íconos.
+- [x] **Frontend**: Crear pruebas E2E del Flujo Crítico con `Playwright`.
+- [x] **Backend**: Integrar y autogenerar documentación de API con `Swagger UI`.
+- [x] **DevOps**: Configurar CI/CD Pipeline automático usando GitHub Actions.
+
 
 ### FASE 4: Base de Datos y APIs reales
 - [ ] Configurar PostgreSQL local o en la nube (ej. Supabase o Neon).

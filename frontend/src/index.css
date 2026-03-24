@@ -15,6 +15,30 @@
   --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(255, 255, 255, 0.5);
+  --hero-gradient: linear-gradient(135deg, #eef2ff 0%, #fff 100%);
+  --image-bg: #f1f5f9;
+  --summary-gradient: linear-gradient(to bottom, #f8f9fa, #ffffff);
+  --winner-gradient: linear-gradient(90deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+:root.dark {
+  --primary: #4895ef;
+  --secondary: #4361ee;
+  --accent: #ff477e;
+  --bg-color: #0f172a;
+  --surface: #1e293b;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border: #334155;
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --hero-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  --image-bg: #334155;
+  --summary-gradient: linear-gradient(to bottom, #0f172a, #1e293b);
+  --winner-gradient: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
 }
 
 * {
@@ -28,6 +52,7 @@ body {
   background-color: var(--bg-color);
   color: var(--text-main);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .app-container {
@@ -106,9 +131,29 @@ body {
   gap: 1rem;
 }
 
+.theme-toggle-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-main);
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle-btn:hover {
+  background: var(--bg-color);
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
 .location-btn,
 .cart-btn {
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 50px;
   padding: 0.5rem 1rem;
@@ -162,7 +207,7 @@ body {
 .hero {
   position: relative;
   padding: 4rem 1.5rem;
-  background: linear-gradient(135deg, #eef2ff 0%, #fff 100%);
+  background: var(--hero-gradient);
   overflow: hidden;
   text-align: center;
   display: flex;
@@ -227,7 +272,7 @@ body {
 .search-box {
   display: flex;
   align-items: center;
-  background: white;
+  background: var(--surface);
   border-radius: 50px;
   padding: 0.5rem 1.5rem;
   box-shadow: var(--shadow-lg);
@@ -320,7 +365,7 @@ body {
 .product-image-container {
   position: relative;
   height: 200px;
-  background: #f1f5f9;
+  background: var(--image-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -454,7 +499,7 @@ body {
   flex-wrap: wrap;
   gap: 0.75rem;
   padding: 1.2rem 1.5rem;
-  background: white;
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
 }
 
@@ -467,7 +512,7 @@ body {
   border-radius: 50px;
   font-weight: 600;
   font-size: 0.85rem;
-  background: white;
+  background: var(--surface);
   transition: all 0.2s ease;
 }
 
@@ -668,7 +713,7 @@ body {
   height: 60px;
   object-fit: contain;
   mix-blend-mode: multiply;
-  background: white;
+  background: var(--surface);
   border-radius: 8px;
   padding: 0.2rem;
 }
@@ -711,7 +756,7 @@ body {
 
 /* SUMMARY */
 .cart-summary {
-  background: linear-gradient(to bottom, #f8f9fa, white);
+  background: var(--summary-gradient);
   border-radius: 16px;
   padding: 1.5rem;
   border: 1px solid var(--border);
@@ -740,7 +785,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 0.8rem 1rem;
-  background: white;
+  background: var(--surface);
   border-radius: 10px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
@@ -748,7 +793,7 @@ body {
 
 .total-row.winner {
   border-width: 2px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(248, 249, 250, 1) 100%);
+  background: var(--winner-gradient);
   transform: scale(1.02);
   transform-origin: left center;
 }
