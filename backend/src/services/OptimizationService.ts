@@ -1,9 +1,11 @@
 import { ProductRepository, SupermarketRepository } from '../repositories';
 
 export class OptimizationService {
-    static optimizeCart(productIds: number[]) {
-        const products = ProductRepository.findByIds(productIds);
-        const supermarkets = SupermarketRepository.findAll();
+    static async optimizeCart(productIds: number[]) {
+        const [products, supermarkets] = await Promise.all([
+            ProductRepository.findByIds(productIds),
+            SupermarketRepository.findAll(),
+        ]);
 
         const totals: Record<string, number> = {};
         supermarkets.forEach(s => totals[s.id] = 0);

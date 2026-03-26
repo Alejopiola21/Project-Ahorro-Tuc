@@ -299,6 +299,7 @@ body {
   font-size: 1.1rem;
   font-family: inherit;
   color: var(--text-main);
+  background-color: transparent;
 }
 
 .clear-btn {

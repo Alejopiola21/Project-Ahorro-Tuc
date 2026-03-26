@@ -1,83 +1,131 @@
-import db from '../db/connection';
+import { prisma } from '../db/client';
+import { Prisma } from '@prisma/client';
 
 // ── Types ────────────────────────────────────────────────────────────────────
-interface SupermarketRow { id: string; name: string; color: string; logo: string; }
-interface PriceRow { supermarket_id: string; price: number; }
-
-interface ProductRow {
+// Tipo de retorno consistente con lo que el frontend espera
+interface ProductWithPrices {
     id: number;
     name: string;
     category: string;
-    image_url: string;
-}
-
-// ── Queries ──────────────────────────────────────────────────────────────────
-let _queries: any = null;
-function getQueries() {
-    if (!_queries) {
-        _queries = {
-            allSupermarkets: db.prepare<[], SupermarketRow>(
-                'SELECT id, name, color, logo FROM supermarkets ORDER BY name'
-            ),
-            allProducts: db.prepare<[], ProductRow>(
-                'SELECT id, name, category, image_url FROM products ORDER BY category, name'
-            ),
-            searchProducts: db.prepare<[string, string], ProductRow>(
-                "SELECT id, name, category, image_url FROM products WHERE name LIKE ? OR category LIKE ? ORDER BY name"
-            ),
-            productById: db.prepare<[number], ProductRow | undefined>(
-                'SELECT id, name, category, image_url FROM products WHERE id = ?'
-            ),
-            pricesByProduct: db.prepare<[number], PriceRow>(
-                'SELECT supermarket_id, price FROM prices WHERE product_id = ?'
-            ),
-            priceHistory: db.prepare<[number, string], { price: number; recorded_at: string }>(
-                `SELECT price, recorded_at
-             FROM price_history
-             WHERE product_id = ? AND supermarket_id = ?
-             ORDER BY recorded_at DESC
-             LIMIT 30`
-            ),
-        };
-    }
-    return _queries;
+    image: string;
+    brand: string | null;
+    weight: string | null;
+    ean: string | null;
+    prices: Record<string, number>;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function buildProductWithPrices(row: ProductRow) {
-    const priceRows = getQueries().pricesByProduct.all(row.id);
+function buildProductWithPrices(product: any): ProductWithPrices {
     const prices: Record<string, number> = {};
-    for (const p of priceRows) prices[p.supermarket_id] = p.price;
-    return { id: row.id, name: row.name, category: row.category, image: row.image_url, prices };
+    if (product.currentPrices) {
+        for (const p of product.currentPrices) {
+            prices[p.supermarketId] = p.price;
+        }
+    }
+    return {
+        id: product.id,
+        name: product.name,
+        category: product.category,
+        image: product.imageUrl,
+        brand: product.brand ?? null,
+        weight: product.weight ?? null,
+        ean: product.ean ?? null,
+        prices,
+    };
 }
+
+// Include clause reutilizable para traer precios junto con productos
+const withCurrentPrices = {
+    currentPrices: {
+        select: {
+            supermarketId: true,
+            price: true,
+        },
+    },
+} satisfies Prisma.ProductInclude;
 
 // ── Repository ────────────────────────────────────────────────────────────────
 export const SupermarketRepository = {
-    findAll(): SupermarketRow[] {
-        return getQueries().allSupermarkets.all();
+    findAll() {
+        return prisma.supermarket.findMany({
+            orderBy: { name: 'asc' },
+            select: { id: true, name: true, color: true, logo: true },
+        });
     },
 };
 
 export const ProductRepository = {
-    findAll() {
-        return getQueries().allProducts.all().map(buildProductWithPrices);
+    async findAll(): Promise<ProductWithPrices[]> {
+        const products = await prisma.product.findMany({
+            orderBy: [{ category: 'asc' }, { name: 'asc' }],
+            include: withCurrentPrices,
+        });
+        return products.map(buildProductWithPrices);
     },
 
-    findByIds(ids: number[]): ReturnType<typeof buildProductWithPrices>[] {
-        const products: any[] = [];
-        for (const id of ids) {
-            const row = getQueries().productById.get(id);
-            if (row) products.push(buildProductWithPrices(row));
+    async findByIds(ids: number[]): Promise<ProductWithPrices[]> {
+        const products = await prisma.product.findMany({
+            where: { id: { in: ids } },
+            include: withCurrentPrices,
+        });
+        return products.map(buildProductWithPrices);
+    },
+
+    /**
+     * Búsqueda difusa (Fuzzy Search) usando pg_trgm.
+     * Utiliza el operador de similaridad `%` de PostgreSQL para encontrar
+     * productos incluso con errores de tipeo.
+     * Fallback: si no hay resultados difusos, intenta un ILIKE clásico.
+     */
+    async search(query: string): Promise<ProductWithPrices[]> {
+        // Primero intentamos con Fuzzy Search usando pg_trgm
+        // similarity() devuelve un score entre 0 y 1
+        const products = await prisma.$queryRaw<any[]>`
+            SELECT p.id, p.name, p.category, p.image_url AS "imageUrl",
+                   p.brand, p.weight, p.ean,
+                   similarity(p.name, ${query}) AS score
+            FROM "Product" p
+            WHERE similarity(p.name, ${query}) > 0.1
+               OR p.name ILIKE ${'%' + query + '%'}
+               OR p.category ILIKE ${'%' + query + '%'}
+            ORDER BY score DESC, p.name ASC
+            LIMIT 50
+        `;
+
+        // Para cada producto encontrado, obtenemos sus precios
+        if (products.length === 0) return [];
+
+        const productIds = products.map((p: any) => p.id);
+        const prices = await prisma.price.findMany({
+            where: { productId: { in: productIds } },
+            select: { productId: true, supermarketId: true, price: true },
+        });
+
+        // Agrupamos los precios por productId
+        const priceMap: Record<number, Record<string, number>> = {};
+        for (const p of prices) {
+            if (!priceMap[p.productId]) priceMap[p.productId] = {};
+            priceMap[p.productId][p.supermarketId] = p.price;
         }
-        return products;
+
+        return products.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            category: p.category,
+            image: p.imageUrl,
+            brand: p.brand ?? null,
+            weight: p.weight ?? null,
+            ean: p.ean ?? null,
+            prices: priceMap[p.id] || {},
+        }));
     },
 
-    search(query: string) {
-        const pattern = `%${query}%`;
-        return getQueries().searchProducts.all(pattern, pattern).map(buildProductWithPrices);
-    },
-
-    getPriceHistory(productId: number, supermarketId: string) {
-        return getQueries().priceHistory.all(productId, supermarketId);
+    async getPriceHistory(productId: number, supermarketId: string) {
+        return prisma.priceHistory.findMany({
+            where: { productId, supermarketId },
+            orderBy: { date: 'desc' },
+            take: 30,
+            select: { price: true, date: true, sourceUrl: true },
+        });
     },
 };

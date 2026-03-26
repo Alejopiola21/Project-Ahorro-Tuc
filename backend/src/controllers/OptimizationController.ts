@@ -7,7 +7,7 @@ const OptimizeCartSchema = z.object({
 });
 
 export class OptimizationController {
-    static optimizeCart(req: Request, res: Response) {
+    static async optimizeCart(req: Request, res: Response) {
         const parseResult = OptimizeCartSchema.safeParse(req.body);
 
         if (!parseResult.success) {
@@ -18,9 +18,13 @@ export class OptimizationController {
             return;
         }
 
-        const { productIds } = parseResult.data;
-        const result = OptimizationService.optimizeCart(productIds);
-
-        res.json(result);
+        try {
+            const { productIds } = parseResult.data;
+            const result = await OptimizationService.optimizeCart(productIds);
+            res.json(result);
+        } catch (error) {
+            console.error('[OptimizationController] Error:', error);
+            res.status(500).json({ error: 'Error al optimizar carrito' });
+        }
     }
 }

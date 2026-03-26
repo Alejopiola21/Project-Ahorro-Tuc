@@ -13,7 +13,7 @@ vi.mock('../src/repositories', () => ({
 }));
 
 describe('OptimizationService', () => {
-    it('should calculate the cheapest supermarket and max savings correctly', () => {
+    it('should calculate the cheapest supermarket and max savings correctly', async () => {
         // Arrange
         const mockSupermarkets = [
             { id: 'coto', name: 'Coto' },
@@ -31,11 +31,11 @@ describe('OptimizationService', () => {
             }
         ];
 
-        vi.mocked(SupermarketRepository.findAll).mockReturnValue(mockSupermarkets);
-        vi.mocked(ProductRepository.findByIds).mockReturnValue(mockProducts as any);
+        vi.mocked(SupermarketRepository.findAll).mockResolvedValue(mockSupermarkets as any);
+        vi.mocked(ProductRepository.findByIds).mockResolvedValue(mockProducts as any);
 
         // Act
-        const result = OptimizationService.optimizeCart([1, 2]);
+        const result = await OptimizationService.optimizeCart([1, 2]);
 
         // Assert
         // Coto total: 100 + 200 = 300

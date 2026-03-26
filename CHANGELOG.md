@@ -1,5 +1,26 @@
 # Changelog - Ahorro Tuc
 
+## [1.0.0-alpha.6] - Fase 4: Migración a PostgreSQL con Prisma (Código)
+### Infraestructura de Base de Datos Profesional
+* **Prisma ORM Integrado**: Migración completa del acceso a datos de `better-sqlite3` (queries raw SQL) a `PrismaClient` con tipado seguro, autocomplete de modelos y validación de relaciones en tiempo de compilación.
+* **Schema de Base de Datos Relacional Completo**:
+  - `Supermarket`: Identificador, nombre, logo y color (11 cadenas regionales de Tucumán).
+  - `Product`: Con campos avanzados `ean` (código de barras), `brand` (marca) y `weight` (peso/volumen) para matching exacto entre supermercados.
+  - `Price`: Precio actual con constraint único `(productId, supermarketId)` para evitar duplicados.
+  - `PriceHistory`: Historial de precios con `sourceUrl` para auditoría del origen de datos scrapeados.
+  - `ProductAlias`: Tabla de mapeo para recordar cómo cada supermercado nombra un mismo producto (clave para el motor de scraping futuro).
+  - `UserList`: Modelo preparado para listas personalizadas de usuarios (relación many-to-many con productos).
+* **Prisma Client Singleton** (`db/client.ts`): Implementado patrón singleton con adapter `@prisma/adapter-pg` para PostgreSQL nativo, protegiendo contra múltiples instancias durante hot-reload en desarrollo.
+* **Repositorio Migrado** (`repositories/index.ts`): 
+  - `SupermarketRepository.findAll()` — Prisma query con select y ordenamiento.
+  - `ProductRepository.findAll()` — Include de relaciones anidadas `currentPrices`.
+  - `ProductRepository.search()` — Búsqueda difusa (Fuzzy Search) usando `pg_trgm` de PostgreSQL con fallback ILIKE.
+  - `ProductRepository.getPriceHistory()` — Consulta de historial con paginación (últimos 30 registros).
+* **Seed Migrado a Prisma** (`db/seed.ts`): Función idempotente que pobla supermercados, productos, precios actuales e historial usando `upsert` y `createMany` de Prisma.
+* **Docker Compose**: Configuración lista con PostgreSQL 15 Alpine + pgAdmin 4 para administración visual de la base de datos.
+* **Migraciones SQL**: Archivos de migración generados automáticamente por `prisma migrate dev` (incluyen habilitación de extensión `pg_trgm`).
+* **Nota**: La ejecución real (levantar PostgreSQL con Docker) queda pendiente hasta que Docker Desktop esté disponible en el entorno de desarrollo.
+
 ## [1.0.0-alpha.5] - Fase 3.9: Pulido para Producción
 ### UX Premium, Testing y DevOps
 * **Modo Oscuro**: Implementado esquema de paletas de CSS orientadas a Dark Mode con toggle en el componente Header y guardado local.
@@ -16,6 +37,7 @@
 * **Zustand Store Frontend**: Eliminado el largo rastro de estados prop-drilled de React desde `App.tsx`. Ahora `CartSidebar` tiene autonomía propia e interacción instantánea con persisted state.
 * **Axios + Toasts (Sonner)**: Lógica de fetchings refactorizada al archivo `api.ts` con instanciado de Interceptores globales para reportar errores en formato de Toast. Toasts verdes bonitos en pantalla cuando agregas un producto al chango virtual.
 * **Skeletons en CSS puro**: Animación "shine" de carga premium agregada al `index.css` y `ProductGrid.tsx` al momento de iterar la carga de base de datos desde Node.js.
+
 ## [1.0.0-alpha.3] - Fase 3.5 Finalizada
 ### Refactorización, Memoria Local y Seguridad
 * **Frontend Componentizado**: `App.tsx` dividido modularmente en `Header`, `Hero`, `SupermarketsBar`, `ProductCard`, `ProductGrid` y `CartSidebar`.

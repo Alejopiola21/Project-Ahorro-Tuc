@@ -7,38 +7,71 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Supermarket {
-  id        String         @id
-  name      String
-  logoUrl   String
-  color     String         @default("#000000")
-  prices    PriceHistory[]
+  id             String         @id
+  name           String
+  logo           String         @default("?")
+  color          String         @default("#000000")
+  priceHistories PriceHistory[]
+  currentPrices  Price[]
+  aliases        ProductAlias[]
 }
 
 model Product {
-  id        Int            @id @default(autoincrement())
-  name      String
-  category  String
-  imageUrl  String
-  prices    PriceHistory[]
-  userLists UserList[]     @relation("ListProducts")
+  id             Int            @id @default(autoincrement())
+  ean            String?        @unique
+  brand          String?
+  weight         String?
+  name           String
+  category       String
+  imageUrl       String         @map("image_url")
+  priceHistories PriceHistory[]
+  currentPrices  Price[]
+  aliases        ProductAlias[]
+  userLists      UserList[]     @relation("ListProducts")
+}
+
+model Price {
+  id            Int         @id @default(autoincrement())
+  price         Float
+  updatedAt     DateTime    @default(now()) @map("updated_at")
+  
+  productId     Int         @map("product_id")
+  product       Product     @relation(fields: [productId], references: [id])
+  
+  supermarketId String      @map("supermarket_id")
+  supermarket   Supermarket @relation(fields: [supermarketId], references: [id])
+
+  @@unique([productId, supermarketId])
 }
 
 model PriceHistory {
   id            Int         @id @default(autoincrement())
   price         Float
-  date          DateTime    @default(now())
+  sourceUrl     String?     @map("source_url")
+  date          DateTime    @default(now()) @map("recorded_at")
   
-  productId     Int
+  productId     Int         @map("product_id")
   product       Product     @relation(fields: [productId], references: [id])
   
-  supermarketId String
+  supermarketId String      @map("supermarket_id")
   supermarket   Supermarket @relation(fields: [supermarketId], references: [id])
 
   @@unique([productId, supermarketId, date])
+}
+
+model ProductAlias {
+  id            Int         @id @default(autoincrement())
+  originalName  String      @map("original_name")
+  supermarketId String      @map("supermarket_id")
+  supermarket   Supermarket @relation(fields: [supermarketId], references: [id])
+  productId     Int         @map("product_id")
+  product       Product     @relation(fields: [productId], references: [id])
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  @@unique([supermarketId, originalName])
 }
 
 model UserList {
@@ -46,5 +79,5 @@ model UserList {
   name        String
   userId      String    // Placeholder for Auth implementation
   products    Product[] @relation("ListProducts")
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime  @default(now()) @map("created_at")
 }
