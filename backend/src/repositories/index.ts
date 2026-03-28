@@ -14,8 +14,21 @@ interface ProductWithPrices {
     prices: Record<string, number>;
 }
 
+// Include clause reutilizable para traer precios junto con productos
+const withCurrentPrices = {
+    currentPrices: {
+        select: {
+            supermarketId: true,
+            price: true,
+        },
+    },
+} satisfies Prisma.ProductInclude;
+
+// Tipo inferido de Prisma para Product con precios incluidos
+type ProductWithPricesPayload = Prisma.ProductGetPayload<{ include: typeof withCurrentPrices }>;
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function buildProductWithPrices(product: any): ProductWithPrices {
+function buildProductWithPrices(product: ProductWithPricesPayload): ProductWithPrices {
     const prices: Record<string, number> = {};
     if (product.currentPrices) {
         for (const p of product.currentPrices) {
@@ -33,16 +46,6 @@ function buildProductWithPrices(product: any): ProductWithPrices {
         prices,
     };
 }
-
-// Include clause reutilizable para traer precios junto con productos
-const withCurrentPrices = {
-    currentPrices: {
-        select: {
-            supermarketId: true,
-            price: true,
-        },
-    },
-} satisfies Prisma.ProductInclude;
 
 // ── Repository ────────────────────────────────────────────────────────────────
 export const SupermarketRepository = {

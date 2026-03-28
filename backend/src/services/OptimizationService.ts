@@ -8,17 +8,51 @@ export class OptimizationService {
         ]);
 
         const totals: Record<string, number> = {};
-        supermarkets.forEach(s => totals[s.id] = 0);
+        // Track cuántos productos tiene cada super para detectar catálogos incompletos
+        const productCount: Record<string, number> = {};
+
+        supermarkets.forEach(s => {
+            totals[s.id] = 0;
+            productCount[s.id] = 0;
+        });
 
         products.forEach(item => {
             Object.entries(item.prices).forEach(([sup, price]) => {
-                if (totals[sup] !== undefined) totals[sup] += price as number;
+                if (totals[sup] !== undefined) {
+                    totals[sup] += price as number;
+                    productCount[sup] = (productCount[sup] || 0) + 1;
+                }
             });
         });
 
-        const sortedTotals = Object.entries(totals).sort((a, b) => a[1] - b[1]);
-        const maxSavings = sortedTotals.length > 0 ? sortedTotals[sortedTotals.length - 1][1] - sortedTotals[0][1] : 0;
+        // Filtrar supermercados que no tienen TODOS los productos del carrito
+        // para evitar comparaciones injustas
+        const totalProducts = products.length;
+        const completeSupermarkets = supermarkets
+            .filter(s => productCount[s.id] === totalProducts)
+            .map(s => s.id);
 
-        return { sortedTotals, maxSavings };
+        const incompleteSupermarkets = supermarkets
+            .filter(s => productCount[s.id] > 0 && productCount[s.id] < totalProducts)
+            .map(s => ({
+                id: s.id,
+                name: s.name,
+                missingProducts: totalProducts - productCount[s.id],
+            }));
+
+        // Solo incluir supermercados completos en el ranking principal
+        const sortedTotals = Object.entries(totals)
+            .filter(([id]) => completeSupermarkets.includes(id))
+            .sort((a, b) => a[1] - b[1]);
+
+        const maxSavings = sortedTotals.length > 1
+            ? sortedTotals[sortedTotals.length - 1][1] - sortedTotals[0][1]
+            : 0;
+
+        return {
+            sortedTotals,
+            maxSavings,
+            incompleteSupermarkets, // Informar al frontend cuáles tienen catálogo parcial
+        };
     }
 }

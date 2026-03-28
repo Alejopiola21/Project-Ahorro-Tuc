@@ -11,24 +11,30 @@ dotenv.config();
 
 // ── Bootstrap database & start server ─────────────────────────────────────────
 async function main() {
-    // Seed si es la primera vez
-    await seedDatabase();
+    // Seed condicional (skip con SKIP_SEED=true)
+    if (process.env.SKIP_SEED !== 'true') {
+        await seedDatabase();
+    } else {
+        console.log('[DB] ⏩ SKIP_SEED=true — saltando seed automático');
+    }
 
     // ── Express app ───────────────────────────────────────────────────────────
     const app = express();
     const port = process.env.PORT || 3001;
+    const isDev = process.env.NODE_ENV === 'development';
 
     // Seguridad
     app.use(helmet());
 
     const limiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutos
-        max: 100, // Limita a 100 peticiones por ventana de 15 minutos por IP
+        max: isDev ? 1000 : 100, // Más permisivo en desarrollo
         message: 'Demasiadas peticiones desde esta IP, por favor intenta de nuevo más tarde.'
     });
     app.use(limiter);
 
-    const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:5173'];
+    // CORS con múltiples orígenes
+    const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173').split(',').map(o => o.trim());
     app.use(cors({
         origin: (origin, callback) => {
             // En desarrollo local a veces el origen viene undefined usando postman
@@ -41,6 +47,16 @@ async function main() {
     }));
     app.use(express.json());
 
+    // ── Middleware de logging de requests HTTP ─────────────────────────────────
+    app.use((req: Request, res: Response, next) => {
+        const start = Date.now();
+        res.on('finish', () => {
+            const duration = Date.now() - start;
+            console.log(`[${req.method}] ${req.originalUrl} → ${res.statusCode} (${duration}ms)`);
+        });
+        next();
+    });
+
     // Activar Swagger
     setupSwagger(app);
 
@@ -52,7 +68,7 @@ async function main() {
     app.use('/api', apiRoutes);
 
     // ── Manejador Global de Errores (Silenciador) ─────────────────────────────
-    app.use((err: any, req: Request, res: Response, next: express.NextFunction) => {
+    app.use((err: any, req: Request, res: Response, _next: express.NextFunction) => {
         console.error('[💥 Error Event]', new Date().toISOString(), err.message || err);
         res.status(500).json({ error: 'Error Interno del Servidor' });
     });

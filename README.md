@@ -98,12 +98,16 @@ cd Project-Ahorro-Tuc
 # Instalar dependencias
 cd frontend && npm install && cd ..
 cd backend && npm install && cd ..
+
+# Configurar variables de entorno (copiar de los de ejemplo)
+cp frontend/.env.example frontend/.env
+cp backend/.env.example backend/.env
 ```
 
-### 2. Levantar la base de datos
+### 2. Configurar la base de datos (Neon.tech)
+Asegurate de pegar tu `DATABASE_URL` (proveída por Neon) en el archivo `backend/.env`. Luego corre:
 ```bash
 cd backend
-docker compose up -d db
 npx prisma db push
 npx prisma db seed
 ```
@@ -121,7 +125,6 @@ cd frontend && npm run dev
 - **Frontend**: http://localhost:5173
 - **Backend API**: http://localhost:3001/api
 - **Swagger Docs**: http://localhost:3001/api/docs
-- **pgAdmin**: http://localhost:5050
 
 ## 🏗️ Estado del Proyecto
 
@@ -132,8 +135,8 @@ cd frontend && npm run dev
 | 3 | Lógica de Optimización | ✅ Completada |
 | 3.5 | Refactorización y Seguridad | ✅ Completada |
 | 3.8 | Arquitectura Escalable y UX Premium | ✅ Completada |
-| 3.9 | Pulido para Producción (PWA, Dark Mode, E2E, Swagger, CI/CD) | ✅ Completada |
-| 4 | Migración a PostgreSQL con Prisma | ✅ Código listo · ⏳ Ejecución pendiente (Docker) |
+| 3.9 | Pulido para Producción & Auditoría (PWA, E2E, CI/CD, 30+ Mejoras UI/UX) | ✅ Completada |
+| 4 | Migración a PostgreSQL con Prisma (Neon Serverless) | ✅ Código listo · ⏳ Ejecución pendiente |
 | 5 | Motor de Scraping de Precios | 🔜 Próximamente |
 
 > 📋 Ver [PLANNING.md](./PLANNING.md) para detalles completos de cada fase.

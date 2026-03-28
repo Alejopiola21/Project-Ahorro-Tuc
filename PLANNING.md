@@ -43,12 +43,13 @@
 - [x] **Frontend**: Centralizar el estado del carrito usando `Zustand` globalmente (`store.ts`).
 - [x] **Frontend**: Añadir Toast Notifications (`Sonner`) y Skeleton Loaders (animaciones completas en CSS) para UX.
 
-### FASE 3.9: Pulido para Producción (Completada ✅)
+### FASE 3.9: Pulido para Producción & Auditoría Integral (Completada ✅)
 - [x] **Frontend**: Implementar Modo Oscuro (CSS Variables y `useTheme` hook).
 - [x] **Frontend**: Convertir app a PWA instalable con `vite-plugin-pwa` e íconos.
 - [x] **Frontend**: Crear pruebas E2E del Flujo Crítico con `Playwright`.
 - [x] **Backend**: Integrar y autogenerar documentación de API con `Swagger UI`.
 - [x] **DevOps**: Configurar CI/CD Pipeline automático usando GitHub Actions.
+- [x] **Auditoría (MEJORAS.md)**: 30 mejoras implementadas incluyendo tipado estricto, debounce, middlewares de log, wrappers async, fixes SEO, y UI pulida (esqueletos, footer, accesibilidad).
 
 ### FASE 4: Migración a PostgreSQL con Prisma (Código Completado ✅ — Ejecución Pendiente ⏳)
 - [x] **Schema Prisma Completo**: Modelos `Supermarket`, `Product`, `Price`, `PriceHistory`, `ProductAlias`, `UserList` con relaciones, índices y constraints.
@@ -60,7 +61,7 @@
 - [x] **Seed con Prisma**: `db/seed.ts` migrado para crear supermercados, productos, precios e historial usando PrismaClient.
 - [x] **Docker Compose**: `docker-compose.yml` con PostgreSQL 15 + pgAdmin listo para desarrollo.
 - [x] **Migraciones generadas**: Archivos SQL de migración creados (`prisma/migrations/`).
-- [ ] ⏳ **Ejecución pendiente**: Levantar Docker (`docker compose up -d db`), correr `npx prisma db push` y `npx prisma db seed`. Requiere Docker Desktop instalado.
+- [ ] ⏳ **Ejecución pendiente**: Conectar a base de datos serverless en **Neon.tech** (reemplazando Docker por problemas de compatibilidad local). Correr `npx prisma db push` y `npx prisma db seed` remoto.
 
 ### FASE 5: Actualizador de Precios (Motor de Scraping) / "Extras" (Pendiente 🔜)
 - [ ] **Desarrollar Motor de Extracción**: Crear scripts (Node.js/Python) dividiendo en APIs ocultas (VTEX/cadenas modernas) y Playwright/Cheerio (webs antiguas).

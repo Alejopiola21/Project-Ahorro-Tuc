@@ -1,29 +1,30 @@
 import { Request, Response } from 'express';
 import { ProductRepository } from '../repositories';
+import { asyncHandler } from '../middleware/asyncHandler';
 
 export class ProductController {
-    static async getProducts(req: Request, res: Response) {
-        try {
-            const { q } = req.query;
-            const data = q && typeof q === 'string'
-                ? await ProductRepository.search(q)
-                : await ProductRepository.findAll();
-            res.json(data);
-        } catch (error) {
-            console.error('[ProductController] Error:', error);
-            res.status(500).json({ error: 'Error al obtener productos' });
-        }
-    }
+    static getProducts = asyncHandler(async (req: Request, res: Response) => {
+        const { q } = req.query;
+        const data = q && typeof q === 'string'
+            ? await ProductRepository.search(q)
+            : await ProductRepository.findAll();
+        res.json(data);
+    });
 
-    static async getProductHistory(req: Request, res: Response) {
-        try {
-            const id = Number(req.params.id);
-            const supermarketId = String(req.params.supermarketId);
-            const history = await ProductRepository.getPriceHistory(id, supermarketId);
-            res.json(history);
-        } catch (error) {
-            console.error('[ProductController] Error:', error);
-            res.status(500).json({ error: 'Error al obtener historial' });
+    static getProductHistory = asyncHandler(async (req: Request, res: Response) => {
+        const id = Number(req.params.id);
+        if (isNaN(id) || id <= 0) {
+            res.status(400).json({ error: 'ID de producto inválido' });
+            return;
         }
-    }
+
+        const supermarketId = String(req.params.supermarketId);
+        if (!supermarketId || supermarketId.trim() === '') {
+            res.status(400).json({ error: 'ID de supermercado inválido' });
+            return;
+        }
+
+        const history = await ProductRepository.getPriceHistory(id, supermarketId);
+        res.json(history);
+    });
 }

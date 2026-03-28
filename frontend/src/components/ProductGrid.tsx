@@ -1,13 +1,11 @@
 import React from 'react';
 import { ProductCard } from './ProductCard';
-import type { Product, Supermarket } from '../types';
+import type { Product } from '../types';
 
 interface Props {
     loading: boolean;
     products: Product[];
     debouncedQuery: string;
-    getSup: (id: string) => Supermarket | undefined;
-    getCheapest: (prices: Record<string, number>) => [string, number];
     onAddToCart: (p: Product) => void;
 }
 
@@ -24,17 +22,17 @@ const ProductSkeleton = () => (
 );
 
 export const ProductGrid: React.FC<Props> = ({
-    loading, products, debouncedQuery, getSup, getCheapest, onAddToCart
+    loading, products, debouncedQuery, onAddToCart
 }) => {
     return (
-        <main className="main-content">
+        <main className="main-content" role="main">
             <div className="section-header">
                 <h3>{debouncedQuery ? `Resultados para "${debouncedQuery}"` : 'Productos Destacados'}</h3>
                 {!loading && <p>{products.length} productos encontrados</p>}
             </div>
 
             {loading ? (
-                <div className="products-grid">
+                <div className="products-grid" aria-busy="true">
                     {[1, 2, 3, 4, 5, 6].map((n) => (
                         <ProductSkeleton key={n} />
                     ))}
@@ -50,8 +48,6 @@ export const ProductGrid: React.FC<Props> = ({
                         <ProductCard
                             key={product.id}
                             product={product}
-                            getSup={getSup}
-                            getCheapest={getCheapest}
                             onAddToCart={onAddToCart}
                         />
                     ))}
