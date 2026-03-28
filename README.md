@@ -48,7 +48,7 @@ En un contexto de constante variación de precios, saber dónde comprar puede si
 - **PostgreSQL 15** con extensión `pg_trgm` para búsqueda difusa ultrarrápida
 - Schema relacional con 6 modelos: `Supermarket`, `Product`, `Price`, `PriceHistory`, `ProductAlias`, `UserList`
 - Soporte para código de barras (EAN), marcas y pesos para matching exacto
-- **Docker Compose** pre-configurado con pgAdmin
+- **Neon.tech** como proveedor Serverless (100% en la nube, sin dependencias locales)
 
 ### DevOps & Testing
 - **GitHub Actions** CI/CD pipeline automático
@@ -79,8 +79,7 @@ ahorro-tuc/
 │   ├── prisma/
 │   │   ├── schema.prisma    # Modelos de base de datos
 │   │   └── migrations/      # Migraciones SQL
-│   ├── tests/               # Vitest unit tests
-│   └── docker-compose.yml   # PostgreSQL + pgAdmin
+│   └── tests/               # Vitest unit tests
 └── .github/workflows/       # CI/CD pipeline
 ```
 
@@ -88,7 +87,7 @@ ahorro-tuc/
 
 ### Prerrequisitos
 - Node.js 18+
-- Docker Desktop (para PostgreSQL)
+- Una cuenta gratuita en [Neon.tech](https://neon.tech/) para la base de datos
 
 ### 1. Clonar e instalar
 ```bash

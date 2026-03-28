@@ -37,7 +37,7 @@
 
 ### FASE 3.8: Arquitectura Escalable y UX Premium (Completada ✅)
 - [x] **Backend**: Implementar patrón Controlador-Servicio (`controllers` y `services`).
-- [x] **Backend**: Preparar ORM (Prisma) y esqueleto base para PostgreSQL (`docker-compose.yml`).
+- [x] **Backend**: Preparar ORM (Prisma) y arquitectura para PostgreSQL (Neon).
 - [x] **Backend**: Configurar `Vitest` y escribir tests unitarios para `OptimizationService`.
 - [x] **Frontend**: Refactorizar llamadas de backend usando `Axios` e Interceptores globales.
 - [x] **Frontend**: Centralizar el estado del carrito usando `Zustand` globalmente (`store.ts`).
@@ -59,7 +59,7 @@
 - [x] **Repositorio migrado a PrismaClient**: `repositories/index.ts` usa 100% Prisma con Fuzzy Search (`pg_trgm`).
 - [x] **PrismaClient singleton**: `db/client.ts` con patrón singleton usando adapter `@prisma/adapter-pg`.
 - [x] **Seed con Prisma**: `db/seed.ts` migrado para crear supermercados, productos, precios e historial usando PrismaClient.
-- [x] **Docker Compose**: `docker-compose.yml` con PostgreSQL 15 + pgAdmin listo para desarrollo.
+- [x] **Base de Datos Cloud**: Transición garantizada a PostgreSQL Serverless con Neon.tech (eliminando dependencias locales conflictivas).
 - [x] **Migraciones generadas**: Archivos SQL de migración creados (`prisma/migrations/`).
 - [ ] ⏳ **Ejecución pendiente**: Conectar a base de datos serverless en **Neon.tech** (reemplazando Docker por problemas de compatibilidad local). Correr `npx prisma db push` y `npx prisma db seed` remoto.
 
