@@ -11,7 +11,7 @@ export const Hero: React.FC<Props> = ({ query, setQuery }) => (
         <div className="hero-bg-shapes"></div>
         <div className="hero-content">
             <h2 className="hero-title">Encontrá el mejor precio en <span>Tucumán</span></h2>
-            <p className="hero-subtitle">Comparamos Coto, Carrefour, Jumbo, Vea, Disco, Día, Gómez Pardo, ChangoMás, Libertad, Comodín y Luque al instante.</p>
+            <p className="hero-subtitle">Comparamos Coto, Carrefour, Jumbo, Vea, Disco, Día, Gómez Pardo, ChangoMás, Libertad y Comodín al instante.</p>
             <div className="search-box">
                 <Search className="search-icon" size={24} />
                 <input

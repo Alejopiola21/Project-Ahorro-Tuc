@@ -164,7 +164,7 @@ if (isNaN(id) || id <= 0) {
 
 ---
 
-### 2.5 El `OptimizationService` no maneja productos sin precios en ciertos supermercados
+### 2.5 El `OptimizationService` no maneja productos sin precios en ciertos supermercados (✅ COMPLETADO)
 - **Archivo:** `backend/src/services/OptimizationService.ts`
 - **Problema:** Si un producto no tiene precio en un supermercado, `totals[sup]` se mantiene en 0 para ese supermercado en ese producto, distorsionando la comparativa. Un super parece más barato simplemente porque no tiene el producto.
 - **Fix:** Solo contar supermercados que tienen TODOS los productos:

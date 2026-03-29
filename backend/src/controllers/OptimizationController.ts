@@ -4,7 +4,10 @@ import { OptimizationService } from '../services/OptimizationService';
 import { asyncHandler } from '../middleware/asyncHandler';
 
 const OptimizeCartSchema = z.object({
-    productIds: z.array(z.number().positive())
+    cartItems: z.array(z.object({
+        productId: z.number().positive(),
+        quantity: z.number().int().min(1)
+    }))
 });
 
 export class OptimizationController {
@@ -19,8 +22,8 @@ export class OptimizationController {
             return;
         }
 
-        const { productIds } = parseResult.data;
-        const result = await OptimizationService.optimizeCart(productIds);
+        const { cartItems } = parseResult.data;
+        const result = await OptimizationService.optimizeCart(cartItems);
         res.json(result);
     });
 }

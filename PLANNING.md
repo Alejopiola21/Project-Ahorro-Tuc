@@ -1,7 +1,7 @@
 # Plan de Proyecto: Ahorro Tuc
 
 ## 1. Visión General
-**Ahorro Tuc** es una aplicación web (optimizada para dispositivos móviles y web) que permite a los usuarios de la provincia de Tucumán comparar precios de productos de supermercados (Coto, Carrefour, Jumbo, Vea, Disco, Día, Gómez Pardo, ChangoMás, Libertad, Comodín, Luque) en tiempo real, ayudándolos a encontrar la opción más barata. Además, permite cargar una lista de compras y calcular el total en cada supermercado y el ahorro estimado.
+**Ahorro Tuc** es una aplicación web (optimizada para dispositivos móviles y web) que permite a los usuarios de la provincia de Tucumán comparar precios de productos de supermercados (Coto, Carrefour, Jumbo, Vea, Disco, Día, Gómez Pardo, ChangoMás, Libertad, Comodín) en tiempo real, ayudándolos a encontrar la opción más barata. Además, permite cargar una lista de compras y calcular el total en cada supermercado y el ahorro estimado.
 
 ## 2. Arquitectura del Sistema (Tech Stack)
 * **Frontend**: React (creado con Vite), TypeScript, CSS Vanilla (con variables y un diseño estético moderno, animado y glassmorphism).
@@ -65,7 +65,7 @@
 
 ### FASE 5: Actualizador de Precios (Motor de Scraping) / "Extras" (Pendiente 🔜)
 - [ ] **Desarrollar Motor de Extracción**: Crear scripts (Node.js/Python) dividiendo en APIs ocultas (VTEX/cadenas modernas) y Playwright/Cheerio (webs antiguas).
-  - *Supermercados*: Coto, Carrefour, Vea, Disco, Jumbo, Día, Gómez Pardo, ChangoMás, Libertad, Comodín, Luque.
+  - *Supermercados*: Coto, Carrefour, Vea, Disco, Jumbo, Día, Gómez Pardo, ChangoMás, Libertad, Comodín.
 - [ ] **Algoritmo de Homogeneización de Datos**: Implementar lógica de *matching* (Fuzzy Search o código de barras EAN) para identificar que el mismo producto tiene exactamente el mismo `product_id` independientemente del nombre.
 - [ ] **Sincronización Automática (Cron Jobs)**: Configurar *workers* o GitHub Actions para correr la extracción 1 o 2 veces al día y mantener PostgreSQL actualizado.
 - [ ] **Sistemas Anti-Bloqueo**: Incorporar cabeceras (`User-Agent`) dinámicas y rotación para evitar baneos de Cloudflare/Akamai.

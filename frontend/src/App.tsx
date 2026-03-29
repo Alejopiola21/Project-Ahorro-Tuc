@@ -59,8 +59,8 @@ export default function App() {
     }
 
     const timer = setTimeout(() => {
-      const productIds = cart.map(item => item.product.id);
-      api.post<CartTotals>('/optimize-cart', { productIds })
+      const cartItems = cart.map(item => ({ productId: item.product.id, quantity: item.quantity }));
+      api.post<CartTotals>('/optimize-cart', { cartItems })
         .then(r => setCartTotals(r.data))
         .catch(() => { });
     }, 500);

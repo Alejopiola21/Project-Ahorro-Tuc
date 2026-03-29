@@ -1,5 +1,11 @@
 # Changelog - Ahorro Tuc
 
+## [1.0.0-alpha.7] - Fase 4.1: Mejoras de Motor y Catálogo
+### Optimización de Carrito y Remoción de Entidades Obsoletas
+* **Multiplicador de Cantidad**: El motor de optimización (`OptimizationService.ts`) ahora acepta cantidades (`quantity`) enviadas desde el Frontend y calcula el valor de la lista multiplicando el precio base por la cantidad de productos requeridos.
+* **Refactor Zod Payload**: Actualizada la validación de esquema en la API POST `/api/optimize-cart` para recibir un arreglo tipado de objetos en lugar de simples `productIds`.
+* **Remoción de Luque**: Se purgó al supermercado "Luque" (ya inactivo) de toda la base de datos (Seed), del Hero Banner de la UI y de la documentación técnica.
+
 ## [1.0.0-alpha.6] - Fase 4: Migración a PostgreSQL con Prisma (Código)
 ### Infraestructura de Base de Datos Profesional
 * **Prisma ORM Integrado**: Migración completa del acceso a datos de `better-sqlite3` (queries raw SQL) a `PrismaClient` con tipado seguro, autocomplete de modelos y validación de relaciones en tiempo de compilación.

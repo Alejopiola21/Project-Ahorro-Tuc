@@ -1,7 +1,8 @@
 import { ProductRepository, SupermarketRepository } from '../repositories';
 
 export class OptimizationService {
-    static async optimizeCart(productIds: number[]) {
+    static async optimizeCart(cartItems: { productId: number, quantity: number }[]) {
+        const productIds = cartItems.map(item => item.productId);
         const [products, supermarkets] = await Promise.all([
             ProductRepository.findByIds(productIds),
             SupermarketRepository.findAll(),
@@ -17,9 +18,12 @@ export class OptimizationService {
         });
 
         products.forEach(item => {
+            const cartItem = cartItems.find(c => c.productId === item.id);
+            const quantity = cartItem ? cartItem.quantity : 1;
+
             Object.entries(item.prices).forEach(([sup, price]) => {
                 if (totals[sup] !== undefined) {
-                    totals[sup] += price as number;
+                    totals[sup] += (price as number) * quantity;
                     productCount[sup] = (productCount[sup] || 0) + 1;
                 }
             });

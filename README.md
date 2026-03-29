@@ -24,7 +24,7 @@ En un contexto de constante variación de precios, saber dónde comprar puede si
 
 ## 🏪 Supermercados Incluidos
 
-`Coto` · `Carrefour` · `Jumbo` · `Vea` · `Disco` · `Día` · `Gómez Pardo` · `ChangoMás` · `Libertad` · `Comodín` · `Luque`
+`Coto` · `Carrefour` · `Jumbo` · `Vea` · `Disco` · `Día` · `Gómez Pardo` · `ChangoMás` · `Libertad` · `Comodín`
 
 ## 🛠️ Stack Tecnológico
 
