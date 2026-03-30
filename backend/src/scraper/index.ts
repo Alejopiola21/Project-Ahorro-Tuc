@@ -1,9 +1,9 @@
 import 'dotenv/config'; // Cargar variables para Prisma y configuraciones
-import { prisma } from '../db/client';
+// import { prisma } from '../db/client'; // Ya no es estrictamente necesario pasarlo al enrutador
 import { syncSupermarketData } from './core/sync';
-import { scrapeVea } from './providers/vea';
-import { scrapeJumbo } from './providers/jumbo';
-import { scrapeDisco } from './providers/disco';
+import { VeaScraper } from './providers/vea';
+import { JumboScraper } from './providers/jumbo';
+import { DiscoScraper } from './providers/disco';
 
 async function main() {
     console.log('============================================');
@@ -12,26 +12,22 @@ async function main() {
 
     try {
         // --- 1. VEA ---
-        const veaProducts = await scrapeVea();
-        if (veaProducts.length > 0) await syncSupermarketData(prisma, 'vea', veaProducts);
+        const veaProducts = await new VeaScraper().scrape();
+        if (veaProducts.length > 0) await syncSupermarketData(null, 'vea', veaProducts);
         
         // --- 2. JUMBO ---
-        const jumboProducts = await scrapeJumbo();
-        if (jumboProducts.length > 0) await syncSupermarketData(prisma, 'jumbo', jumboProducts);
+        const jumboProducts = await new JumboScraper().scrape();
+        if (jumboProducts.length > 0) await syncSupermarketData(null, 'jumbo', jumboProducts);
 
         // --- 3. DISCO ---
-        const discoProducts = await scrapeDisco();
-        if (discoProducts.length > 0) await syncSupermarketData(prisma, 'disco', discoProducts);
-
-        // Proveedores en desarrollo (Ignorados por ahora)
-        // const carrefourProducts = await scrapeCarrefour();
-        // const chMasProducts = await scrapeChangomas();
+        const discoProducts = await new DiscoScraper().scrape();
+        if (discoProducts.length > 0) await syncSupermarketData(null, 'disco', discoProducts);
         
     } catch (error) {
         console.error('❌ Error general en la ejecución del Scraper:', error);
     } finally {
         console.log('\n✅ Proceso de scraping finalizado.');
-        await prisma.$disconnect();
+        // Para cerrar la conexión cleanly la delegaríamos al repository o prisma client al apagar el root app
     }
 }
 

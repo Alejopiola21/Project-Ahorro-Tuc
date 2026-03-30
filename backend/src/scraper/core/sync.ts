@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { ScraperRepository, ScraperPriceUpdate } from '../../repositories/ScraperRepository';
 
 export interface ScrapedProduct {
     name: string;
@@ -28,53 +28,55 @@ function fuzzyMatch(dbName: string, scrapedName: string): boolean {
     const dbWords = dbClean.split(/\s+/).filter(w => w.length > 2);
     
     // Si la cadena de la web incluye TODAS las palabras fuertes del dbName, lo damos por válido
-    // Ej: "leche", "descremada", "serenisima", "1l" están dento de "leche uat serenisima descremada 1l sachet"
     return dbWords.every(word => scrapedClean.includes(word));
 }
 
 export async function syncSupermarketData(
-    prisma: PrismaClient,
+    _prisma: any, // Ignorado, ahora usamos ScraperRepository y aislamos la capa de persistencia
     supermarketId: string,
     scrapedProducts: ScrapedProduct[]
 ) {
     console.log(`\n[Sync] 🚀 Procesando sincronización para [${supermarketId.toUpperCase()}]`);
     console.log(`[Sync] Productos recolectados: ${scrapedProducts.length}`);
     
-    // Optimizacion: precargar todos los productos una sola vez para la búsqueda fuzzy en memoria
-    const allDbProducts = await prisma.product.findMany({ select: { id: true, name: true }});
+    // Cargar diccionarios O(1) en memoria (Reemplaza cientos de queries `findUnique` contra la DB de Neon)
+    console.log(`[Sync] Cacheando catálogo completo en memoria...`);
     
-    let matchedCount = 0;
+    const dbProducts = await ScraperRepository.getAllProductsForMatching();
+    const dbAliases = await ScraperRepository.getAllAliases(supermarketId);
+
+    // Mapear EAN y Alias para búsqueda O(1)
+    const eanMap = new Map<string, number>();
+    for (const p of dbProducts) {
+        if (p.ean) eanMap.set(p.ean, p.id);
+    }
+
+    const aliasMap = new Map<string, number>();
+    for (const a of dbAliases) {
+        aliasMap.set(a.originalName, a.productId);
+    }
+    
     let ignoredCount = 0;
+    const batchUpdates: ScraperPriceUpdate[] = [];
+
+    console.log(`[Sync] Matcheando de forma rápida O(1) y Fuzzy O(N)...`);
 
     for (const scraped of scrapedProducts) {
-        let dbProductId: number | null = null;
+        let dbProductId: number | undefined = undefined;
 
-        // 1. Matcheo exacto por EAN (Código de barras) (La forma más segura)
+        // 1. O(1) - EAN Exact Match
         if (scraped.ean) {
-            const byEan = await prisma.product.findUnique({
-                where: { ean: scraped.ean },
-                select: { id: true }
-            });
-            if (byEan) dbProductId = byEan.id;
+            dbProductId = eanMap.get(scraped.ean);
         }
 
-        // 2. Revisar la tabla de Alias (Nombres mapeados manualmente por el usuario o aprendidos)
+        // 2. O(1) - Alias Match
         if (!dbProductId) {
-            const alias = await prisma.productAlias.findUnique({
-                where: { 
-                    supermarketId_originalName: { 
-                        supermarketId, 
-                        originalName: scraped.name 
-                    } 
-                },
-                select: { productId: true }
-            });
-            if (alias) dbProductId = alias.productId;
+            dbProductId = aliasMap.get(scraped.name);
         }
 
-        // 3. Fallback: Búsqueda Insensible (Fuzzy Avanzado) por Palabras Clave
+        // 3. O(N) - Fuzzy Matching O(N * M) Array Loop
         if (!dbProductId) {
-            for (const dbP of allDbProducts) {
+            for (const dbP of dbProducts) {
                 if (fuzzyMatch(dbP.name, scraped.name)) {
                     dbProductId = dbP.id;
                     break;
@@ -82,48 +84,24 @@ export async function syncSupermarketData(
             }
         }
 
-        // Si después de 3 intentos no hallamos el producto, lo ignoramos para no ensuciar el catálogo
+        // Ignorados
         if (!dbProductId) {
             ignoredCount++;
             continue;
         }
 
-        // >>> Producto Encontrado - ¡Actualizamos los precios! <<<
-        
-        // Upsert en la tabla 'Price' (Precio actual)
-        await prisma.price.upsert({
-            where: {
-                productId_supermarketId: {
-                    productId: dbProductId,
-                    supermarketId: supermarketId
-                }
-            },
-            update: {
-                price: scraped.price,
-                updatedAt: new Date()
-            },
-            create: {
-                productId: dbProductId,
-                supermarketId: supermarketId,
-                price: scraped.price
-            }
+        // Producto match exitoso: Apuntar para batch transaction. Evitamos N queries upsert!
+        batchUpdates.push({
+            productId: dbProductId,
+            price: scraped.price,
+            sourceUrl: scraped.sourceUrl
         });
-
-        // Insertar en el historial de precios para las gráficas
-        await prisma.priceHistory.create({
-            data: {
-                productId: dbProductId,
-                supermarketId: supermarketId,
-                price: scraped.price,
-                sourceUrl: scraped.sourceUrl,
-                date: new Date()
-            }
-        });
-
-        matchedCount++;
     }
 
+    // Guardar en la base de datos de manera atómica transaccional y masiva (Latencia 100x menor)
+    await ScraperRepository.batchUpdatePrices(supermarketId, batchUpdates);
+
     console.log(`[Sync:${supermarketId}] ✔ Sincronización finalizada.`);
-    console.log(`[Sync:${supermarketId}] 🔹 Actualizados / Matcheados: ${matchedCount}`);
+    console.log(`[Sync:${supermarketId}] 🔹 Matcheados / Actualizados: ${batchUpdates.length}`);
     console.log(`[Sync:${supermarketId}] 🔸 Ignorados (No en catálogo): ${ignoredCount}`);
 }

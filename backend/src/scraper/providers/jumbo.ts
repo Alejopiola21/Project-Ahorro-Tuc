@@ -1,20 +1,26 @@
 import { fetchWithRetry } from '../core/fetcher';
-import { ScrapedProduct } from '../core/sync';
+import { BaseScraper } from '../core/BaseScraper';
 
+// API Clásica de VTEX usada por Cencosud
 const JUMBO_SEARCH_API = 'https://www.jumbo.com.ar/api/catalog_system/pub/products/search';
 
-export async function scrapeJumbo(): Promise<ScrapedProduct[]> {
-    console.log('\n[Provider:Jumbo] 🐘 Iniciando extracción (VTEX API)...');
-    const results: ScrapedProduct[] = [];
-    
-    // Términos clave a recolectar
-    const searchTerms = ['leche', 'fideos', 'azucar', 'papel'];
+export class JumboScraper extends BaseScraper {
+    constructor() {
+        super('jumbo');
+    }
 
-    for (const term of searchTerms) {
-        try {
+    async performScraping(): Promise<void> {
+        const searchTerms = ['leche', 'fideos', 'azucar', 'papel'];
+
+        for (const term of searchTerms) {
+            console.log(`[Provider:Jumbo] Buscando: "${term}"...`);
+            
             const data = await fetchWithRetry<any[]>(`${JUMBO_SEARCH_API}?ft=${term}`);
 
-            if (!Array.isArray(data)) continue;
+            if (!Array.isArray(data)) {
+                console.warn(`[Provider:Jumbo] Respuesta inválida para ${term}`);
+                continue;
+            }
 
             for (const item of data) {
                 const name = item.productName;
@@ -25,15 +31,15 @@ export async function scrapeJumbo(): Promise<ScrapedProduct[]> {
                 const sourceUrl = item.link || `https://www.jumbo.com.ar${item.linkText}/p`;
                 const imageUrl = sku?.images?.[0]?.imageUrl;
 
-                if (name && typeof price === 'number') {
-                    results.push({ name, price, ean, brand, sourceUrl, imageUrl });
-                }
+                this.addResult({
+                    name,
+                    price,
+                    ean,
+                    brand,
+                    sourceUrl,
+                    imageUrl
+                });
             }
-        } catch (error) {
-            console.error(`[Provider:Jumbo] Error buscando "${term}":`, (error as Error).message);
         }
     }
-    
-    console.log(`[Provider:Jumbo] ✅ Extraídos: ${results.length} ítems.`);
-    return results;
 }

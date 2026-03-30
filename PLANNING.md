@@ -75,7 +75,7 @@
 - [ ] **Experiencia Gráfica (Historiales)**: Paneles desplegables en el Frontend dibujando la caída/subida del precio a lo largo del mes con `Recharts`.
 - [ ] **Gestión de Usuarios (Fase 6)**: Sistema de autenticación para guardar carritos en la nube, marcarlos como favoritos y generar "Ticket de Compra PDF" o links directos a WhatsApp.
 - [ ] **Navegación por Categorías**: UI moderna para descubrir productos por departamento en lugar de una búsqueda a ciegas.
-- [ ] **Infraestructura Caché**: Servidor Redis mitigando los costos de transacciones en la Base de Datos para operaciones idénticas concurrentes.
+- [x] **Infraestructura Caché**: Implementación exitosa de capa `In-Memory TTL Cache` mitigando costos de transacciones difusas sin requerir contenedores Redis inmediatos.
 
 ## Notas para Desarrollo IA
 Este documento servirá para no olvidar el contexto del proyecto y en qué fase estamos. Continuar refiriéndose a este `PLANNING.md` para seguir avanzando en cada tarea sugerida.

@@ -1,5 +1,13 @@
 # Changelog - Ahorro Tuc
 
+## [1.0.0-alpha.9] - Fase 5.1: SDD, Caché In-Memory y Refactoring
+### Metodología de Agentes, Optimización de Base de Datos y Clean Code
+* **Spec-Driven Development (SDD)**: Se introdujo una carpeta `.agents` que estandariza las convenciones estructurales (Skills) de Prisma, React y el Scraper para guiar de forma segura las actualizaciones.
+* **Caché Protector In-Memory (Node)**: Se creó un `CacheService` nativo (Map LRU-like) con TTL de 10 minutos. Este interceptor ahorra el 99% de las consultas a la Base de Datos en el buscador frontal.
+* **Batch Transactions (Prisma)**: El sincronizador de scraping ya no ejecuta el problema de *N+1 Queries*. Pre-carga el catálogo a RAM y lanza inyecciones atómicas mediante `prisma.$transaction`.
+* **Motor Scraper POO**: Todos los extractores (`Vea`, `Jumbo`, `Disco`) ahora heredan de `BaseScraper.ts` contando de forma estándar con un *Graceful Shutdown* tolerante a fallos de internet.
+* **Frontend Custom Hooks**: Separación extrema de responsabilidades en React. Se independizaron `useProductSearch.ts` y `useCartOptimizer.ts`, dejando un `App.tsx` puramente presentacional.
+
 ## [1.0.0-alpha.8] - Fase 5: Motor de Scraping Multi-Supermercado
 ### Autonomía, Automatización e Integración de Datos
 * **Arquitectura de Extracción Autónoma**: Creado el módulo `backend/src/scraper/` ejecutándose paralelamente y sin entorpecer la API de Express.

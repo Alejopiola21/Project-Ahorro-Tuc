@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Toaster, toast } from 'sonner';
 import './index.css';
 
-import type { Product, CartTotals } from './types';
+import type { Product } from './types';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { SupermarketsBar } from './components/SupermarketsBar';
@@ -10,65 +10,36 @@ import { ProductGrid } from './components/ProductGrid';
 import { CartSidebar } from './components/CartSidebar';
 import { Footer } from './components/Footer';
 
+// Hooks & Store
 import { api } from './api';
 import { useCartStore, useSupermarketStore } from './store';
+import { useProductSearch } from './hooks/useProductSearch';
+import { useCartOptimizer } from './hooks/useCartOptimizer';
 
 export default function App() {
-  const [query, setQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [cartTotals, setCartTotals] = useState<CartTotals | null>(null);
 
-  // Zustand Stores
+  // 1. Lógica de Búsqueda completamente encapsulada
+  const { query, setQuery, debouncedQuery, products, loading } = useProductSearch();
+
+  // 2. Lógica de Optimización de Carrito encapsulada (se suscribe autonómicamente)
+  const { cartTotals } = useCartOptimizer();
+
+  // 3. Zustand Stores para lógica de UI global
   const cart = useCartStore(state => state.cart);
   const addToCart = useCartStore(state => state.addToCart);
-  const supermarkets = useSupermarketStore(state => state.supermarkets);
+  
   const setSupermarkets = useSupermarketStore(state => state.setSupermarkets);
 
-  // Debounce search query
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query), 350);
-    return () => clearTimeout(t);
-  }, [query]);
-
-  // Fetch supermarkets once
+  // Carga inicial de datos estáticos (Supermercados) - Este es el único fetch que queda aquí
+  // porque necesita correr solo una vez on-mount para popular el Zustand store base.
   useEffect(() => {
     api.get('/supermarkets')
       .then(r => setSupermarkets(r.data))
-      .catch(() => { }); // handled by interceptor
-  }, []);
+      .catch((e) => console.error("Error cargando supermercados:", e)); 
+  }, [setSupermarkets]);
 
-  // Fetch products
-  useEffect(() => {
-    setLoading(true);
-    const params = debouncedQuery ? { q: debouncedQuery } : {};
-
-    api.get<Product[]>('/products', { params })
-      .then(r => setProducts(r.data))
-      .catch(() => { })
-      .finally(() => setLoading(false));
-  }, [debouncedQuery]);
-
-  // Optimize Cart via Backend (with debounce)
-  useEffect(() => {
-    if (cart.length === 0 || supermarkets.length === 0) {
-      setCartTotals(null);
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      const cartItems = cart.map(item => ({ productId: item.product.id, quantity: item.quantity }));
-      api.post<CartTotals>('/optimize-cart', { cartItems })
-        .then(r => setCartTotals(r.data))
-        .catch(() => { });
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [cart, supermarkets]);
-
-  // Helpers
+  // Helpers de UI
   const handleAddToCart = (p: Product) => {
     addToCart(p);
     const existing = cart.find(i => i.product.id === p.id);
@@ -88,7 +59,7 @@ export default function App() {
       <Header cartCount={totalItems} onOpenCart={() => setIsCartOpen(true)} />
 
       <Hero query={query} setQuery={setQuery} />
-
+      
       <SupermarketsBar />
 
       <ProductGrid

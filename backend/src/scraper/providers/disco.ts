@@ -1,19 +1,25 @@
 import { fetchWithRetry } from '../core/fetcher';
-import { ScrapedProduct } from '../core/sync';
+import { BaseScraper } from '../core/BaseScraper';
 
 const DISCO_SEARCH_API = 'https://www.disco.com.ar/api/catalog_system/pub/products/search';
 
-export async function scrapeDisco(): Promise<ScrapedProduct[]> {
-    console.log('\n[Provider:Disco] 🔴 Iniciando extracción (VTEX API)...');
-    const results: ScrapedProduct[] = [];
-    
-    const searchTerms = ['leche', 'fideos', 'azucar', 'papel'];
+export class DiscoScraper extends BaseScraper {
+    constructor() {
+        super('disco');
+    }
 
-    for (const term of searchTerms) {
-        try {
+    async performScraping(): Promise<void> {
+        const searchTerms = ['leche', 'fideos', 'azucar', 'papel'];
+
+        for (const term of searchTerms) {
+            console.log(`[Provider:Disco] Buscando: "${term}"...`);
+            
             const data = await fetchWithRetry<any[]>(`${DISCO_SEARCH_API}?ft=${term}`);
 
-            if (!Array.isArray(data)) continue;
+            if (!Array.isArray(data)) {
+                console.warn(`[Provider:Disco] Respuesta inválida para ${term}`);
+                continue;
+            }
 
             for (const item of data) {
                 const name = item.productName;
@@ -24,15 +30,15 @@ export async function scrapeDisco(): Promise<ScrapedProduct[]> {
                 const sourceUrl = item.link || `https://www.disco.com.ar${item.linkText}/p`;
                 const imageUrl = sku?.images?.[0]?.imageUrl;
 
-                if (name && typeof price === 'number') {
-                    results.push({ name, price, ean, brand, sourceUrl, imageUrl });
-                }
+                this.addResult({
+                    name,
+                    price,
+                    ean,
+                    brand,
+                    sourceUrl,
+                    imageUrl
+                });
             }
-        } catch (error) {
-            console.error(`[Provider:Disco] Error buscando "${term}":`, (error as Error).message);
         }
     }
-    
-    console.log(`[Provider:Disco] ✅ Extraídos: ${results.length} ítems.`);
-    return results;
 }
