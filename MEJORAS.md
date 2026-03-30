@@ -487,6 +487,28 @@ VITE_API_URL=http://localhost:3001/api
 4. **Cat. 5** — Blindar contra regresiones con tests
 5. **Cat. 6** — Mejorar experiencia de desarrollo
 
+## 🚀 Categoría 7: Propuestas de Expansión Futura (Siguientes Pasos)
+
+### 7.1 Gráficos de Historial de Precios (UI/UX)
+- **Idea:** El scraper actual guarda fechas y precios en `PriceHistory`.
+- **Implementación:** Añadir `Recharts` o `Chart.js` al frontend. Crear un desplegable en la tarjeta del producto que dibuje la evolución temporal de los precios entre supermercados, permitiendo al usuario ver "verdaderas ofertas".
+
+### 7.2 Autenticación y Cuentas de Usuario (Fase 6)
+- **Idea:** Permitir que los usuarios guarden sus listas y favoritos.
+- **Implementación:** Agregar Auth (ej. Supabase Auth o NextAuth/JWT) y crear una tabla `UserList`. Permitirá guardar múltiples carritos, compartirlos por WhatsApp con familiares, y no depender del localStorage del dispositivo.
+
+### 7.3 Sistema de Caché con Redis (Rendimiento)
+- **Idea:** Evitar saturar la base de datos de NeonDB ante picos de tráfico.
+- **Implementación:** Instalar `Redis` en el backend. Cachear las búsquedas generales (ej `/api/products?q=leche`) durante 1-2 horas para respuestas instantáneas de 10ms, liberando de cálculos intensivos al PostgreSQL.
+
+### 7.4 Explorador de Categorías Inteligente
+- **Idea:** Pasar de un modelo "solo buscador" a un modelo "descubrimiento de ofertas".
+- **Implementación:** Añadir chips/botones de acceso rápido en la home ("Lácteos", "Limpieza"). Al clickear, mostrar los productos ordenados dinámicamente según la caída porcentual de precio en las últimas 24h.
+
+### 7.5 Conquistar ChangoMás y Carrefour
+- **Idea:** Completar el catálogo extendiendo el scraper VTEX actual.
+- **Implementación:** Hacer ingeniería sobre las APIs de `VTEX IO / GraphQL` utilizadas por ChangoMás y Carrefour, integrándolas al scheduler asíncrono actual sin romper la arquitectura.
+
 ---
 
 > **Nota:** Este documento se mantiene como referencia permanente del proyecto. Marcar items como completados a medida que se implementen.

@@ -125,3 +125,15 @@ export async function seedDatabase() {
 
     console.log(`[DB] 🌱 Seeded ${PRODUCTS.length} products across ${SUPERMARKETS.length} supermarkets`);
 }
+
+// Ejecutar la función si es el script principal
+if (require.main === module) {
+    seedDatabase()
+        .catch((e) => {
+            console.error(e);
+            process.exit(1);
+        })
+        .finally(async () => {
+            await prisma.$disconnect();
+        });
+}

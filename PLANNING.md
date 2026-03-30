@@ -51,7 +51,7 @@
 - [x] **DevOps**: Configurar CI/CD Pipeline automático usando GitHub Actions.
 - [x] **Auditoría (MEJORAS.md)**: 30 mejoras implementadas incluyendo tipado estricto, debounce, middlewares de log, wrappers async, fixes SEO, y UI pulida (esqueletos, footer, accesibilidad).
 
-### FASE 4: Migración a PostgreSQL con Prisma (Código Completado ✅ — Ejecución Pendiente ⏳)
+### FASE 4: Migración a PostgreSQL con Prisma (Completada ✅)
 - [x] **Schema Prisma Completo**: Modelos `Supermarket`, `Product`, `Price`, `PriceHistory`, `ProductAlias`, `UserList` con relaciones, índices y constraints.
 - [x] **Campos avanzados en Product**: `ean` (Código de barras único), `brand` (Marca) y `weight` (Peso/Volumen) para matching exacto.
 - [x] **Modelo ProductAlias**: Tabla relacional (`supermarketId`, `originalName`, `productId`) para mapear nombres entre supermercados.
@@ -59,18 +59,23 @@
 - [x] **Repositorio migrado a PrismaClient**: `repositories/index.ts` usa 100% Prisma con Fuzzy Search (`pg_trgm`).
 - [x] **PrismaClient singleton**: `db/client.ts` con patrón singleton usando adapter `@prisma/adapter-pg`.
 - [x] **Seed con Prisma**: `db/seed.ts` migrado para crear supermercados, productos, precios e historial usando PrismaClient.
-- [x] **Base de Datos Cloud**: Transición garantizada a PostgreSQL Serverless con Neon.tech (eliminando dependencias locales conflictivas).
-- [x] **Migraciones generadas**: Archivos SQL de migración creados (`prisma/migrations/`).
-- [ ] ⏳ **Ejecución pendiente**: Conectar a base de datos serverless en **Neon.tech** (reemplazando Docker por problemas de compatibilidad local). Correr `npx prisma db push` y `npx prisma db seed` remoto.
+- [x] **Base de Datos Cloud**: Transición a PostgreSQL Serverless con Neon.tech realizada exitosamente.
+- [x] **Migraciones generadas**: Archivos SQL de migración aplicados directamente a esquema de base de datos nube (`prisma db push`).
+- [x] **Ejecución de Migración**: Conectados a Neon.tech mediante variables de entorno, esquema sincronizado y base de datos con seeding inicial.
 
-### FASE 5: Actualizador de Precios (Motor de Scraping) / "Extras" (Pendiente 🔜)
-- [ ] **Desarrollar Motor de Extracción**: Crear scripts (Node.js/Python) dividiendo en APIs ocultas (VTEX/cadenas modernas) y Playwright/Cheerio (webs antiguas).
-  - *Supermercados*: Coto, Carrefour, Vea, Disco, Jumbo, Día, Gómez Pardo, ChangoMás, Libertad, Comodín.
-- [ ] **Algoritmo de Homogeneización de Datos**: Implementar lógica de *matching* (Fuzzy Search o código de barras EAN) para identificar que el mismo producto tiene exactamente el mismo `product_id` independientemente del nombre.
-- [ ] **Sincronización Automática (Cron Jobs)**: Configurar *workers* o GitHub Actions para correr la extracción 1 o 2 veces al día y mantener PostgreSQL actualizado.
-- [ ] **Sistemas Anti-Bloqueo**: Incorporar cabeceras (`User-Agent`) dinámicas y rotación para evitar baneos de Cloudflare/Akamai.
-- [ ] Exportación a PDF o WhatsApp de la lista recomendada.
-- [ ] Sección de feedback y estadísticas en tiempo real.
+### FASE 5: Actualizador de Precios (Motor de Scraping) (Completada ✅)
+- [x] **Arquitectura Segura y Orquestador**: Script independiente en `/src/scraper` que no contamina el servidor Express usando `node-cron` a medianoche.
+- [x] **Desarrollar Proveedores (Cencosud)**: Extracción operativa leyendo desde las APIs internas ocultas de VTEX (Vea, Jumbo, Disco).
+- [x] **Sistemas Anti-Bloqueo**: Cliente HTTP propio (`core/fetcher.ts`) con reintentos escalonados, rotación dinámica de `User-Agent`.
+- [x] **Algoritmo de Homogeneización**: Sincronizador de base de datos (`sync.ts`) con matching difuso avanzado (sanitiza strings, detecta inclusiones) ignorando los fallos.
+- [x] **Gestor de Alias Manual**: Inyectador `seed_aliases.ts` para mapeos directos en Edge-Cases muy crudos de nombres entre empresas.
+
+### FASES FUTURAS (Roadmap 🚀)
+- [ ] **Expansión a Nuevos Gigantes**: Scrapeo avanzado en plataformas VTEX IO/GraphQL (Carrefour, ChangoMás).
+- [ ] **Experiencia Gráfica (Historiales)**: Paneles desplegables en el Frontend dibujando la caída/subida del precio a lo largo del mes con `Recharts`.
+- [ ] **Gestión de Usuarios (Fase 6)**: Sistema de autenticación para guardar carritos en la nube, marcarlos como favoritos y generar "Ticket de Compra PDF" o links directos a WhatsApp.
+- [ ] **Navegación por Categorías**: UI moderna para descubrir productos por departamento en lugar de una búsqueda a ciegas.
+- [ ] **Infraestructura Caché**: Servidor Redis mitigando los costos de transacciones en la Base de Datos para operaciones idénticas concurrentes.
 
 ## Notas para Desarrollo IA
 Este documento servirá para no olvidar el contexto del proyecto y en qué fase estamos. Continuar refiriéndose a este `PLANNING.md` para seguir avanzando en cada tarea sugerida.

@@ -135,8 +135,9 @@ cd frontend && npm run dev
 | 3.5 | Refactorización y Seguridad | ✅ Completada |
 | 3.8 | Arquitectura Escalable y UX Premium | ✅ Completada |
 | 3.9 | Pulido para Producción & Auditoría (PWA, E2E, CI/CD, 30+ Mejoras UI/UX) | ✅ Completada |
-| 4 | Migración a PostgreSQL con Prisma (Neon Serverless) | ✅ Código listo · ⏳ Ejecución pendiente |
-| 5 | Motor de Scraping de Precios | 🔜 Próximamente |
+| 4 | Migración a PostgreSQL con Prisma (Neon Serverless) | ✅ Completada |
+| 5 | Motor de Scraping y Actualización Automática Multi-Supermercado (Cron) | ✅ Completada |
+| 6 | Autenticación, Caché y Gráficos Visuales de Historial | 🔜 Roadmap en MEJORAS.md |
 
 > 📋 Ver [PLANNING.md](./PLANNING.md) para detalles completos de cada fase.
 > 📝 Ver [CHANGELOG.md](./CHANGELOG.md) para el historial de cambios detallado.

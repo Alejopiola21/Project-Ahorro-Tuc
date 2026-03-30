@@ -74,53 +74,20 @@ export const ProductRepository = {
         return products.map(buildProductWithPrices);
     },
 
-    /**
-     * Búsqueda difusa (Fuzzy Search) usando pg_trgm.
-     * Utiliza el operador de similaridad `%` de PostgreSQL para encontrar
-     * productos incluso con errores de tipeo.
-     * Fallback: si no hay resultados difusos, intenta un ILIKE clásico.
-     */
     async search(query: string): Promise<ProductWithPrices[]> {
-        // Primero intentamos con Fuzzy Search usando pg_trgm
-        // similarity() devuelve un score entre 0 y 1
-        const products = await prisma.$queryRaw<any[]>`
-            SELECT p.id, p.name, p.category, p.image_url AS "imageUrl",
-                   p.brand, p.weight, p.ean,
-                   similarity(p.name, ${query}) AS score
-            FROM "Product" p
-            WHERE similarity(p.name, ${query}) > 0.1
-               OR p.name ILIKE ${'%' + query + '%'}
-               OR p.category ILIKE ${'%' + query + '%'}
-            ORDER BY score DESC, p.name ASC
-            LIMIT 50
-        `;
-
-        // Para cada producto encontrado, obtenemos sus precios
-        if (products.length === 0) return [];
-
-        const productIds = products.map((p: any) => p.id);
-        const prices = await prisma.price.findMany({
-            where: { productId: { in: productIds } },
-            select: { productId: true, supermarketId: true, price: true },
+        // Implementación segura nativa de Prisma para evitar errores si pg_trgm no está habilitado
+        const products = await prisma.product.findMany({
+            where: {
+                OR: [
+                    { name: { contains: query, mode: 'insensitive' } },
+                    { category: { contains: query, mode: 'insensitive' } }
+                ]
+            },
+            take: 50,
+            include: withCurrentPrices
         });
-
-        // Agrupamos los precios por productId
-        const priceMap: Record<number, Record<string, number>> = {};
-        for (const p of prices) {
-            if (!priceMap[p.productId]) priceMap[p.productId] = {};
-            priceMap[p.productId][p.supermarketId] = p.price;
-        }
-
-        return products.map((p: any) => ({
-            id: p.id,
-            name: p.name,
-            category: p.category,
-            image: p.imageUrl,
-            brand: p.brand ?? null,
-            weight: p.weight ?? null,
-            ean: p.ean ?? null,
-            prices: priceMap[p.id] || {},
-        }));
+        
+        return products.map(buildProductWithPrices);
     },
 
     async getPriceHistory(productId: number, supermarketId: string) {

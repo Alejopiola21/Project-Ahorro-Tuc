@@ -1,5 +1,14 @@
 # Changelog - Ahorro Tuc
 
+## [1.0.0-alpha.8] - Fase 5: Motor de Scraping Multi-Supermercado
+### Autonomía, Automatización e Integración de Datos
+* **Arquitectura de Extracción Autónoma**: Creado el módulo `backend/src/scraper/` ejecutándose paralelamente y sin entorpecer la API de Express.
+* **Integración API VTEX**: Proveedores desarrollados para las cadenas de Cencosud preponderantes en Tucumán (Vea, Jumbo, Disco), extrayendo precios por iteración de palabras clave.
+* **Sistema Anti-Bloqueos (Fetcher)**: Rotador de User-Agents y Backoff exponencial en caso de rechazo del servidor para no disparar firewalls ni Cloudflare.
+* **Cron Jobs Automatizados**: Instanciado `node-cron` a nivel backend (`npm run cron`) para que cada medianoche se disparen los subprocesos de recolección y actualización.
+* **Sincronizador Difuso**: El `sync.ts` compara la base de datos contra el scraping usando limpieza de carácteres, filtrado unificador (comas, acentos, 1L vs 1lt) e inclusión de arrays de palabras.
+* **Inyección de Alias Manual**: Añadido `seed_aliases.ts` para mapeos explícitos e inflexibles de Frontend vs Nombre Real del Proveedor que superan pruebas de test.
+* **Optimización de Prisma Search**: Se suplantó la raw-query de `pg_trgm` por el nativo iterador insensible a mayúsculas de Prisma (`contains`), evitando bloqueos o caídas de base de datos (`HTTP 500`) en instancias en la nube (Neon) sin la extensión instalada.
 ## [1.0.0-alpha.7] - Fase 4.1: Mejoras de Motor y Catálogo
 ### Optimización de Carrito y Remoción de Entidades Obsoletas
 * **Multiplicador de Cantidad**: El motor de optimización (`OptimizationService.ts`) ahora acepta cantidades (`quantity`) enviadas desde el Frontend y calcula el valor de la lista multiplicando el precio base por la cantidad de productos requeridos.
