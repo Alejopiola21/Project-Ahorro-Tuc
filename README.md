@@ -137,7 +137,8 @@ cd frontend && npm run dev
 | 3.9 | Pulido para Producción & Auditoría (PWA, E2E, CI/CD, 30+ Mejoras UI/UX) | ✅ Completada |
 | 4 | Migración a PostgreSQL con Prisma (Neon Serverless) | ✅ Completada |
 | 5 | Motor de Scraping y Actualización Automática Multi-Supermercado (Cron) | ✅ Completada |
-| 6 | Autenticación, Caché y Gráficos Visuales de Historial | 🔜 Roadmap en MEJORAS.md |
+| 5.5 | Expansión Global de Scrapers (ChangoMás, Día, Carrefour) y UI de Categorías | ✅ Completada |
+| 6 | Autenticación Segura y Gráficos Visuales de Historial de Precios | 🔜 Roadmap en MEJORAS.md |
 
 > 📋 Ver [PLANNING.md](./PLANNING.md) para detalles completos de cada fase.
 > 📝 Ver [CHANGELOG.md](./CHANGELOG.md) para el historial de cambios detallado.

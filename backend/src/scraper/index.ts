@@ -1,37 +1,32 @@
-import 'dotenv/config'; // Cargar variables para Prisma y configuraciones
-// import { prisma } from '../db/client'; // Ya no es estrictamente necesario pasarlo al enrutador
+import 'dotenv/config'; 
 import { syncSupermarketData } from './core/sync';
-import { VeaScraper } from './providers/vea';
-import { JumboScraper } from './providers/jumbo';
-import { DiscoScraper } from './providers/disco';
+import { providersRegistry } from './providers';
 
 async function main() {
     console.log('============================================');
-    console.log(' 🤖 AHORRO TUC :: MOTOR DE SCRAPING :: 🤖 ');
+    console.log(' 🤖 AHORRO TUC :: AUTO-REGISTRY SCRAPER 🤖 ');
     console.log('============================================\n');
 
     try {
-        // --- 1. VEA ---
-        const veaProducts = await new VeaScraper().scrape();
-        if (veaProducts.length > 0) await syncSupermarketData(null, 'vea', veaProducts);
-        
-        // --- 2. JUMBO ---
-        const jumboProducts = await new JumboScraper().scrape();
-        if (jumboProducts.length > 0) await syncSupermarketData(null, 'jumbo', jumboProducts);
+        console.log(`[Orquestador] Arrancando ${providersRegistry.length} proveedores encadenados...`);
 
-        // --- 3. DISCO ---
-        const discoProducts = await new DiscoScraper().scrape();
-        if (discoProducts.length > 0) await syncSupermarketData(null, 'disco', discoProducts);
+        // Ejecutar linealmente para no abrumar a nuestra base de datos ni a nuestra memoria RAM
+        for (const provider of providersRegistry) {
+            const scrapedProducts = await provider.scrape();
+            
+            if (scrapedProducts.length > 0) {
+                await syncSupermarketData(null, provider.id, scrapedProducts);
+            }
+        }
         
     } catch (error) {
-        console.error('❌ Error general en la ejecución del Scraper:', error);
+        console.error('❌ Crash fatal en orquestador superior:', error);
     } finally {
-        console.log('\n✅ Proceso de scraping finalizado.');
-        // Para cerrar la conexión cleanly la delegaríamos al repository o prisma client al apagar el root app
+        console.log('\n✅ Proceso batch completo finalizado.');
     }
 }
 
-// Ejecutar si el archivo es llamado directamente en la terminal
+// Ejecutar si el archivo es invocado por node cron o bash
 if (require.main === module) {
     main();
 }

@@ -1,5 +1,13 @@
 # Changelog - Ahorro Tuc
 
+## [1.0.0-beta.1] - Fase 5.5: Expansión Global de Scrapers y Categorización Dinámica
+### Escalabilidad de Catálogo e Integración Masiva
+* **Nuevos Conectores Inteligentes**: Se crearon las clases extractoras nativas para `Carrefour` (VTEX Púbico), `ChangoMás` (MasOnline Legacy) y `Día` (DíaOnline API).
+* **Auto-Mapeo al Registro**: Integrados exitosamente al orquestador `providersRegistry`. El comando `npm run scrape` ahora ejecuta 6 robots asíncronos en paralelo, insertando miles de filas atómicamente a PostgreSQL.
+* **Componente CategoryNav (UI/UX)**: Implementado el slider inferior de "píldoras" ('Todas', 'Limpieza', etc.) en React, comunicándose con el custom hook de búsqueda.
+* **Base de datos agrupada (Prisma)**: Creado el `/api/categories` que usa `prisma.product.groupBy()` para averiguar mágicamente qué categorías tienen stock y mandárselas a React.
+* **Caché Multi-Llave Dinámica**: Ajustado el `CacheService` para identificar búsquedas compuestas por texto y categoría simultáneamente (`search_c:{cat}_q:{query}`) a coste O(1).
+
 ## [1.0.0-alpha.9] - Fase 5.1: SDD, Caché In-Memory y Refactoring
 ### Metodología de Agentes, Optimización de Base de Datos y Clean Code
 * **Spec-Driven Development (SDD)**: Se introdujo una carpeta `.agents` que estandariza las convenciones estructurales (Skills) de Prisma, React y el Scraper para guiar de forma segura las actualizaciones.

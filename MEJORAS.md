@@ -501,13 +501,13 @@ VITE_API_URL=http://localhost:3001/api
 - **Idea:** Evitar saturar la base de datos de NeonDB ante picos de tráfico.
 - **Implementación:** Instalar `Redis` en el backend. Cachear las búsquedas generales (ej `/api/products?q=leche`) durante 1-2 horas para respuestas instantáneas de 10ms, liberando de cálculos intensivos al PostgreSQL.
 
-### 7.4 Explorador de Categorías Inteligente
+### 7.4 Explorador de Categorías Inteligente (✅ COMPLETADO)
 - **Idea:** Pasar de un modelo "solo buscador" a un modelo "descubrimiento de ofertas".
-- **Implementación:** Añadir chips/botones de acceso rápido en la home ("Lácteos", "Limpieza"). Al clickear, mostrar los productos ordenados dinámicamente según la caída porcentual de precio en las últimas 24h.
+- **Implementación:** Añadidos chips/botones de acceso rápido interactivos en la home ("Lácteos", "Limpieza", etc.). Tienen carga dinámica O(1) conectados al caché Prisma.
 
-### 7.5 Conquistar ChangoMás y Carrefour
+### 7.5 Conquistar ChangoMás, Día y Carrefour (✅ COMPLETADO)
 - **Idea:** Completar el catálogo extendiendo el scraper VTEX actual.
-- **Implementación:** Hacer ingeniería sobre las APIs de `VTEX IO / GraphQL` utilizadas por ChangoMás y Carrefour, integrándolas al scheduler asíncrono actual sin romper la arquitectura.
+- **Implementación:** Se hizo ingeniería sobre las APIs de `VTEX IO / GraphQL / MasOnline`, inyectando las 3 cadenas en el orquestador automático `npm run scrape`.
 
 ---
 

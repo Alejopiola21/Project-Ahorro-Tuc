@@ -6,6 +6,7 @@ import type { Product } from './types';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { SupermarketsBar } from './components/SupermarketsBar';
+import { CategoryNav } from './components/CategoryNav';
 import { ProductGrid } from './components/ProductGrid';
 import { CartSidebar } from './components/CartSidebar';
 import { Footer } from './components/Footer';
@@ -20,7 +21,11 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   // 1. Lógica de Búsqueda completamente encapsulada
-  const { query, setQuery, debouncedQuery, products, loading } = useProductSearch();
+  const { 
+    query, setQuery, debouncedQuery, 
+    activeCategory, setActiveCategory,
+    products, loading 
+  } = useProductSearch();
 
   // 2. Lógica de Optimización de Carrito encapsulada (se suscribe autonómicamente)
   const { cartTotals } = useCartOptimizer();
@@ -61,6 +66,11 @@ export default function App() {
       <Hero query={query} setQuery={setQuery} />
       
       <SupermarketsBar />
+      
+      <CategoryNav 
+        activeCategory={activeCategory} 
+        onSelect={(cat) => setActiveCategory(cat)} 
+      />
 
       <ProductGrid
         loading={loading}

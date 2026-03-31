@@ -2,8 +2,21 @@ import { Router } from 'express';
 import { ProductController } from '../controllers/ProductController';
 import { SupermarketController } from '../controllers/SupermarketController';
 import { OptimizationController } from '../controllers/OptimizationController';
+import { CategoryController } from '../controllers/CategoryController';
 
 const router = Router();
+
+/**
+ * @openapi
+ * /api/categories:
+ *   get:
+ *     summary: Obtiene rubros de productos disponibles
+ *     tags: [Categories]
+ *     responses:
+ *       200:
+ *         description: Arreglo de categorías
+ */
+router.get('/categories', CategoryController.getCategories);
 
 /**
  * @openapi

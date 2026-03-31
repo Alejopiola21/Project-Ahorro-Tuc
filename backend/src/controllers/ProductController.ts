@@ -5,13 +5,13 @@ import { globalCache } from '../services/CacheService';
 
 export class ProductController {
     static getProducts = asyncHandler(async (req: Request, res: Response) => {
-        const { q } = req.query;
+        const { q, category } = req.query;
         
-        // 1. Interceptor de Caché: Construir Llave
-        // Si no hay query, traemos todos. Si hay query, normalizamos a lowercase.
-        const cacheKey = q && typeof q === 'string' 
-            ? `search_${q.toLowerCase().trim()}` 
-            : 'search_all_products';
+        const qStr = typeof q === 'string' ? q.trim() : '';
+        const catStr = typeof category === 'string' && category.trim() !== 'Todas' ? category.trim() : '';
+        
+        // 1. Interceptor de Caché: Construir Llave multi-variable
+        const cacheKey = `search_c:${catStr.toLowerCase()}_q:${qStr.toLowerCase()}`;
 
         // 2. Verificar existencia en Memoria O(1)
         const cachedData = globalCache.get(cacheKey);
@@ -25,9 +25,9 @@ export class ProductController {
         // 3. Fallo de caché (Miss), obligados a consultar Neon DB
         console.log(`🐌 [Cache Miss] Resolviendo query pesado en Postgres: ${cacheKey}`);
         
-        const data = q && typeof q === 'string'
-            ? await ProductRepository.search(q)
-            : await ProductRepository.findAll();
+        const data = qStr.length > 0
+            ? await ProductRepository.search(qStr, catStr)
+            : await ProductRepository.findAll(catStr);
             
         // 4. Salvar el resultado costoso en memoria por 10 Minutos (600.000 ms)
         globalCache.set(cacheKey, data, 600000); 

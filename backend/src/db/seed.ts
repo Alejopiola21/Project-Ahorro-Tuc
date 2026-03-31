@@ -74,15 +74,39 @@ const PRODUCTS = [
         imageUrl: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400',
         prices: { coto: 1100, carrefour: 1050, jumbo: 1200, vea: 1120, disco: 1120, dia: 980, gomez_pardo: 950, changomas: 1000, libertad: 1150, comodin: 990 },
     },
+    {
+        name: 'Coca Cola Sabor Original 2.25L',
+        category: 'Bebidas',
+        imageUrl: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400',
+        prices: { coto: 1800, carrefour: 1850, jumbo: 2100, vea: 1950, disco: 1950, dia: 1750, gomez_pardo: 1700, changomas: 1750, libertad: 1950, comodin: 1780 },
+    },
+    {
+        name: 'Cerveza Quilmes Clásica Lata 473ml',
+        category: 'Bebidas',
+        imageUrl: 'https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&q=80&w=400',
+        prices: { coto: 850, carrefour: 900, jumbo: 980, vea: 910, disco: 910, dia: 820, gomez_pardo: 800, changomas: 850, libertad: 950, comodin: 820 },
+    },
+    {
+        name: 'Alimento Perro Pedigree Cachorro 3Kg',
+        category: 'Mascotas',
+        imageUrl: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&q=80&w=400',
+        prices: { coto: 8400, carrefour: 8900, jumbo: 9500, vea: 8700, disco: 8700, dia: 8100, gomez_pardo: 7900, changomas: 8200, libertad: 9100, comodin: 8000 },
+    },
+    {
+        name: 'Hamburguesas Swift Clásicas 4u',
+        category: 'Congelados',
+        imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=400',
+        prices: { coto: 2800, carrefour: 2900, jumbo: 3100, vea: 2850, disco: 2850, dia: 2600, gomez_pardo: 2500, changomas: 2700, libertad: 2950, comodin: 2650 },
+    },
 ];
 
 export async function seedDatabase() {
     // Verificar si ya hay datos
     const supCount = await prisma.supermarket.count();
-    if (supCount > 0) {
-        console.log('[DB] ⏩ Seed already applied — skipping');
-        return;
-    }
+    // if (supCount > 0) {
+    //     console.log('[DB] ⏩ Seed already applied — skipping');
+    //     return;
+    // }
 
     console.log('[DB] 🌱 Seeding database...');
 

@@ -58,9 +58,11 @@ export const SupermarketRepository = {
 };
 
 export const ProductRepository = {
-    async findAll(): Promise<ProductWithPrices[]> {
+    async findAll(category?: string): Promise<ProductWithPrices[]> {
         const products = await prisma.product.findMany({
+            where: category && category !== 'Todas' ? { category: { equals: category, mode: 'insensitive' } } : undefined,
             orderBy: [{ category: 'asc' }, { name: 'asc' }],
+            take: 100, // Previene colapso si findAll es llamado
             include: withCurrentPrices,
         });
         return products.map(buildProductWithPrices);
@@ -74,13 +76,19 @@ export const ProductRepository = {
         return products.map(buildProductWithPrices);
     },
 
-    async search(query: string): Promise<ProductWithPrices[]> {
+    async search(query: string, category?: string): Promise<ProductWithPrices[]> {
         // Implementación segura nativa de Prisma para evitar errores si pg_trgm no está habilitado
         const products = await prisma.product.findMany({
             where: {
-                OR: [
-                    { name: { contains: query, mode: 'insensitive' } },
-                    { category: { contains: query, mode: 'insensitive' } }
+                AND: [
+                    category && category !== 'Todas' ? { category: { equals: category, mode: 'insensitive' } } : {},
+                    {
+                        OR: [
+                            { name: { contains: query, mode: 'insensitive' } },
+                            { category: { contains: query, mode: 'insensitive' } },
+                            { brand: { contains: query, mode: 'insensitive' } }
+                        ]
+                    }
                 ]
             },
             take: 50,

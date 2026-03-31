@@ -71,10 +71,10 @@
 - [x] **Gestor de Alias Manual**: Inyectador `seed_aliases.ts` para mapeos directos en Edge-Cases muy crudos de nombres entre empresas.
 
 ### FASES FUTURAS (Roadmap 🚀)
-- [ ] **Expansión a Nuevos Gigantes**: Scrapeo avanzado en plataformas VTEX IO/GraphQL (Carrefour, ChangoMás).
+- [x] **Expansión a Nuevos Gigantes**: Scrapeo avanzado en plataformas VTEX IO/GraphQL (Carrefour, ChangoMás, Día).
 - [ ] **Experiencia Gráfica (Historiales)**: Paneles desplegables en el Frontend dibujando la caída/subida del precio a lo largo del mes con `Recharts`.
 - [ ] **Gestión de Usuarios (Fase 6)**: Sistema de autenticación para guardar carritos en la nube, marcarlos como favoritos y generar "Ticket de Compra PDF" o links directos a WhatsApp.
-- [ ] **Navegación por Categorías**: UI moderna para descubrir productos por departamento en lugar de una búsqueda a ciegas.
+- [x] **Navegación por Categorías**: UI moderna para descubrir productos por departamento en lugar de una búsqueda a ciegas.
 - [x] **Infraestructura Caché**: Implementación exitosa de capa `In-Memory TTL Cache` mitigando costos de transacciones difusas sin requerir contenedores Redis inmediatos.
 
 ## Notas para Desarrollo IA

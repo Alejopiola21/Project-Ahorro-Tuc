@@ -8,6 +8,10 @@ export abstract class BaseScraper {
         this.supermarketId = supermarketId;
     }
 
+    public get id(): string {
+        return this.supermarketId;
+    }
+
     /**
      * Método principal que debe ser sobrescrito por el provider
      */
