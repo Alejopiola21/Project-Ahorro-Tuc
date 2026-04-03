@@ -509,6 +509,26 @@ VITE_API_URL=http://localhost:3001/api
 - **Idea:** Completar el catálogo extendiendo el scraper VTEX actual.
 - **Implementación:** Se hizo ingeniería sobre las APIs de `VTEX IO / GraphQL / MasOnline`, inyectando las 3 cadenas en el orquestador automático `npm run scrape`.
 
+### 7.6 Actualización Dinámica del DOM (✅ COMPLETADO)
+- **Idea:** Navegación ultra-fluida de categorías que no genere recarga reactiva de componentes.
+- **Implementación:** El hook `useProductSearch.ts` utiliza caché de mapa local reteniendo el DOM; el salto entre categorías cuesta literalmente cero peticiones y cero parpadeos usando Single Page Application architecture.
+
+---
+
+## 🕸️ Categoría 8: Mejoras de Motor de Extracción (Scraping Avanzado)
+
+### 8.1 Integración de IP Rotativa (Proxies)
+- **Idea:** Aunque el `randomSleep` ayuda gigantescamente, hacer cientos de peticiones lineales a la misma cadena diariamente puede exponer la IP del VPS eventualmente.
+- **Implementación:** Conectar el `fetcher.ts` a un servicio de proxy residencial (BrightData u OxyLabs). Esto enrutará cada consulta por una IP residencial de una provincia distinta evitando que nos baneen a nivel macro de servidor.
+
+### 8.2 Monitor Orgánico en Telegram/Discord
+- **Idea:** Si Coto cambia radicalmente el HTML de su página, `cheerio` dejará de encontrar los atributos y devolverá arrays vacíos. Necesitamos enterarnos rápidamente sin tener que revisar los logs del servidor a mano.
+- **Implementación:** Crear un utilero web-hook. Si al analizar una página un proveedor (ej. CotoScraper) arroja 0 productos o `Error de DOM`, este enviará silenciosamente una notificación de chat (Telegram/Discord) a los desarrolladores con el stacktrace.
+
+### 8.3 Bypass Complejo (Puppeteer Lite) 
+- **Idea:** Algunos sitios pueden forzar el captcha de "Verificando si eres humano" de Cloudflare si se actualizan en el futuro.
+- **Implementación:** En caso de detectar un error estricto (403 constante), el fallback debería derivar al uso de renderizado *Headless* (Chromium/Puppeteer) inyectando la librería `puppeteer-extra-plugin-stealth` para simular mouse/teclados invisibles, y solo volver a la API normal luego de aprobar el cerco de seguridad robótico.
+
 ---
 
 > **Nota:** Este documento se mantiene como referencia permanente del proyecto. Marcar items como completados a medida que se implementen.

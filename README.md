@@ -138,6 +138,7 @@ cd frontend && npm run dev
 | 4 | Migración a PostgreSQL con Prisma (Neon Serverless) | ✅ Completada |
 | 5 | Motor de Scraping y Actualización Automática Multi-Supermercado (Cron) | ✅ Completada |
 | 5.5 | Expansión Global de Scrapers (ChangoMás, Día, Carrefour) y UI de Categorías | ✅ Completada |
+| 5.8 | Extractores Dedicados "Stealth" (Coto, Libertad, Gómez Pardo, Comodín) y Caché UI Instantáneo | ✅ Completada |
 | 6 | Autenticación Segura y Gráficos Visuales de Historial de Precios | 🔜 Roadmap en MEJORAS.md |
 
 > 📋 Ver [PLANNING.md](./PLANNING.md) para detalles completos de cada fase.

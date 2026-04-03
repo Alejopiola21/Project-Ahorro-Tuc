@@ -1,6 +1,7 @@
 import 'dotenv/config'; 
 import { syncSupermarketData } from './core/sync';
 import { providersRegistry } from './providers';
+import { globalCache } from '../services/CacheService';
 
 async function main() {
     console.log('============================================');
@@ -18,6 +19,10 @@ async function main() {
                 await syncSupermarketData(null, provider.id, scrapedProducts);
             }
         }
+        
+        // Purgar la caché global para que el frontend sirva al usuario datos 100% frescos ("Tiempo Real")
+        console.log(`[Orquestador] Purgando caché in-memory...`);
+        globalCache.flushAll();
         
     } catch (error) {
         console.error('❌ Crash fatal en orquestador superior:', error);

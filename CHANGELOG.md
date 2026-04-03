@@ -1,5 +1,13 @@
 # Changelog - Ahorro Tuc
 
+## [1.0.0-beta.2] - Fase 5.8: Extractores "Stealth" y Caché en Tiempo Real
+### Resiliencia Anti-Bots y Navegación Instantánea
+* **Extractores Dedicados Avanzados**: Coto mudó su motor a `cheerio` para parseo directo de HTML Server-Side. Libertad y Comodín abandonaron el endpoint REST clásico por `Intelligent Search GraphQL` inyectando falsificación nativa VTEX.
+* **Tolerancia a Cambios de Red (Zod)**: Gómez Pardo integra un validador fuerte de esquemas que previene caídas del sistema ante modificaciones imprevistas en su endpoint JSON privado.
+* **Protección IP (Ahorro Firewall)**: Seteado `randomSleep(3000, 5000)` como defensa global de la clase `fetcher.ts` en cada iteración del orquestador web.
+* **Caché Instantáneo UI `(O)1`**: Configuración de `Map` local in-memory pre-compilado en el Hook de React `useProductSearch`. Clickear categorías ya cacheadas rinde respuesta veloz con cero milisegundos de recálculo en el DOM.
+* **Garbage Collector Sincronizado**: El backend ahora ejecuta una purga selectiva global `CacheService.flushAll()` la fracción de segundo que acaba la noche de recolección de base de datos.
+ 
 ## [1.0.0-beta.1] - Fase 5.5: Expansión Global de Scrapers y Categorización Dinámica
 ### Escalabilidad de Catálogo e Integración Masiva
 * **Nuevos Conectores Inteligentes**: Se crearon las clases extractoras nativas para `Carrefour` (VTEX Púbico), `ChangoMás` (MasOnline Legacy) y `Día` (DíaOnline API).

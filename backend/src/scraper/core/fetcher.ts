@@ -2,7 +2,13 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import UserAgent from 'user-agents';
 
 // Retraso aleatorio para evitar bloqueos
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+export const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+export const randomSleep = async (min = 3000, max = 5000) => {
+    const ms = Math.floor(Math.random() * (max - min + 1)) + min;
+    console.log(`[Stealth] 🛡️ Durmiendo ${ms}ms para evadir firewall...`);
+    await delay(ms);
+};
 
 export interface FetchOptions extends AxiosRequestConfig {
     retries?: number;

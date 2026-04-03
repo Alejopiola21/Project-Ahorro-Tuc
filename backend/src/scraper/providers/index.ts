@@ -6,6 +6,10 @@ import { DiscoScraper } from './disco';
 import { CarrefourScraper } from './carrefour';
 import { ChangomasScraper } from './changomas';
 import { DiaScraper } from './dia';
+import { CotoScraper } from './coto';
+import { GomezPardoScraper } from './gomez_pardo';
+import { LibertadScraper } from './libertad';
+import { ComodinScraper } from './comodin';
 
 // Cualquier scraper agregado aquí será ejecutado automáticamente en cron/batch
 export const providersRegistry: BaseScraper[] = [
@@ -14,5 +18,9 @@ export const providersRegistry: BaseScraper[] = [
     new DiscoScraper(),
     new CarrefourScraper(),
     new ChangomasScraper(),
-    new DiaScraper()
+    new DiaScraper(),
+    new CotoScraper(),
+    new GomezPardoScraper(),
+    new LibertadScraper(),
+    new ComodinScraper()
 ];

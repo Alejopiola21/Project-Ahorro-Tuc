@@ -59,7 +59,14 @@ export class CacheService {
             }
         }
     }
+    /**
+     * Limpia completamente toda la memoria caché almacenada (Púrgado Global)
+     */
+    flushAll() {
+        const sizeBefore = this.cache.size;
+        this.cache.clear();
+        console.log(`[CacheService] 🧹 Purga global completada. Liberados ${sizeBefore} registros.`);
+    }
 }
-
 // Instancia global Singleton
 export const globalCache = new CacheService();
