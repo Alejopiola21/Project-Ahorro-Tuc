@@ -487,14 +487,16 @@ VITE_API_URL=http://localhost:3001/api
 4. **Cat. 5** — Blindar contra regresiones con tests
 5. **Cat. 6** — Mejorar experiencia de desarrollo
 
+
+
 ## 🚀 Categoría 7: Roadmap Fase 7+ (Escalabilidad y UX Premium)
 
 La auditoría inicial (Cats 1-6) está 100% completada, dejando el proyecto listo para producción. Las siguientes propuestas buscan escalar la arquitectura y añadir valor real al usuario en un contexto de tráfico masivo.
 
-### 🛒 7.1 UX y Experiencia del Usuario (Prioridad Alta)
-* **Gráficos de Inflación / Historial de Precios (`Recharts`):** La DB ya almacena el `PriceHistory`. Modificar el Frontend para que al hacer clic en un producto se abra un modal con el gráfico de la variación de precio en los últimos 3 meses, permitiendo detectar ofertas engañosas.
-* **"Rutas de Compra" (Carrito Híbrido):** La opción de *optimizar* puede dar 2 ganadores si están geográficamente cerca. El motor debe calcular el "Ahorro Híbrido" (ej: lácteos en súper A, limpieza en súper B) y dejar exportar la lista separada para máxima rentabilidad.
-* **Sesiones Clientes Compartidas (Magic Links):** Implementar Auth ligera sin contraseñas (NextAuth/Clerk) para que el usuario guarde el carrito de compras mensual en su PC y lo pueda abrir fácilmente caminando en el pasillo del supermercado desde el móvil.
+### 🛒 7.1 UX y Experiencia del Usuario (✅ COMPLETADO)
+* **Gráficos de Inflación / Historial de Precios (`Recharts`):** Implementado el componente `ProductHistoryChart` que visualiza la tendencia de precios consumiendo el historial de la DB.
+* **"Rutas de Compra" (Carrito Híbrido):** El optimizador ahora calcula y muestra el ahorro adicional al dividir la compra entre los dos mejores supermercados.
+* **Sesiones Clientes Compartidas (Magic Links):** (Pendiente para Fase 8) Implementar Auth ligera sin contraseñas.
 
 ### ⚙️ 7.2 Motor de Scraping y Sistema Anti-Ban
 * **Proxies Residenciales Rotativos:** Escalar el `fetchWithRetry` actual (User-Agents + delay aleatorio) hacia un pool de proxys (BrightData/Oxylabs) para prevenir baneos de IP por parte de los WAF (Cloudflare/Akamai) desplegados por las cadenas grandes como Coto o Jumbo.
