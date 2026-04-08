@@ -139,7 +139,11 @@ cd frontend && npm run dev
 | 5 | Motor de Scraping y Actualización Automática Multi-Supermercado (Cron) | ✅ Completada |
 | 5.5 | Expansión Global de Scrapers (ChangoMás, Día, Carrefour) y UI de Categorías | ✅ Completada |
 | 5.8 | Extractores Dedicados "Stealth" (Coto, Libertad, Gómez Pardo, Comodín) y Caché UI Instantáneo | ✅ Completada |
-| 6 | Autenticación Segura y Gráficos Visuales de Historial de Precios | 🔜 Roadmap en MEJORAS.md |
+| 6.0 | Auditoría Completa: 30 bugs identificados y corregidos (Cats. 1–6) | ✅ Completada |
+| 6.1 | CI/CD, DevOps, Tests E2E, Skeletons y Estabilidad Anti-Regresión | ✅ Completada |
+| 7.0 | Experiencia Visual (Gráficos Recharts) y Motor de Carrito Híbrido | ✅ Completada |
+| 8.0 | Gestión de Usuarios y Backend Cloud | 🔜 Roadmap en MEJORAS.md |
+
 
 > 📋 Ver [PLANNING.md](./PLANNING.md) para detalles completos de cada fase.
 > 📝 Ver [CHANGELOG.md](./CHANGELOG.md) para el historial de cambios detallado.

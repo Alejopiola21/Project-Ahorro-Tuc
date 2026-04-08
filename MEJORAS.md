@@ -8,7 +8,7 @@
 
 ## 🐛 Categoría 1: Bugs y Problemas Reales (Prioridad CRÍTICA)
 
-### 1.1 `index.html` — SEO y metadata rotos
+### 1.1 `index.html` — SEO y metadata rotos (✅ COMPLETADO)
 - **Archivo:** `frontend/index.html`
 - **Problema:** El título dice `"frontend"` (genérico) y el idioma está en inglés (`lang="en"`) cuando la app es 100% en español.
 - **Actual:**
@@ -25,7 +25,7 @@
 
 ---
 
-### 1.2 Swagger `servers.url` hardcodeado en puerto incorrecto
+### 1.2 Swagger `servers.url` hardcodeado en puerto incorrecto (✅ COMPLETADO)
 - **Archivo:** `backend/src/swagger.ts` (línea 15)
 - **Problema:** La URL del servidor Swagger apunta al puerto `5000`, pero el backend usa el puerto `3001`.
 - **Actual:**
@@ -39,7 +39,7 @@ url: `http://localhost:${process.env.PORT || 3001}`,
 
 ---
 
-### 1.3 `backend/.env` está ignorado por Git pero no hay `.env.example`
+### 1.3 `backend/.env` está ignorado por Git pero no hay `.env.example` (✅ COMPLETADO)
 - **Archivo:** `.gitignore` / `backend/.env`
 - **Problema:** El archivo `.env` tiene credenciales de la base de datos. Si alguien clona el repo, no tendrá `.env`, y el servidor crasheará sin un mensaje claro de qué configurar.
 - **Fix:** Crear `backend/.env.example` con valores de ejemplo y documentar el setup en README:
@@ -51,7 +51,7 @@ DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/DB_NAME?schema=public"
 
 ---
 
-### 1.4 El rate limiter es demasiado agresivo para desarrollo
+### 1.4 El rate limiter es demasiado agresivo para desarrollo (✅ COMPLETADO)
 - **Archivo:** `backend/src/index.ts` (línea 24-29)
 - **Problema:** 100 requests en 15 minutos es muy bajo. En desarrollo con hot-reload y fetches automáticos del frontend, se alcanza fácilmente ese límite y el frontend se queda mostrando errores.
 - **Fix:** Rate limit condicional según entorno:
@@ -65,7 +65,7 @@ const limiter = rateLimit({
 
 ---
 
-### 1.5 El backend seed se ejecuta en CADA arranque del servidor
+### 1.5 El backend seed se ejecuta en CADA arranque del servidor (✅ COMPLETADO)
 - **Archivo:** `backend/src/index.ts` (línea 15)
 - **Problema:** `seedDatabase()` se llama automáticamente en cada `main()`. Si la DB ya tiene datos reales del scraper, esto podría causar conflictos. Además, ralentiza cada arranque.
 - **Actual:** El seed verifica con `prisma.supermarket.count()`, lo que mitiga parcialmente el problema, pero sigue ejecutando una query innecesaria cada vez.
@@ -83,7 +83,7 @@ if (process.env.SKIP_SEED !== 'true') {
 
 ---
 
-### 1.6 El `FRONTEND_URL` en CORS no contempla múltiples orígenes en producción
+### 1.6 El `FRONTEND_URL` en CORS no contempla múltiples orígenes en producción (✅ COMPLETADO)
 - **Archivo:** `backend/src/index.ts` (línea 31)
 - **Problema:** Solo soporta un origen. Si se despliega con staging + producción, habrá conflictos de CORS.
 - **Actual:**
@@ -99,7 +99,7 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173').
 
 ## 🏗️ Categoría 2: Arquitectura del Backend (Prioridad ALTA)
 
-### 2.1 Falta middleware de logging de requests HTTP
+### 2.1 Falta middleware de logging de requests HTTP (✅ COMPLETADO)
 - **Problema:** No hay logs de requests. En producción no se sabe qué endpoints se llaman, con qué frecuencia, ni cuáles fallan.
 - **Mejora:** Agregar middleware de logging al `index.ts`:
 ```ts
@@ -114,7 +114,7 @@ app.use((req, res, next) => {
 
 ---
 
-### 2.2 Los controladores repiten try/catch idénticos
+### 2.2 Los controladores repiten try/catch idénticos (✅ COMPLETADO)
 - **Archivos:** `ProductController.ts`, `SupermarketController.ts`, `OptimizationController.ts`
 - **Problema:** Los 3 controladores tienen el mismo patrón `try { ... } catch { console.error; res.status(500) }`. Código duplicado.
 - **Mejora:** Crear un wrapper `asyncHandler` en un archivo `middleware/asyncHandler.ts`:
@@ -130,7 +130,7 @@ Así el error handler global los captura automáticamente.
 
 ---
 
-### 2.3 El repositorio usa `any` en el helper `buildProductWithPrices`
+### 2.3 El repositorio usa `any` en el helper `buildProductWithPrices` (✅ COMPLETADO)
 - **Archivo:** `backend/src/repositories/index.ts` (línea 18)
 - **Problema:** `function buildProductWithPrices(product: any)` pierde todo el beneficio de TypeScript. Prisma genera los tipos automáticamente.
 - **Fix:** Usar tipos generados por Prisma:
@@ -146,7 +146,7 @@ function buildProductWithPrices(product: ProductWithPricesPayload): ProductWithP
 
 ---
 
-### 2.4 Falta validación de parámetros en `getProductHistory`
+### 2.4 Falta validación de parámetros en `getProductHistory` (✅ COMPLETADO)
 - **Archivo:** `backend/src/controllers/ProductController.ts` (línea 20-21)
 - **Problema:** No valida que `id` sea un número válido. Si alguien hace `/products/abc/history/coto`, `Number("abc")` es `NaN` y la query fallaría de manera impredecible.
 - **Actual:**
@@ -180,7 +180,7 @@ O al menos advertir al usuario qué productos faltan en cada super.
 
 ## ⚛️ Categoría 3: Frontend — React y State Management (Prioridad ALTA)
 
-### 3.1 Los tipos de frontend no reflejan la realidad del backend
+### 3.1 Los tipos de frontend no reflejan la realidad del backend (✅ COMPLETADO)
 - **Archivo:** `frontend/src/types.ts`
 - **Problema:** El backend devuelve `brand`, `weight` y `ean`, pero el frontend no los tiene en la interface `Product`. Se pierde información útil.
 - **Actual:**
@@ -203,7 +203,7 @@ export interface Product {
 
 ---
 
-### 3.2 El carrito permite duplicados sin control de cantidad
+### 3.2 El carrito permite duplicados sin control de cantidad (✅ COMPLETADO)
 - **Archivo:** `frontend/src/store.ts`
 - **Problema:** `addToCart` simplemente hace `[...state.cart, product]`. Si agregás 3 veces "Leche", hay 3 objetos idénticos. No se maneja `quantity`.
 - **Fix:** Reemplazar el store por un modelo con cantidades:
@@ -237,7 +237,7 @@ addToCart: (product) => set((state) => {
 
 ---
 
-### 3.3 El `optimize-cart` se llama en cada cambio de carrito sin debounce
+### 3.3 El `optimize-cart` se llama en cada cambio de carrito sin debounce (✅ COMPLETADO)
 - **Archivo:** `frontend/src/App.tsx` (líneas 54-63)
 - **Problema:** El `useEffect` para optimizar el carrito se dispara en cada cambio de estado del carrito. Si el usuario agrega 5 productos rápido, se hacen 5 requests al backend seguidas.
 - **Fix:** Agregar debounce al optimize-cart:
@@ -256,7 +256,7 @@ useEffect(() => {
 
 ---
 
-### 3.4 `react-router-dom` está instalado pero NO se usa
+### 3.4 `react-router-dom` está instalado pero NO se usa (✅ COMPLETADO)
 - **Archivo:** `frontend/package.json`
 - **Problema:** `react-router-dom` (v7.13.1) está en dependencias pero no se importa en ningún archivo. Peso muerto en el bundle (~13KB gzipped).
 - **Opciones:**
@@ -265,7 +265,7 @@ useEffect(() => {
 
 ---
 
-### 3.5 `getSup` y `getCheapest` se pasan como props innecesariamente (prop drilling)
+### 3.5 `getSup` y `getCheapest` se pasan como props innecesariamente (prop drilling — ✅ COMPLETADO)
 - **Archivos:** `App.tsx` → `ProductGrid` → `ProductCard`
 - **Problema:** Estas funciones se definen en App.tsx y se pasan por 3 niveles de componentes. Es prop drilling clásico.
 - **Fix:** Dos opciones:
@@ -276,7 +276,7 @@ useEffect(() => {
 
 ## 🎨 Categoría 4: CSS y UX (Prioridad MEDIA)
 
-### 4.1 Los skeletons no respetan dark mode
+### 4.1 Los skeletons no respetan dark mode (✅ COMPLETADO)
 - **Archivo:** `frontend/src/index.css` (líneas 906-918)
 - **Problema:** Los colores del skeleton están hardcodeados en tonos claros. En dark mode, se ven como parches blancos brillantes.
 - **Actual:**
@@ -298,7 +298,7 @@ useEffect(() => {
 
 ---
 
-### 4.2 Falta un footer profesional
+### 4.2 Falta un footer profesional (✅ COMPLETADO)
 - **Problema:** La app termina abruptamente después de los productos. No hay footer con info legal, disclaimer de precios, créditos, o links útiles.
 - **Mejora:** Agregar un componente `Footer.tsx` con:
   - Disclaimer: "Precios obtenidos de fuentes públicas. Los precios pueden variar."
@@ -307,7 +307,7 @@ useEffect(() => {
 
 ---
 
-### 4.3 El botón "Optimizar compra" en el carrito no hace nada
+### 4.3 El botón "Optimizar compra" en el carrito no hace nada (✅ COMPLETADO)
 - **Archivo:** `frontend/src/components/CartSidebar.tsx` (línea 90)
 - **Problema:** El botón `checkout-btn` no tiene `onClick`. Es puramente decorativo.
 - **Opciones de Fix:**
@@ -318,7 +318,7 @@ useEffect(() => {
 
 ---
 
-### 4.4 Falta accesibilidad (a11y) básica
+### 4.4 Falta accesibilidad (a11y) básica (✅ COMPLETADO)
 - **Archivos:** Varios componentes
 - **Problemas encontrados:**
   - Los supermarket chips no tienen `aria-label`
@@ -330,7 +330,7 @@ useEffect(() => {
 
 ---
 
-### 4.5 Animación excesiva del logo distrae
+### 4.5 Animación excesiva del logo distrae (✅ COMPLETADO)
 - **Archivo:** `frontend/src/index.css` (líneas 102-117)
 - **Problema:** La animación `pulse` del logo es `infinite`. Es una distracción sutil pero constante.
 - **Fix:**
@@ -344,7 +344,7 @@ useEffect(() => {
 
 ## 🧪 Categoría 5: Testing y CI/CD (Prioridad MEDIA)
 
-### 5.1 El CI no levanta PostgreSQL → el backend-test va a fallar
+### 5.1 El CI no levanta PostgreSQL → el backend-test va a fallar (✅ COMPLETADO)
 - **Archivo:** `.github/workflows/ci.yml`
 - **Problema:** El job `backend-test` genera Prisma y corre tests, pero no hay un servicio PostgreSQL disponible. Si los tests o el build requieren la DB, fallarán.
 - **Fix:** Agregar servicio PostgreSQL al job:
@@ -371,14 +371,14 @@ backend-test:
 
 ---
 
-### 5.2 Los tests E2E asumen que el backend tiene datos
+### 5.2 Los tests E2E asumen que el backend tiene datos (✅ COMPLETADO)
 - **Archivo:** `frontend/tests/critical-flow.spec.ts`
 - **Problema:** El test busca "Leche" y espera encontrar resultados. Si la DB está vacía o el seed no corrió, el test falla silenciosamente.
 - **Fix:** Agregar un paso previo en el CI que corra el seed, o crear fixtures independientes para tests.
 
 ---
 
-### 5.3 Cobertura de testing muy baja (solo 2 tests en total)
+### 5.3 Cobertura de testing muy baja (solo 2 tests en total — ✅ COMPLETADO)
 - **Archivos:** 1 test unitario (`OptimizationService.test.ts`), 1 test E2E (`critical-flow.spec.ts`)
 - **Problema:** La cobertura es mínima. Faltan tests para:
   - Validación de Zod en `OptimizationController` (payloads inválidos)
@@ -389,7 +389,7 @@ backend-test:
 
 ---
 
-### 5.4 No hay linting en el CI
+### 5.4 No hay linting en el CI (✅ COMPLETADO)
 - **Problema:** Ni backend ni frontend ejecutan `npm run lint` en el pipeline de CI. Errores de estilo y potenciales bugs pasan desapercibidos.
 - **Fix:** Agregar paso de lint en ambos jobs del CI:
 ```yaml
@@ -401,7 +401,7 @@ backend-test:
 
 ## 📦 Categoría 6: DevOps y Configuración (Prioridad BAJA)
 
-### 6.1 El backend usa `ts-node` en producción
+### 6.1 El backend usa `ts-node` en producción (✅ COMPLETADO)
 - **Archivo:** `backend/package.json`
 - **Problema:** Tanto `dev` como `start` usan `ts-node src/index.ts`. En producción, `ts-node` es significativamente más lento y consume más memoria que ejecutar JavaScript compilado.
 - **Actual:**
@@ -418,7 +418,7 @@ backend-test:
 
 ---
 
-### 6.2 No hay hot-reload en development del backend
+### 6.2 No hay hot-reload en development del backend (✅ COMPLETADO)
 - **Problema:** Cada cambio en el código del backend requiere reiniciar manualmente el servidor.
 - **Fix:** Instalar `tsx` y usarlo con `watch`:
 ```json
@@ -427,14 +427,14 @@ backend-test:
 
 ---
 
-### 6.3 El `docker-compose.yml` usa `version: '3.8'` (deprecated)
+### 6.3 El `docker-compose.yml` usa `version: '3.8'` (deprecated — ✅ COMPLETADO)
 - **Archivo:** `backend/docker-compose.yml` (línea 1)
 - **Problema:** Las versiones recientes de Docker Compose (v2+) ignoran el campo `version`. No rompe nada pero es obsoleto y genera warnings.
 - **Fix:** Remover la línea `version: '3.8'`.
 
 ---
 
-### 6.4 Falta `.env.example` para onboarding de nuevos desarrolladores
+### 6.4 Falta `.env.example` para onboarding de nuevos desarrolladores (✅ COMPLETADO)
 - **Problema:** Alguien nuevo que clone el proyecto no sabe qué variables de entorno necesita configurar.
 - **Fix:** Crear archivos `.env.example` en `backend/` y `frontend/`:
 
@@ -454,7 +454,7 @@ VITE_API_URL=http://localhost:3001/api
 
 ---
 
-### 6.5 El README principal no tiene instrucciones de setup
+### 6.5 El README principal no tiene instrucciones de setup (✅ COMPLETADO)
 - **Archivo:** `README.md`
 - **Problema:** El README no incluye instrucciones paso a paso para instalar, configurar y correr el proyecto localmente.
 - **Fix:** Agregar sección de setup con:
@@ -487,47 +487,23 @@ VITE_API_URL=http://localhost:3001/api
 4. **Cat. 5** — Blindar contra regresiones con tests
 5. **Cat. 6** — Mejorar experiencia de desarrollo
 
-## 🚀 Categoría 7: Propuestas de Expansión Futura (Siguientes Pasos)
+## 🚀 Categoría 7: Roadmap Fase 7+ (Escalabilidad y UX Premium)
 
-### 7.1 Gráficos de Historial de Precios (UI/UX)
-- **Idea:** El scraper actual guarda fechas y precios en `PriceHistory`.
-- **Implementación:** Añadir `Recharts` o `Chart.js` al frontend. Crear un desplegable en la tarjeta del producto que dibuje la evolución temporal de los precios entre supermercados, permitiendo al usuario ver "verdaderas ofertas".
+La auditoría inicial (Cats 1-6) está 100% completada, dejando el proyecto listo para producción. Las siguientes propuestas buscan escalar la arquitectura y añadir valor real al usuario en un contexto de tráfico masivo.
 
-### 7.2 Autenticación y Cuentas de Usuario (Fase 6)
-- **Idea:** Permitir que los usuarios guarden sus listas y favoritos.
-- **Implementación:** Agregar Auth (ej. Supabase Auth o NextAuth/JWT) y crear una tabla `UserList`. Permitirá guardar múltiples carritos, compartirlos por WhatsApp con familiares, y no depender del localStorage del dispositivo.
+### 🛒 7.1 UX y Experiencia del Usuario (Prioridad Alta)
+* **Gráficos de Inflación / Historial de Precios (`Recharts`):** La DB ya almacena el `PriceHistory`. Modificar el Frontend para que al hacer clic en un producto se abra un modal con el gráfico de la variación de precio en los últimos 3 meses, permitiendo detectar ofertas engañosas.
+* **"Rutas de Compra" (Carrito Híbrido):** La opción de *optimizar* puede dar 2 ganadores si están geográficamente cerca. El motor debe calcular el "Ahorro Híbrido" (ej: lácteos en súper A, limpieza en súper B) y dejar exportar la lista separada para máxima rentabilidad.
+* **Sesiones Clientes Compartidas (Magic Links):** Implementar Auth ligera sin contraseñas (NextAuth/Clerk) para que el usuario guarde el carrito de compras mensual en su PC y lo pueda abrir fácilmente caminando en el pasillo del supermercado desde el móvil.
 
-### 7.3 Sistema de Caché con Redis (Rendimiento)
-- **Idea:** Evitar saturar la base de datos de NeonDB ante picos de tráfico.
-- **Implementación:** Instalar `Redis` en el backend. Cachear las búsquedas generales (ej `/api/products?q=leche`) durante 1-2 horas para respuestas instantáneas de 10ms, liberando de cálculos intensivos al PostgreSQL.
+### ⚙️ 7.2 Motor de Scraping y Sistema Anti-Ban
+* **Proxies Residenciales Rotativos:** Escalar el `fetchWithRetry` actual (User-Agents + delay aleatorio) hacia un pool de proxys (BrightData/Oxylabs) para prevenir baneos de IP por parte de los WAF (Cloudflare/Akamai) desplegados por las cadenas grandes como Coto o Jumbo.
+* **Alertas Inteligentes (Webhooks):** Conectar el nuevo endpoint `/api/scraper/status` con Discord, Slack o Telegram para notificar al equipo técnico en tiempo real si un proveedor de datos cae u obtiene 0 `itemsScraped`, previniendo que la plataforma se quede estancada por días.
 
-### 7.4 Explorador de Categorías Inteligente (✅ COMPLETADO)
-- **Idea:** Pasar de un modelo "solo buscador" a un modelo "descubrimiento de ofertas".
-- **Implementación:** Añadidos chips/botones de acceso rápido interactivos en la home ("Lácteos", "Limpieza", etc.). Tienen carga dinámica O(1) conectados al caché Prisma.
-
-### 7.5 Conquistar ChangoMás, Día y Carrefour (✅ COMPLETADO)
-- **Idea:** Completar el catálogo extendiendo el scraper VTEX actual.
-- **Implementación:** Se hizo ingeniería sobre las APIs de `VTEX IO / GraphQL / MasOnline`, inyectando las 3 cadenas en el orquestador automático `npm run scrape`.
-
-### 7.6 Actualización Dinámica del DOM (✅ COMPLETADO)
-- **Idea:** Navegación ultra-fluida de categorías que no genere recarga reactiva de componentes.
-- **Implementación:** El hook `useProductSearch.ts` utiliza caché de mapa local reteniendo el DOM; el salto entre categorías cuesta literalmente cero peticiones y cero parpadeos usando Single Page Application architecture.
-
----
-
-## 🕸️ Categoría 8: Mejoras de Motor de Extracción (Scraping Avanzado)
-
-### 8.1 Integración de IP Rotativa (Proxies)
-- **Idea:** Aunque el `randomSleep` ayuda gigantescamente, hacer cientos de peticiones lineales a la misma cadena diariamente puede exponer la IP del VPS eventualmente.
-- **Implementación:** Conectar el `fetcher.ts` a un servicio de proxy residencial (BrightData u OxyLabs). Esto enrutará cada consulta por una IP residencial de una provincia distinta evitando que nos baneen a nivel macro de servidor.
-
-### 8.2 Monitor Orgánico en Telegram/Discord
-- **Idea:** Si Coto cambia radicalmente el HTML de su página, `cheerio` dejará de encontrar los atributos y devolverá arrays vacíos. Necesitamos enterarnos rápidamente sin tener que revisar los logs del servidor a mano.
-- **Implementación:** Crear un utilero web-hook. Si al analizar una página un proveedor (ej. CotoScraper) arroja 0 productos o `Error de DOM`, este enviará silenciosamente una notificación de chat (Telegram/Discord) a los desarrolladores con el stacktrace.
-
-### 8.3 Bypass Complejo (Puppeteer Lite) 
-- **Idea:** Algunos sitios pueden forzar el captcha de "Verificando si eres humano" de Cloudflare si se actualizan en el futuro.
-- **Implementación:** En caso de detectar un error estricto (403 constante), el fallback debería derivar al uso de renderizado *Headless* (Chromium/Puppeteer) inyectando la librería `puppeteer-extra-plugin-stealth` para simular mouse/teclados invisibles, y solo volver a la API normal luego de aprobar el cerco de seguridad robótico.
+### 🧱 7.3 Arquitectura Backend y DevOps
+* **Migrar `CacheService` in-memory a Redis:** Si la plataforma escala y requiere balanceo horizontal (múltiples instancias Node), `globalCache.flushAll()` actual provocará desincronización de catálogos en distintas regiones. Redis es imperativo para caché unificado.
+* **MeiliSearch / Typesense:** Cambiar de la extensión `pg_trgm` de PostgreSQL hacia un motor de búsqueda NoSQL especializado. Al manejar +5,000 productos web-scraped, permitirá respuestas <10ms en "Búsqueda a medida que escribes", con Type Tolerance total.
+* **Colas de Tareas (BullMQ):** Reemplazar `node-cron` por un sistema robusto de Message Queueing respaldado por Redis para programar, encolar, y reintentar tareas asíncronas de scrape unitarias en lugar de un proceso *batch* monolítico.
 
 ---
 

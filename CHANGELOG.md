@@ -1,5 +1,30 @@
 # Changelog - Ahorro Tuc
 
+## [1.1.0] - Fase 7.0: Experiencia Visual y Motor de Optimización Avanzada
+### Gráficos Recharts, Carrito Híbrido e Interfaz Detallada
+* **Gráficos de Historial de Precios (UI)**: Se integró la librería `recharts` para renderizar un gráfico de tendencia (línea de tiempo) al expandir una tarjeta de producto en el frontend.
+* **Algoritmo de Carrito Híbrido**: El `OptimizationService` fue re-escrito para no solo devolver el supermercado más barato global, sino una recomendación alternativa ("Carrito Híbrido") que sugiere dividir la compra entre el supermercado base ganador y otra cadena para obtener el precio mínimo absoluto combinando ofertas parciales.
+* **Componente Historial (`ProductHistoryChart`)**: Nuevo componente que agrupa dinámicamente precios por fecha (tomando el mínimo de cada día) para mostrar la evaluación a los usuarios a lo largo del tiempo de manera intuitiva.
+* **Expansión Frontend y Endpoints API**: Adaptados los endpoints en `api.ts` y controladores asociados para la provisión del historial de precios por fecha y la lógica híbrida del nuevo motor.
+
+## [1.0.0-rc.1] - Fase 6.1: Auditoría Completa — Testing, CI/CD y DevOps
+### Blindaje Anti-Regresión y Estabilidad Operacional
+* **Tests Unitarios Expandidos (5.3 — fix)**: El único test de `OptimizationService` estaba desactualizado (llamaba con firma `number[]` en lugar de `{productId, quantity}[]`). Se reescribió con 4 casos de prueba cubriendo cálculo correcto, multiplicación por `quantity`, carrito vacío y exclusión de supers con catálogo incompleto.
+* **Tests de Controlador Zod (5.3 — nuevo)**: Nuevo archivo `OptimizationController.test.ts` con 5 tests que verifican la validación completa del payload: body vacío, `cartItems` no-array, `quantity: 0`, `productId` negativo y path feliz que retorna resultados del servicio.
+* **Lint Backend en CI (5.4 — fix)**: Agregado paso `npx tsc --noEmit` al job `backend-test` del pipeline de GitHub Actions, detectando errores de tipos en cada push sin necesitar compilar archivos.
+* **Seed en E2E (5.2 — fix)**: El job `frontend-e2e` ahora ejecuta `npm run seed` post `prisma db push` para garantizar que los tests de Playwright encuentren productos reales y no fallen silenciosamente con BD vacía.
+* **docker-compose.yml (6.3 — nuevo)**: Creado con sintaxis moderna Docker Compose v2 (sin campo `version` deprecado). Incluye PostgreSQL 15 Alpine con health check y pgAdmin 4 con `depends_on.condition: service_healthy`.
+* **Auditoría Cat. 4 completa**: Verificado que skeletons usan variables CSS dark-mode-aware (4.1 ✅), Footer profesional existe (4.2 ✅), botón optimizar tiene `handleOptimize` con scroll animado (4.3 ✅), accesibilidad con Escape/focus-trap/ARIA implementada (4.4 ✅), animación logo limitada a 3 repeticiones (4.5 ✅).
+* **Auditoría Cat. 6 completa**: `tsx watch` en dev (6.1 ✅), hot-reload via tsx (6.2 ✅), `.env.example` en backend y frontend (6.4 ✅), README con instrucciones completas de setup (6.5 ✅).
+
+## [1.0.0-beta.3] - Fase 6.0: Auditoría de Bugs Críticos y Arquitectura Backend
+### Estabilidad, Corrección de Regresiones y Refactoring
+* **Seed Idempotente (Bug 1.5 — fix)**: Se corrigió el bug más grave donde `seedDatabase()` ejecutaba `prisma.product.create` sin verificar existencia previa, duplicando los 14 productos en cada reinicio del servidor. Ahora usa `findFirst + create condicional` para productos y `upsert` por clave compuesta para precios. El guard de early-exit (`supCount > 0`) fue re-activado como primera línea de defensa.
+* **Auditoría Cat. 1 completa**: Verificado que los bugs 1.1 (SEO `index.html`), 1.2 (Swagger puerto), 1.3 (`.env.example`), 1.4 (rate limiter en dev) y 1.6 (CORS multi-origen) ya estaban corregidos en sesiones anteriores. Todos los 6 bugs críticos quedan resueltos.
+* **Auditoría Cat. 2 completa**: Verificado que `asyncHandler` (2.2), tipos Prisma inferidos en repositorio (2.3), validación de `id` en `getProductHistory` (2.4), filtro de supermercados incompletos en `OptimizationService` (2.5) y middleware de logging HTTP (2.1) ya estaban implementados.
+* **Auditoría Cat. 3 completa**: Verificado que tipos `brand/weight/ean` en `Product` (3.1), control de cantidad en carrito Zustand (3.2), debounce en `useCartOptimizer` (3.3), remoción de `react-router-dom` (3.4) y `useSupermarketStore` como reemplazo del prop drilling (3.5) ya estaban implementados.
+* **CategoryRepository (refactor arquitectónico)**: Movida la lógica de `groupBy` categorías del `CategoryController` (que accedía directamente a Prisma) al nuevo `CategoryRepository.findAll()`, manteniendo consistente el patrón Controller→Repository→DB en todo el proyecto.
+
 ## [1.0.0-beta.2] - Fase 5.8: Extractores "Stealth" y Caché en Tiempo Real
 ### Resiliencia Anti-Bots y Navegación Instantánea
 * **Extractores Dedicados Avanzados**: Coto mudó su motor a `cheerio` para parseo directo de HTML Server-Side. Libertad y Comodín abandonaron el endpoint REST clásico por `Intelligent Search GraphQL` inyectando falsificación nativa VTEX.

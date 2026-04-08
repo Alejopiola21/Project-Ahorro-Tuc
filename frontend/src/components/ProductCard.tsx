@@ -1,7 +1,8 @@
-import React from 'react';
-import { Award } from 'lucide-react';
+import React, { useState } from 'react';
+import { Award, TrendingUp } from 'lucide-react';
 import type { Product } from '../types';
 import { useSupermarketStore, getCheapest } from '../store';
+import { ProductHistoryChart } from './ProductHistoryChart';
 
 interface Props {
     product: Product;
@@ -10,6 +11,7 @@ interface Props {
 
 export const ProductCard: React.FC<Props> = ({ product, onAddToCart }) => {
     const getSupermarket = useSupermarketStore(state => state.getSupermarket);
+    const [showHistory, setShowHistory] = useState(false);
     const cheapest = getCheapest(product.prices);
 
     if (!cheapest) return null;
@@ -50,10 +52,31 @@ export const ProductCard: React.FC<Props> = ({ product, onAddToCart }) => {
                             })}
                     </div>
                 </div>
-                <button className="add-to-cart-btn" onClick={() => onAddToCart(product)} aria-label={`Agregar ${product.name} a la lista`}>
-                    + Agregar a mi Lista
-                </button>
+                
+                <div className="flex gap-2">
+                    <button 
+                        className="flex-1 py-3 bg-[var(--paper-bg)] border border-[var(--border-color)] text-[var(--text-primary)] rounded-[12px] font-semibold text-[14px] flex items-center justify-center gap-2 hover:bg-[var(--bg-color)] transition-colors"
+                        onClick={() => setShowHistory(!showHistory)}
+                        aria-label={`Ver historial de ${product.name}`}
+                    >
+                        <TrendingUp size={16} /> Historial
+                    </button>
+                    <button 
+                        className="flex-[2] add-to-cart-btn m-0" 
+                        onClick={() => onAddToCart(product)} 
+                        aria-label={`Agregar ${product.name} a la lista`}
+                    >
+                        + Agregar
+                    </button>
+                </div>
             </div>
+            
+            {showHistory && (
+                <div className="w-full border-t border-[var(--border-color)] bg-[var(--bg-color)] p-4 rounded-b-[16px]">
+                    <h5 className="text-[14px] font-bold text-[var(--text-primary)] mb-2">Evolución de precios (Última semana)</h5>
+                    <ProductHistoryChart productId={product.id} />
+                </div>
+            )}
         </div>
     );
 };

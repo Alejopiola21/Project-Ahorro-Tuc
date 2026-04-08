@@ -73,10 +73,14 @@
 ### FASES FUTURAS (Roadmap 🚀)
 - [x] **Expansión a Nuevos Gigantes**: Scrapeo avanzado en plataformas VTEX IO/GraphQL (Carrefour, ChangoMás, Día).
 - [x] **Scraping Complejo "Stealth"**: Uso cruzado de `cheerio` para parsear HTML de Coto, inyecciones Header en Libertad/Comodín y validadores orgánicos `Zod` (G. Pardo) junto a iteradores anti-bloqueo aleatorio.
-- [ ] **Experiencia Gráfica (Historiales)**: Paneles desplegables en el Frontend dibujando la caída/subida del precio a lo largo del mes con `Recharts`.
-- [ ] **Gestión de Usuarios (Fase 6)**: Sistema de autenticación para guardar carritos en la nube, marcarlos como favoritos y generar "Ticket de Compra PDF" o links directos a WhatsApp.
+- [x] **Experiencia Gráfica (Historiales)**: Paneles desplegables en el Frontend dibujando la caída/subida del precio a lo largo del mes con `Recharts`.
+- [ ] **Gestión de Usuarios (Fase 8)**: Sistema de autenticación para guardar carritos en la nube, marcarlos como favoritos y generar "Ticket de Compra PDF" o links directos a WhatsApp.
 - [x] **Navegación Intuitiva de Categorías `O(1)`**: UI paralela interactiva con prefetching `in-memory` alojado a nivel del DOM reactivo.
 - [x] **Infraestructura Caché Automática**: Implementación exitosa de capa `In-Memory TTL Cache` amortizando la DB y un `flushAll()` dinámico atado al crontab del backend.
+
+### FASE 7: Motor Híbrido y Visualización (Completada ✅)
+- [x] **Cálculo de Carrito Híbrido**: El optimizador ahora te indica cómo dividir la compra en dos cadenas para lograr el precio mínimo absoluto.
+- [x] **Integración Visual (Recharts)**: Las tarjetas de los productos ahora se expanden revelando un gráfico de curvas suave indicando la evolución de los precios en el tiempo.
 
 ### PROPUESTAS DE ARQUITECTURA (Mejoras Sugeridas 💡)
 - [ ] **Data-Lake Engine**: Desacoplar la base de datos Scraper hacia una base analítica paralela separada del Backend de React (Ej: BigQuery) si almacenamos históricamente años de precios diarios.

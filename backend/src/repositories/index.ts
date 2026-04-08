@@ -98,12 +98,31 @@ export const ProductRepository = {
         return products.map(buildProductWithPrices);
     },
 
-    async getPriceHistory(productId: number, supermarketId: string) {
+    async getPriceHistory(productId: number, supermarketId?: string) {
         return prisma.priceHistory.findMany({
-            where: { productId, supermarketId },
-            orderBy: { date: 'desc' },
-            take: 30,
-            select: { price: true, date: true, sourceUrl: true },
+            where: { 
+                productId, 
+                supermarketId: supermarketId ? supermarketId : undefined 
+            },
+            orderBy: { date: 'asc' }, // Recharts dibuja cronológicamente limpio (izq a der) con asc
+            take: 120, // 4 meses si scrapea a diario en 1 super. Al ser múltiple lo expandimos
+            select: { price: true, date: true, sourceUrl: true, supermarketId: true },
         });
     },
 };
+
+// ── Category Repository ───────────────────────────────────────────────────────
+export const CategoryRepository = {
+    async findAll(): Promise<{ name: string; count: number }[]> {
+        const rawCategories = await prisma.product.groupBy({
+            by: ['category'],
+            _count: { _all: true },
+            orderBy: { category: 'asc' },
+        });
+
+        return rawCategories
+            .filter(c => c.category && c.category.trim() !== '')
+            .map(c => ({ name: c.category, count: c._count._all }));
+    },
+};
+

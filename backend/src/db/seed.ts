@@ -14,143 +14,144 @@ const SUPERMARKETS = [
 ];
 
 const PRODUCTS = [
-    {
-        name: 'Leche Descremada La Serenísima 1L',
-        category: 'Lácteos',
-        imageUrl: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&q=80&w=400',
-        prices: { coto: 1100, carrefour: 1050, jumbo: 1200, vea: 1150, disco: 1150, dia: 990, gomez_pardo: 1010, changomas: 1020, libertad: 1180, comodin: 1000 },
-    },
-    {
-        name: 'Yerba Mate Playadito 1Kg',
-        category: 'Almacén',
-        imageUrl: 'https://images.unsplash.com/photo-1594910243171-4171887e1f13?auto=format&fit=crop&q=80&w=400',
-        prices: { coto: 3400, carrefour: 3600, jumbo: 3750, vea: 3500, disco: 3500, dia: 3200, gomez_pardo: 3100, changomas: 3150, libertad: 3600, comodin: 3250 },
-    },
-    {
-        name: 'Papel Higiénico Higienol 4u',
-        category: 'Limpieza',
-        imageUrl: 'https://images.unsplash.com/photo-1584556812952-905ffd0c611a?auto=format&fit=crop&q=80&w=400',
-        prices: { coto: 2800, carrefour: 2750, jumbo: 2900, vea: 2850, disco: 2850, dia: 2600, gomez_pardo: 2550, changomas: 2650, libertad: 2950, comodin: 2600 },
-    },
-    {
-        name: 'Café Dolca Suave Premium 170g',
-        category: 'Almacén',
-        imageUrl: 'https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&q=80&w=400',
-        prices: { coto: 4600, carrefour: 4800, jumbo: 5100, vea: 4700, disco: 4700, dia: 4500, gomez_pardo: 4400, changomas: 4450, libertad: 5000, comodin: 4600 },
-    },
-    {
-        name: 'Aceite de Girasol Natura 1.5L',
-        category: 'Almacén',
-        imageUrl: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400',
-        prices: { coto: 2950, carrefour: 3100, jumbo: 3250, vea: 3000, disco: 3000, dia: 2800, gomez_pardo: 2750, changomas: 2850, libertad: 3200, comodin: 2800 },
-    },
-    {
-        name: 'Azúcar Ledesma 1Kg',
-        category: 'Almacén',
-        imageUrl: 'https://images.unsplash.com/photo-1550411294-2f6b4fe5a1e8?auto=format&fit=crop&q=80&w=400',
-        prices: { coto: 1400, carrefour: 1350, jumbo: 1500, vea: 1420, disco: 1420, dia: 1280, gomez_pardo: 1250, changomas: 1300, libertad: 1450, comodin: 1250 },
-    },
-    {
-        name: 'Fideos Matarazzo Spaghetti 500g',
-        category: 'Almacén',
-        imageUrl: 'https://images.unsplash.com/photo-1551462147-37885acc36f1?auto=format&fit=crop&q=80&w=400',
-        prices: { coto: 850, carrefour: 820, jumbo: 950, vea: 880, disco: 880, dia: 790, gomez_pardo: 750, changomas: 800, libertad: 900, comodin: 780 },
-    },
-    {
-        name: 'Detergente Magistral 750ml',
-        category: 'Limpieza',
-        imageUrl: 'https://images.unsplash.com/photo-1585237017125-24baf8d7406f?auto=format&fit=crop&q=80&w=400',
-        prices: { coto: 1650, carrefour: 1600, jumbo: 1750, vea: 1680, disco: 1680, dia: 1520, gomez_pardo: 1500, changomas: 1550, libertad: 1700, comodin: 1550 },
-    },
-    {
-        name: 'Pan Lactal Bimbo Blanco 450g',
-        category: 'Panadería',
-        imageUrl: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=400',
-        prices: { coto: 1200, carrefour: 1180, jumbo: 1300, vea: 1220, disco: 1220, dia: 1100, gomez_pardo: 1050, changomas: 1100, libertad: 1250, comodin: 1080 },
-    },
-    {
-        name: 'Arroz SOS Largo Fino 1Kg',
-        category: 'Almacén',
-        imageUrl: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400',
-        prices: { coto: 1100, carrefour: 1050, jumbo: 1200, vea: 1120, disco: 1120, dia: 980, gomez_pardo: 950, changomas: 1000, libertad: 1150, comodin: 990 },
-    },
-    {
-        name: 'Coca Cola Sabor Original 2.25L',
-        category: 'Bebidas',
-        imageUrl: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400',
-        prices: { coto: 1800, carrefour: 1850, jumbo: 2100, vea: 1950, disco: 1950, dia: 1750, gomez_pardo: 1700, changomas: 1750, libertad: 1950, comodin: 1780 },
-    },
-    {
-        name: 'Cerveza Quilmes Clásica Lata 473ml',
-        category: 'Bebidas',
-        imageUrl: 'https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&q=80&w=400',
-        prices: { coto: 850, carrefour: 900, jumbo: 980, vea: 910, disco: 910, dia: 820, gomez_pardo: 800, changomas: 850, libertad: 950, comodin: 820 },
-    },
-    {
-        name: 'Alimento Perro Pedigree Cachorro 3Kg',
-        category: 'Mascotas',
-        imageUrl: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&q=80&w=400',
-        prices: { coto: 8400, carrefour: 8900, jumbo: 9500, vea: 8700, disco: 8700, dia: 8100, gomez_pardo: 7900, changomas: 8200, libertad: 9100, comodin: 8000 },
-    },
-    {
-        name: 'Hamburguesas Swift Clásicas 4u',
-        category: 'Congelados',
-        imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=400',
-        prices: { coto: 2800, carrefour: 2900, jumbo: 3100, vea: 2850, disco: 2850, dia: 2600, gomez_pardo: 2500, changomas: 2700, libertad: 2950, comodin: 2650 },
-    },
+    // Lácteos
+    { name: 'Leche Descremada La Serenísima 1L', category: 'Lácteos', brand: 'La Serenísima', ean: '7790742302801', prices: { coto: 1100, carrefour: 1050, disco: 1150 } },
+    { name: 'Leche Entera Ilolay 1L', category: 'Lácteos', brand: 'Ilolay', ean: '7790320150315', prices: { gomez_pardo: 980, changomas: 950, libertad: 1000 } },
+    { name: 'Leche Chocolatada Sancor 1L', category: 'Lácteos', brand: 'SanCor', ean: '7790080045610', prices: { vea: 1400, jumbo: 1450, carrefour: 1380 } },
+
+    // Almacén - Fideos
+    { name: 'Fideos Matarazzo Mostachol 500g', category: 'Almacén', brand: 'Matarazzo', ean: '7790070415309', prices: { dia: 750, coto: 820, comodin: 790 } },
+    { name: 'Fideos Lucchetti Tallarin 500g', category: 'Almacén', brand: 'Lucchetti', ean: '7790070507301', prices: { carrefour: 800, libertad: 850, changomas: 780 } },
+    { name: 'Fideos Knorr Tirabuzon 500g', category: 'Almacén', brand: 'Knorr', ean: '7790070507355', prices: { gomez_pardo: 820, disco: 890, coto: 860 } },
+
+    // Almacén - Azúcar
+    { name: 'Azúcar Ledesma Claásica 1Kg', category: 'Almacén', brand: 'Ledesma', ean: '7790080040608', prices: { coto: 1350, dia: 1250, changomas: 1280 } },
+    { name: 'Azúcar Chango Premium 1Kg', category: 'Almacén', brand: 'Chango', ean: '7790080040653', prices: { carrefour: 1450, jumbo: 1550, libertad: 1400 } },
+    { name: 'Azúcar Fronterita 1Kg', category: 'Almacén', brand: 'Fronterita', ean: '7790080040700', prices: { gomez_pardo: 1100, comodin: 1150, vea: 1200 } },
+
+    // Limpieza
+    { name: 'Papel Higiénico Higienol Max 4u', category: 'Limpieza', brand: 'Higienol', ean: '7790130000450', prices: { jumbo: 2900, carrefour: 2750, disco: 2850 } },
+    { name: 'Papel Higiénico Elite Doble Hoja 4u', category: 'Limpieza', brand: 'Elite', ean: '7790130000460', prices: { coto: 3100, changomas: 2900, libertad: 3200 } },
+    { name: 'Papel Higiénico Sussex 4u', category: 'Limpieza', brand: 'Sussex', ean: '7790130000470', prices: { dia: 2200, gomez_pardo: 2150, comodin: 2300 } },
+
+    // Bebidas
+    { name: 'Coca Cola Sabor Original 2.25L', category: 'Bebidas', brand: 'Coca Cola', ean: '7790895000994', prices: { coto: 1800, changomas: 1750, gomez_pardo: 1700 } },
+    { name: 'Coca Cola Sin Azúcar 2.25L', category: 'Bebidas', brand: 'Coca Cola', ean: '7790895001004', prices: { carrefour: 1850, dia: 1780, libertad: 1950 } },
+    { name: 'Cerveza Quilmes Clásica Lata 473ml', category: 'Bebidas', brand: 'Quilmes', ean: '7792798007421', prices: { comodin: 820, changomas: 850, jumbo: 980 } },
+    { name: 'Cerveza Stella Artois Lata 473ml', category: 'Bebidas', brand: 'Stella Artois', ean: '7792798007455', prices: { disco: 1100, coto: 1050, carrefour: 1000 } },
+    { name: 'Cerveza Brahma Lata 473ml', category: 'Bebidas', brand: 'Brahma', ean: '7792798007466', prices: { dia: 750, gomez_pardo: 720, vea: 780 } },
+
+    // Mascotas
+    { name: 'Alimento Perro Pedigree Adulto 3Kg', category: 'Mascotas', brand: 'Pedigree', ean: '7790895008035', prices: { coto: 8400, jumbo: 9500, carrefour: 8900 } },
+    { name: 'Alimento Perro Dogui Carne 3Kg', category: 'Mascotas', brand: 'Dogui', ean: '7790895008060', prices: { changomas: 7500, comodin: 7200, dia: 7600 } },
+    { name: 'Alimento Perro Raza Adulto Carne 3Kg', category: 'Mascotas', brand: 'Raza', ean: '7790895008099', prices: { gomez_pardo: 6800, libertad: 7200, vea: 7100 } },
+
+    // Congelados
+    { name: 'Hamburguesas Swift Clásicas 4u', category: 'Congelados', brand: 'Swift', ean: '7790250000210', prices: { carrefour: 2900, coto: 2800, jumbo: 3100 } },
+    { name: 'Hamburguesas Paty Clásicas 4u', category: 'Congelados', brand: 'Paty', ean: '7790250000350', prices: { changomas: 3200, disco: 3500, gomez_pardo: 3100 } },
+    { name: 'Hamburguesas Paladini 4u', category: 'Congelados', brand: 'Paladini', ean: '7790250000450', prices: { libertad: 3400, dia: 3000, comodin: 3150 } },
+
+    // Carnes
+    { name: 'Carne Picada Común x Kg', category: 'Carnes', brand: 'Genérico', ean: '1000000000001', prices: { coto: 4500, carrefour: 4800, jumbo: 5200, vea: 4700, gomez_pardo: 4300 } },
+    { name: 'Asado de Novillo x Kg', category: 'Carnes', brand: 'Genérico', ean: '1000000000002', prices: { libertad: 6500, comodin: 6800, dia: 6200, changomas: 6400 } },
+    { name: 'Pechuga de Pollo x Kg', category: 'Carnes', brand: 'Granja', ean: '1000000000003', prices: { coto: 3500, disco: 3800, vea: 3600, carrefour: 3400 } },
+
+    // Perfumería
+    { name: 'Shampoo Pantene Clásico 400ml', category: 'Perfumería', brand: 'Pantene', ean: '7500435123456', prices: { jumbo: 4200, coto: 3900, dia: 4100, gomez_pardo: 3800 } },
+    { name: 'Desodorante Dove Original Aerosol 150ml', category: 'Perfumería', brand: 'Dove', ean: '7791293023847', prices: { carrefour: 2500, changomas: 2350, libertad: 2600, comodin: 2400 } },
+    { name: 'Crema Dental Colgate Total 12 90g', category: 'Perfumería', brand: 'Colgate', ean: '7501004123567', prices: { vea: 1800, disco: 1950, dia: 1750, coto: 1850 } },
+
+    // Panadería
+    { name: 'Pan Lactal Blanco Bimbo 400g', category: 'Panadería', brand: 'Bimbo', ean: '7790070444552', prices: { coto: 2100, carrefour: 2200, changomas: 1950, jumbo: 2300 } },
+    { name: 'Pan para Hamburguesas Fargo 4u', category: 'Panadería', brand: 'Fargo', ean: '7790070555661', prices: { vea: 1500, disco: 1600, libertad: 1450, gomez_pardo: 1400 } },
+    
+    // Frutas y Verduras
+    { name: 'Papa Negra x Kg', category: 'Verdulería', brand: 'Genérico', ean: '1000000000004', prices: { coto: 600, dia: 550, changomas: 580, carrefour: 650 } },
+    { name: 'Banana Cavendish x Kg', category: 'Verdulería', brand: 'Genérico', ean: '1000000000005', prices: { jumbo: 1400, disco: 1500, vea: 1350, gomez_pardo: 1200 } }
 ];
 
 export async function seedDatabase() {
-    // Verificar si ya hay datos
-    const supCount = await prisma.supermarket.count();
-    // if (supCount > 0) {
-    //     console.log('[DB] ⏩ Seed already applied — skipping');
-    //     return;
-    // }
+    console.log('🌱 Iniciando DB Seed...');
 
-    console.log('[DB] 🌱 Seeding database...');
+    const count = await prisma.supermarket.count();
+    if (count > 0 && process.env.SKIP_SEED === 'true') {
+        console.log('✅ Base de datos ya contiene datos. Saltando seed masivo.');
+        return;
+    }
 
-    // Insertar supermercados con upsert (idempotente)
-    for (const s of SUPERMARKETS) {
+    // 1. Supermercados
+    for (const sup of SUPERMARKETS) {
         await prisma.supermarket.upsert({
-            where: { id: s.id },
-            update: {},
-            create: s,
+            where: { id: sup.id },
+            update: { name: sup.name, color: sup.color, logo: sup.logo },
+            create: sup
         });
     }
 
-    // Insertar productos y sus precios
-    for (const p of PRODUCTS) {
-        const product = await prisma.product.create({
-            data: {
-                name: p.name,
-                category: p.category,
-                imageUrl: p.imageUrl,
-            },
+    // 2. Base Products & Prices
+    for (const prodData of PRODUCTS) {
+        // Encontrar por nombre para evitar duplicados en seed-re-runs
+        let product = await prisma.product.findFirst({
+            where: { name: prodData.name }
         });
 
-        // Crear precios actuales e historial en lote
-        const priceData = Object.entries(p.prices).map(([supId, price]) => ({
-            productId: product.id,
-            supermarketId: supId,
-            price,
-        }));
+        if (!product) {
+            product = await prisma.product.create({
+                data: {
+                    name: prodData.name,
+                    category: prodData.category,
+                    brand: prodData.brand,
+                    ean: prodData.ean,
+                    imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400',
+                }
+            });
+        }
 
-        await prisma.price.createMany({ data: priceData });
+        // Upsert Prices
+        for (const [supId, price] of Object.entries(prodData.prices)) {
+            await prisma.price.upsert({
+                where: {
+                    productId_supermarketId: {
+                        productId: product.id,
+                        supermarketId: supId
+                    }
+                },
+                update: { price },
+                create: {
+                    productId: product.id,
+                    supermarketId: supId,
+                    price
+                }
+            });
 
-        const historyData = Object.entries(p.prices).map(([supId, price]) => ({
-            productId: product.id,
-            supermarketId: supId,
-            price,
-        }));
+            // Registrar Historial solo una vez por día en seed
+            const startOfDay = new Date();
+            startOfDay.setHours(0, 0, 0, 0);
 
-        await prisma.priceHistory.createMany({ data: historyData });
+            const existingHistory = await prisma.priceHistory.findFirst({
+                where: {
+                    productId: product.id,
+                    supermarketId: supId,
+                    date: { gte: startOfDay }
+                }
+            });
+
+            if (!existingHistory) {
+                await prisma.priceHistory.create({
+                    data: {
+                        productId: product.id,
+                        supermarketId: supId,
+                        price,
+                        date: new Date()
+                    }
+                });
+            }
+        }
     }
 
-    console.log(`[DB] 🌱 Seeded ${PRODUCTS.length} products across ${SUPERMARKETS.length} supermarkets`);
+    console.log(`✅ Seed Finalizado: ${SUPERMARKETS.length} supermercados, ${PRODUCTS.length} productos base.`);
 }
 
-// Ejecutar la función si es el script principal
 if (require.main === module) {
     seedDatabase()
         .catch((e) => {

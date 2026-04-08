@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { X, ShoppingCart, Trash2, TrendingDown, Award, ArrowRight, Plus, Minus, AlertTriangle } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { X, ShoppingCart, Trash2, TrendingDown, Award, ArrowRight, Plus, Minus, AlertTriangle, Split } from 'lucide-react';
 import type { CartTotals } from '../types';
 import { useCartStore, useSupermarketStore } from '../store';
 
@@ -17,6 +17,7 @@ export const CartSidebar: React.FC<Props> = ({ isOpen, onClose, cartTotals }) =>
     const getSupermarket = useSupermarketStore(state => state.getSupermarket);
 
     const sidebarRef = useRef<HTMLElement>(null);
+    const [optMode, setOptMode] = useState<'single'|'hybrid'>('single');
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
     // Cerrar con Escape (a11y)
@@ -37,7 +38,7 @@ export const CartSidebar: React.FC<Props> = ({ isOpen, onClose, cartTotals }) =>
 
     // Scroll al ganador al presionar "Optimizar compra"
     const handleOptimize = () => {
-        const winnerEl = sidebarRef.current?.querySelector('.total-row.winner');
+        const winnerEl = sidebarRef.current?.querySelector('.total-row.winner, .hybrid-box');
         if (winnerEl) {
             winnerEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
             winnerEl.classList.add('winner-highlight');
@@ -104,26 +105,78 @@ export const CartSidebar: React.FC<Props> = ({ isOpen, onClose, cartTotals }) =>
                             <div className="cart-summary">
                                 <h4 className="summary-title">Comparativa Total</h4>
                                 <p className="summary-subtitle">{totalItems} producto{totalItems !== 1 ? 's' : ''} en tu lista:</p>
+                                
+                                {cartTotals && cartTotals.hybridOptimization && (
+                                    <div className="flex gap-2 mb-4 bg-[var(--paper-bg)] p-1 rounded-lg">
+                                        <button 
+                                            className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${optMode === 'single' ? 'bg-[var(--accent-color)] text-white' : 'text-secondary hover:bg-[var(--bg-color)]'}`}
+                                            onClick={() => setOptMode('single')}
+                                        >
+                                            Un solo Súper
+                                        </button>
+                                        <button 
+                                            className={`flex-1 py-2 text-sm font-bold rounded-md transition-all flex items-center justify-center gap-2 ${optMode === 'hybrid' ? 'bg-[#9b59b6] text-white' : 'text-secondary hover:bg-[var(--bg-color)]'}`}
+                                            onClick={() => setOptMode('hybrid')}
+                                        >
+                                            <Split size={16} /> Carrito Híbrido
+                                        </button>
+                                    </div>
+                                )}
+
                                 {cartTotals && (
                                     <>
-                                        <div className="totals-list">
-                                            {cartTotals.sortedTotals.map(([id, total], idx) => {
-                                                const s = getSupermarket(id);
-                                                const isCheapest = idx === 0;
-                                                return (
-                                                    <div key={id} className={`total-row ${isCheapest ? 'winner' : ''}`} style={isCheapest ? { borderColor: s?.color } : {}}>
-                                                        <div className="supermarket-info">
-                                                            <span className="dot" style={{ backgroundColor: s?.color }}></span>
-                                                            <span className="sup-name">{s?.name}</span>
-                                                            {isCheapest && <span className="winner-badge"><Award size={12} /> Ganador</span>}
+                                        {optMode === 'single' ? (
+                                            <div className="totals-list">
+                                                {cartTotals.sortedTotals.map(([id, total], idx) => {
+                                                    const s = getSupermarket(id);
+                                                    const isCheapest = idx === 0;
+                                                    return (
+                                                        <div key={id} className={`total-row ${isCheapest ? 'winner' : ''}`} style={isCheapest ? { borderColor: s?.color } : {}}>
+                                                            <div className="supermarket-info">
+                                                                <span className="dot" style={{ backgroundColor: s?.color }}></span>
+                                                                <span className="sup-name">{s?.name}</span>
+                                                                {isCheapest && <span className="winner-badge"><Award size={12} /> Ganador</span>}
+                                                            </div>
+                                                            <div className="total-price">${total.toLocaleString('es-AR')}</div>
                                                         </div>
-                                                        <div className="total-price">${total.toLocaleString('es-AR')}</div>
+                                                    );
+                                                })}
+                                            </div>
+                                        ) : (
+                                            cartTotals.hybridOptimization && (
+                                                <div className="hybrid-box border-2 border-[#9b59b6] rounded-[16px] p-4 bg-[rgba(155,89,182,0.05)]">
+                                                    <div className="flex items-center justify-between mb-4">
+                                                        <span className="font-bold text-[#9b59b6] flex items-center gap-2"><Award size={18} /> Compra Dividida</span>
+                                                        <span className="text-[20px] font-bold text-[var(--text-primary)]">
+                                                            ${cartTotals.hybridOptimization.totalPrice.toLocaleString('es-AR')}
+                                                        </span>
                                                     </div>
-                                                );
-                                            })}
-                                        </div>
+                                                    <div className="flex flex-col gap-3">
+                                                    {cartTotals.hybridOptimization.supermarkets.map((supId) => {
+                                                        const s = getSupermarket(supId);
+                                                        const items = cartTotals.hybridOptimization!.splits[supId];
+                                                        const partialTotal = items.reduce((acc, curr) => acc + curr.totalPrice, 0);
+                                                        return (
+                                                            <div key={supId} className="bg-[var(--paper-bg)] p-3 rounded-lg border border-[var(--border-color)]">
+                                                                <div className="flex justify-between items-center mb-2">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: s?.color }}></span>
+                                                                        <span className="font-bold text-[var(--text-primary)]">{s?.name}</span>
+                                                                    </div>
+                                                                    <span className="font-bold text-secondary">${partialTotal.toLocaleString('es-AR')}</span>
+                                                                </div>
+                                                                <p className="text-[12px] text-secondary">
+                                                                    Llevás {items.reduce((a,b)=>a+b.quantity,0)} productos acá (ej: {items.slice(0,2).map(i=>i.name.split(' ')[0]).join(', ')})
+                                                                </p>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                    </div>
+                                                </div>
+                                            )
+                                        )}
 
-                                        {cartTotals.incompleteSupermarkets && cartTotals.incompleteSupermarkets.length > 0 && (
+                                        {cartTotals.incompleteSupermarkets && cartTotals.incompleteSupermarkets.length > 0 && optMode === 'single' && (
                                             <div className="incomplete-alert">
                                                 <AlertTriangle size={16} />
                                                 <span>
@@ -134,10 +187,18 @@ export const CartSidebar: React.FC<Props> = ({ isOpen, onClose, cartTotals }) =>
                                         )}
                                     </>
                                 )}
-                                {cartTotals && cartTotals.maxSavings > 0 && (
+                                
+                                {cartTotals && cartTotals.maxSavings > 0 && optMode === 'single' && (
                                     <div className="savings-alert">
                                         <TrendingDown size={20} />
                                         <span>¡Ahorrás <strong>${cartTotals.maxSavings.toLocaleString('es-AR')}</strong> comprando en el lugar ganador!</span>
+                                    </div>
+                                )}
+                                
+                                {optMode === 'hybrid' && cartTotals?.hybridOptimization && (
+                                    <div className="savings-alert !bg-purple-100 !text-purple-800 !border-purple-300 dark:!bg-[rgba(155,89,182,0.2)] dark:!text-purple-300">
+                                        <TrendingDown size={20} />
+                                        <span>¡Ahorro extremo! Retenés <strong>${cartTotals.hybridOptimization.savingsFromSingle.toLocaleString('es-AR')}</strong> extra separando la compra.</span>
                                     </div>
                                 )}
                             </div>

@@ -43,14 +43,12 @@ export class ProductController {
             return;
         }
 
-        const supermarketId = String(req.params.supermarketId);
-        if (!supermarketId || supermarketId.trim() === '') {
-            res.status(400).json({ error: 'ID de supermercado inválido' });
-            return;
-        }
+        // El frontend ahora lo pedirá como Query Parameter u otro path, pero flexibilizamos
+        // Puede venir como /api/products/1/history o /api/products/1/history/coto
+        const supermarketId = req.params.supermarketId ? String(req.params.supermarketId) : undefined;
 
         // Llave de historial
-        const cacheKey = `history_prod_${id}_sup_${supermarketId}`;
+        const cacheKey = `history_prod_${id}_sup_${supermarketId || 'ALL'}`;
         const cachedHistory = globalCache.get(cacheKey);
         
         if (cachedHistory) {
@@ -61,7 +59,7 @@ export class ProductController {
         // Fallo de caché, query a DB
         const history = await ProductRepository.getPriceHistory(id, supermarketId);
         
-        // Memoria para el historial (5 min) ya que el usuario podría abrir la gráfica múltiples veces
+        // Memoria para el historial (5 min)
         globalCache.set(cacheKey, history, 300000); 
         res.json(history);
     });

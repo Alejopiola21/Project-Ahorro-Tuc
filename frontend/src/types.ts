@@ -21,8 +21,22 @@ export interface CartItem {
     quantity: number;
 }
 
+export interface HybridOptimization {
+    supermarkets: [string, string];
+    totalPrice: number;
+    savingsFromSingle: number;
+    splits: Record<string, {
+        productId: number;
+        name: string;
+        price: number;
+        quantity: number;
+        totalPrice: number;
+    }[]>;
+}
+
 export interface CartTotals {
     sortedTotals: [string, number][];
     maxSavings: number;
     incompleteSupermarkets?: { id: string; name: string; missingProducts: number }[];
+    hybridOptimization?: HybridOptimization | null;
 }
