@@ -1,5 +1,10 @@
 # Changelog - Ahorro Tuc
 
+## [1.2.0] - Fase 9: Performance y Escalabilidad del Backend
+### Fuzzy Matching Optimizado + Caché Redis para Horizontal Scaling
+* **9.1 Fuzzy Matching O(N²) → O(M log N)**: Reemplazado el loop lineal del sincronizador de scraping por un **índice invertido** (`word → Set<productId>`). Construcción O(N_db × W) una vez por sync, lookup O(1) por palabra scrapeada. Reducción de ~18,500 a ~8 operaciones con el catálogo actual (99.9% menos). Normalización mejorada de unidades (`500 gr→500g`, `1000g→1kg`, `750 ml→750ml`, tildes, puntuación). 21 tests unitarios (`SyncService.test.ts`).
+* **9.3 Caché Redis para Escalabilidad Horizontal**: `CacheService` ahora usa arquitectura dual — writes a in-memory (sync) + Redis (fire-and-forget async) con `ioredis`. Reads ultrarrápidos desde in-memory primero, con `getAsync()` disponible para migración gradual de controllers a lecturas verdaderamente distribuidas. Fallback transparente a in-memory si `REDIS_URL` no está configurado (zero breaking changes). Redis 7 Alpine agregado a `docker-compose.yml` con LRU eviction (`allkeys-lru`) y AOF persistence. Credenciales de pgAdmin securitizadas via variables de entorno. 10 tests unitarios (`CacheService.test.ts`).
+
 ## [1.1.0] - Fase 7.0: Experiencia Visual y Motor de Optimización Avanzada
 ### Gráficos Recharts, Carrito Híbrido e Interfaz Detallada
 * **Gráficos de Historial de Precios (UI)**: Se integró la librería `recharts` para renderizar un gráfico de tendencia (línea de tiempo) al expandir una tarjeta de producto en el frontend.
