@@ -4,8 +4,84 @@ import { SupermarketController } from '../controllers/SupermarketController';
 import { OptimizationController } from '../controllers/OptimizationController';
 import { CategoryController } from '../controllers/CategoryController';
 import { ScraperController } from '../controllers/ScraperController';
+import { AuthController } from '../controllers/AuthController';
+import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = Router();
+
+// ── Auth Routes (public) ────────────────────────────────────────────────────
+
+/**
+ * @openapi
+ * /api/auth/register:
+ *   post:
+ *     summary: Registra un nuevo usuario
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Usuario registrado exitosamente
+ *       409:
+ *         description: El email ya está registrado
+ *       400:
+ *         description: Datos inválidos
+ */
+router.post('/auth/register', AuthController.register);
+
+/**
+ * @openapi
+ * /api/auth/login:
+ *   post:
+ *     summary: Inicia sesión con credenciales
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login exitoso
+ *       401:
+ *         description: Credenciales inválidas
+ */
+router.post('/auth/login', AuthController.login);
+
+/**
+ * @openapi
+ * /api/auth/me:
+ *   get:
+ *     summary: Obtiene el perfil del usuario autenticado
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Perfil del usuario
+ *       401:
+ *         description: Token inválido o expirado
+ */
+router.get('/auth/me', authenticateToken, AuthController.getMe);
 
 /**
  * @openapi
@@ -18,6 +94,25 @@ const router = Router();
  *         description: Métricas del último scrape
  */
 router.get('/scraper/status', ScraperController.getStatus);
+
+/**
+ * @openapi
+ * /api/scraper/logs:
+ *   get:
+ *     summary: Obtiene los últimos logs de auditoría del Scraper
+ *     tags: [Health]
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *         description: Cantidad de logs a retornar (máx 100)
+ *     responses:
+ *       200:
+ *         description: Lista de logs del scraper
+ */
+router.get('/scraper/logs', ScraperController.getRecentLogs);
 
 /**
  * @openapi
@@ -47,7 +142,7 @@ router.get('/supermarkets', SupermarketController.getSupermarkets);
  * @openapi
  * /api/products:
  *   get:
- *     summary: Busca productos
+ *     summary: Busca productos (con paginación opcional por cursor)
  *     tags: [Products]
  *     parameters:
  *       - in: query
@@ -55,9 +150,25 @@ router.get('/supermarkets', SupermarketController.getSupermarkets);
  *         schema:
  *           type: string
  *         description: Término de búsqueda
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Filtrar por categoría
+ *       - in: query
+ *         name: cursor
+ *         schema:
+ *           type: integer
+ *         description: Cursor para siguiente página (ID del último producto)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *         description: Cantidad de productos por página (máx 100)
  *     responses:
  *       200:
- *         description: Resultados de la búsqueda
+ *         description: Resultados de la búsqueda con { products, nextCursor }
  */
 router.get('/products', ProductController.getProducts);
 

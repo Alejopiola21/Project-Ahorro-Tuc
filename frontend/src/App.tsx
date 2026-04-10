@@ -14,6 +14,7 @@ import { Footer } from './components/Footer';
 // Hooks & Store
 import { api } from './api';
 import { useCartStore, useSupermarketStore } from './store';
+import { useAuthStore } from './store/authStore';
 import { useProductSearch } from './hooks/useProductSearch';
 import { useCartOptimizer } from './hooks/useCartOptimizer';
 
@@ -21,10 +22,10 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   // 1. Lógica de Búsqueda completamente encapsulada
-  const { 
-    query, setQuery, debouncedQuery, 
+  const {
+    query, setQuery, debouncedQuery,
     activeCategory, setActiveCategory,
-    products, loading 
+    products, loading
   } = useProductSearch();
 
   // 2. Lógica de Optimización de Carrito encapsulada (se suscribe autonómicamente)
@@ -33,15 +34,21 @@ export default function App() {
   // 3. Zustand Stores para lógica de UI global
   const cart = useCartStore(state => state.cart);
   const addToCart = useCartStore(state => state.addToCart);
-  
+
   const setSupermarkets = useSupermarketStore(state => state.setSupermarkets);
+  const checkAuth = useAuthStore(state => state.checkAuth);
+
+  // Verificar auth al montar la app (restaura sesión desde localStorage)
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   // Carga inicial de datos estáticos (Supermercados) - Este es el único fetch que queda aquí
   // porque necesita correr solo una vez on-mount para popular el Zustand store base.
   useEffect(() => {
     api.get('/supermarkets')
       .then(r => setSupermarkets(r.data))
-      .catch((e) => console.error("Error cargando supermercados:", e)); 
+      .catch((e) => console.error("Error cargando supermercados:", e));
   }, [setSupermarkets]);
 
   // Helpers de UI

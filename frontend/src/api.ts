@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { toast } from 'sonner';
+import { useAuthStore } from './store/authStore';
 
 export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
@@ -12,8 +13,16 @@ export const api = axios.create({
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        // Handle global errors here
-        if (error.response) {
+        // Handle 401 — token expired or invalid
+        if (error.response?.status === 401) {
+            const authStore = useAuthStore.getState();
+            if (authStore.isAuthenticated) {
+                authStore.logout();
+                toast.error('Tu sesión expiró. Iniciá sesión nuevamente.', {
+                    description: 'Por seguridad, tu token ha expirado.'
+                });
+            }
+        } else if (error.response) {
             console.error('API Error:', error.response.data);
             toast.error(error.response.data.error || 'Ocurrió un error en el servidor', {
                 description: 'Por favor, intenta de nuevo más tarde.'

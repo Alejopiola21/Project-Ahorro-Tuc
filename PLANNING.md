@@ -87,5 +87,33 @@
 - [ ] **Alerta de Ofertón (Notificaciones)**: Implementar Web Push Notifications. El Backend, al ver un "Drop" (descuento del 40% súbito en Leche) alerta a los usuarios suscriptos de la bajada masiva.
 - [ ] **Monitor de Integridad & Logs vía Bot**: Si el diseño web de Coto cambia y rompe las estrofas de `cheerio`, un bot de Discord de la aplicación detecta el error en Try/Catch nocturno y avisa a los ingenieros de la rotura para un fix Rápido.
 
+### FASE 8: Gestión de Usuarios, Seguridad y Escalabilidad (En Progreso �)
+- [x] **Modelo User en Prisma**: Creado `User` con `id`, `email`, `passwordHash`, `name`, `createdAt`. Relación `UserList.userId` → `User.id` lista para Fase 8.2.
+- [x] **Autenticación JWT**: AuthService con bcrypt + jsonwebtoken. Middleware `authenticateToken`. Endpoints `/api/auth/register`, `/api/auth/login`, `/api/auth/me`.
+- [x] **Frontend Auth**: AuthModal (Login ↔ Register), useAuthStore (Zustand + persist), Axios 401 interceptor, Header con login/logout.
+- [x] **Scraper Health Persistence**: Modelo `ScraperLog` con logs por proveedor y resumen global. Endpoint `/api/scraper/status` consulta DB (sobrevive reinicios). Nuevo `/api/scraper/logs`.
+- [ ] **Magic Links (Auth sin contraseña)**: Alternativa opcional — envío de email con token de un solo uso.
+- [ ] **CRUD de Listas de Usuario**: Endpoints protegidos para guardar/carritos entre dispositivos.
+- [ ] **Favoritos de Productos**: Modelo `UserFavorite` (`userId`, `productId`).
+- [ ] **Alertas Discord/Slack**: Webhook `DISCORD_WEBHOOK_URL` al fallar un provider.
+- [ ] **Generación de Ticket PDF**: Endpoint `POST /api/lists/:id/export/pdf`.
+- [ ] **Compartir por WhatsApp**: Botón en `CartSidebar` con texto formateado.
+- [x] **Cursor-based Pagination**: `ProductRepository.findAllPaginated()` con `?cursor=X&limit=Y`. Frontend `loadMore()`.
+- [ ] **Optimización de Fuzzy Matching**: Reducir O(N²) a O(M log N).
+- [ ] **Scrapers en Paralelo**: `Promise.allSettled()` con timeout individual.
+- [ ] **Migrar CacheService a Redis**: Adapter opcional con `REDIS_URL`.
+- [ ] **Timeout en Cron Scraper**: `spawn()` con timeout de 30 minutos.
+- [x] **Estado Vacío de Búsqueda**: Componente `EmptyState` con icono, mensaje y sugerencias.
+- [ ] **Precio por Unidad**: Campo `unitPrice` en modelo `Product`.
+- [ ] **Loading State en Optimización**: `isOptimizing` en hook + spinner.
+- [ ] **Persistencia Warning**: Toast si `localStorage` no está disponible.
+- [ ] **Tests de Scrapers**: Tests unitarios para `fuzzyMatch()`, `sanitizeName()`, retry logic.
+- [x] **Limpiar Dependencias Muertas**: Removidos `ts-node`, `@types/helmet`, `react-router-dom`.
+- [x] **Tipar todos los `any`**: `HybridResult`, `ScrapeStat`, `Error & { statusCode }`.
+- [ ] **pgAdmin Credenciales Seguras**: Variables de entorno en docker-compose.
+- [x] **Expansión de Scrapers — Términos x5**: 11 scrapers de 4-8 términos a **34 términos** (10 categorías).
+- [x] **Maxiconsumo**: 12° cadena agregada (VTEX Classic, `#ff8c00`).
+- [x] **La Anónima**: 13° cadena agregada (VTEX Classic, `#1a5276`).
+
 ## Notas para Desarrollo IA
 Este documento servirá para no olvidar el contexto del proyecto y en qué fase estamos. Continuar refiriéndose a este `PLANNING.md` para seguir avanzando en cada tarea sugerida.

@@ -499,6 +499,9 @@ La auditoría inicial (Cats 1-6) está 100% completada, dejando el proyecto list
 * **Sesiones Clientes Compartidas (Magic Links):** (Pendiente para Fase 8) Implementar Auth ligera sin contraseñas.
 
 ### ⚙️ 7.2 Motor de Scraping y Sistema Anti-Ban
+* **Expansión de Términos de Búsqueda (✅ COMPLETADO — 10/04/2026):** Los 11 scrapers existentes pasaron de 4-8 términos a **34 términos** organizados en 10 categorías (Lácteos, Almacén, Limpieza, Bebidas, Carnes, Panadería, Mascotas, Perfumería, Verdulería, Congelados). Impacto estimado: **x5-x7** más productos por cadena.
+* **Maxiconsumo (✅ COMPLETADO — 10/04/2026):** Nuevo scraper VTEX Classic añadido. 12° cadena. Color naranja `#ff8c00`.
+* **La Anónima (✅ COMPLETADO — 10/04/2026):** Nuevo scraper VTEX Classic añadido. 13° cadena. Color navy `#1a5276`.
 * **Proxies Residenciales Rotativos:** Escalar el `fetchWithRetry` actual (User-Agents + delay aleatorio) hacia un pool de proxys (BrightData/Oxylabs) para prevenir baneos de IP por parte de los WAF (Cloudflare/Akamai) desplegados por las cadenas grandes como Coto o Jumbo.
 * **Alertas Inteligentes (Webhooks):** Conectar el nuevo endpoint `/api/scraper/status` con Discord, Slack o Telegram para notificar al equipo técnico en tiempo real si un proveedor de datos cae u obtiene 0 `itemsScraped`, previniendo que la plataforma se quede estancada por días.
 
@@ -509,4 +512,312 @@ La auditoría inicial (Cats 1-6) está 100% completada, dejando el proyecto list
 
 ---
 
-> **Nota:** Este documento se mantiene como referencia permanente del proyecto. Marcar items como completados a medida que se implementen.
+## 🐛 Categoría 8: Seguridad, Autenticación y Escalabilidad (Prioridad CRÍTICA)
+
+### 8.1 Sin autenticación ni autorización en ningún endpoint (✅ COMPLETADO — 10/04/2026)
+- **Archivos:** Todos los endpoints de la API
+- **Problema:** No existía modelo `User`, no había JWT, no había middleware de auth. El campo `UserList.userId` era un placeholder sin relación.
+- **Implementado:**
+  - ✅ Modelo `User` en Prisma con `id`, `email`, `passwordHash`, `name`, `createdAt`
+  - ✅ AuthService con bcrypt + jsonwebtoken
+  - ✅ Middleware `authenticateToken` para proteger rutas
+  - ✅ AuthController con Zod validation: `POST /auth/register`, `POST /auth/login`, `GET /auth/me`
+  - ✅ Frontend: AuthModal, useAuthStore (Zustand + persist), Axios 401 interceptor
+  - ✅ Header con login/logout y saludo al usuario
+
+---
+
+### 8.2 Scraper health se pierde al reiniciar el servidor (✅ COMPLETADO — 10/04/2026)
+- **Problema:** El estado del scraper se almacenaba solo en `globalCache` (in-memory). Si el servidor se reiniciaba, el endpoint `/api/scraper/status` devolvía `UNKNOWN`.
+- **Implementado:**
+  - ✅ Modelo `ScraperLog` en Prisma con `provider`, `status`, `itemsScraped`, `errors`, `errorMessage`, `startedAt`, `finishedAt`
+  - ✅ `ScraperLogRepository` con `createLog()`, `createGlobalSummary()`, `getLatestByProvider()`, `getRecentLogs()`
+  - ✅ Scraper orquestador persiste logs por proveedor y resumen global en cada ejecución
+  - ✅ `ScraperController` consulta DB primero (sobrevive reinicios), fallback a caché
+  - ✅ Nuevo endpoint `GET /api/scraper/logs?limit=N` para auditoría
+- **Archivo:** `backend/src/scraper/index.ts`, `ScraperController.ts`
+- **Problema:** El estado del scraper se almacena solo en `globalCache` (in-memory). Si el servidor se reinicia, el endpoint `/api/scraper/status` devuelve `UNKNOWN` aunque el scraping nocturno haya funcionado correctamente hace minutos.
+- **Impacto:** No hay forma de auditar si el scraping funcionó anoche sin revisar logs manualmente.
+- **Mejora:**
+  - Crear modelo `ScraperLog` en Prisma con `provider`, `status`, `itemsScraped`, `errors`, `startedAt`, `finishedAt`
+  - Cada ejecución del orquestador persiste un registro en la DB
+  - `ScraperController.getStatus` consulta los últimos logs de la DB + cache actual
+  - Dashboard visual en frontend con historial de scraping
+
+---
+
+### 8.3 Sin alertas proactivas ante fallos de scraping (⬜ PENDIENTE)
+- **Archivo:** `backend/src/scraper/index.ts`, `cron.ts`
+- **Problema:** Si un proveedor cambia su estructura web y el scraper falla, nadie es notificado. Los precios quedan desactualizados silenciosamente.
+- **Impacto:** La plataforma muestra precios viejos sin que el equipo técnico lo sepa.
+- **Mejora:**
+  - Variable de entorno `DISCORD_WEBHOOK_URL` o `SLACK_WEBHOOK_URL`
+  - Al finalizar el cron, si algún provider tiene `itemsScraped === 0` o errores fatales, enviar webhook
+  - Mensaje con: provider fallido, error, timestamp, intento de retry
+  - Endpoint opcional para re-trigger manual del scraping
+
+---
+
+### 8.4 pgAdmin expuesto con credenciales por defecto (⬜ PENDIENTE)
+- **Archivo:** `backend/docker-compose.yml`
+- **Problema:** pgAdmin se expone en puerto `5050` con credenciales `admin/admin`. Si se despliega en producción sin cambiar esto, cualquiera accede a la base de datos.
+- **Fix:**
+```yaml
+environment:
+  PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@ahorrotuc.local}
+  PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-cambiar_en_produccion}
+```
+- Y documentar que estas credenciales deben rotarse en producción.
+
+---
+
+## 🏗️ Categoría 9: Performance y Escalabilidad del Backend (Prioridad ALTA)
+
+### 9.1 Fuzzy Matching O(N²) en el sincronizador (⬜ PENDIENTE)
+- **Archivo:** `backend/src/scraper/sync.ts`, función `fuzzyMatch`
+- **Problema:** Por cada producto scrapeado, se iteran TODOS los productos de la DB para encontrar coincidencias. Con 5000+ productos y miles de items scrapeados, es O(N²).
+- **Impacto:** El scraping nocturno puede tardar horas en lugar de minutos.
+- **Mejora:**
+  - Usar índice `pg_trgm` con `similarity()` de PostgreSQL para queries de matching directo
+  - O crear un índice de búsqueda en memoria (Map por palabras clave normalizadas)
+  - Pre-computar un lookup `{ normalizedWord: productId[] }` en RAM al iniciar el sync
+  - Reducir de O(N²) a O(M log N) o O(M) donde M = productos scrapeados
+
+---
+
+### 9.2 Sin paginación en endpoints de listado (✅ COMPLETADO — 10/04/2026)
+- **Implementado:**
+  - ✅ `ProductRepository.findAllPaginated()` con cursor-based pagination
+  - ✅ `ProductController` acepta `?cursor=X&limit=Y`, retorna `{ products, nextCursor }`
+  - ✅ Frontend `useProductSearch` con `hasMore` y `loadMore()` function
+  - ✅ Swagger docs actualizados con nuevos parámetros
+- **Archivos:** `ProductRepository.findAll()`, `SupermarketRepository.findAll()`
+- **Problema:** `findAll()` tiene un hard limit de `take: 100`. Si el catálogo crece, los productos después del #100 nunca se muestran. No hay cursor ni offset pagination.
+- **Impacto:** Límite artificial de 100 productos, sin forma de ver el resto.
+- **Mejora:**
+  - Implementar cursor-based pagination (recomendado para datasets grandes):
+```ts
+findAll: async (cursor?: number, limit = 50) => {
+    return prisma.product.findMany({
+        take: limit,
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: { id: 'asc' },
+        include: withCurrentPrices
+    });
+}
+```
+  - Actualizar endpoint para recibir `?cursor=X&limit=Y`
+  - Devolver `{ products, nextCursor }` en la respuesta
+
+---
+
+### 9.3 Caché in-memory no escala horizontalmente (⬜ PENDIENTE)
+- **Archivo:** `backend/src/services/CacheService.ts`
+- **Problema:** `CacheService` es un `Map` singleton en memoria del proceso. Si se deployan múltiples instancias de Node, cada una tiene su propio cache independiente. `flushAll()` solo limpia una instancia.
+- **Impacto:** Imposible hacer load balancing sin desincronización de catálogos.
+- **Mejora:**
+  - Migrar a Redis para cache unificado entre instancias
+  - Mantener interfaz `CacheService` igual para no romper código existente
+  - Implementar adapter con `ioredis` o `redis` npm package
+  - TTL y LRU eviction nativos de Redis
+  - Variable de entorno `REDIS_URL` opcional; fallback a in-memory si no está configurada
+
+---
+
+### 9.4 Scrapers se ejecutan secuencialmente (⬜ PENDIENTE)
+- **Archivo:** `backend/src/scraper/index.ts`
+- **Problema:** Los 10 providers se ejecutan uno tras otro. Cada uno duerme 3-7 segundos entre requests. Un scrape completo tarda 2-5 minutos.
+- **Impacto:** Ventana de scraping larga, mayor chance de timeout o bloqueo.
+- **Mejora:**
+  - Ejecutar providers independientes en paralelo con `Promise.allSettled()`
+  - Agrupar por familia de plataforma (VTEX: Vea/Jumbo/Disco juntos; Coto solo; etc.)
+  - Respetar rate limits por dominio sin bloquear otros providers
+  - Timeout global por provider (ej. 60s máximo por cada uno)
+
+---
+
+## 🎨 Categoría 10: UX y Frontend (Prioridad MEDIA)
+
+### 10.1 Sin loading state durante optimización del carrito (⬜ PENDIENTE)
+- **Archivo:** `frontend/src/hooks/useCartOptimizer.ts`
+- **Problema:** El hook tiene debounce de 500ms pero no expone estado de `isOptimizing`. El usuario no sabe si el cálculo está en progreso.
+- **Mejora:**
+  - Agregar `isOptimizing: boolean` al return del hook
+  - Mostrar spinner skeleton en `CartSidebar` mientras optimiza
+  - Deshabilitar botón de checkout durante optimización
+
+---
+
+### 10.2 Sin estado vacío para búsquedas sin resultados (✅ COMPLETADO — 10/04/2026)
+- **Implementado:**
+  - ✅ Componente `EmptyState` con icono `SearchX`, título contextual, descripción y sugerencias
+  - ✅ Integrado en `ProductGrid` con animaciones y dark mode
+- **Archivo:** `frontend/src/components/ProductGrid.tsx`
+- **Problema:** Cuando `products` está vacío (búsqueda sin resultados), el grid simplemente no muestra nada. No hay mensaje amigable.
+- **Mejora:**
+  - Componente `EmptyState` con:
+    - Icono de lupa (Lucide `SearchX`)
+    - Texto: "No encontramos productos para '{query}'"
+    - Sugerencias: "Probá con otro término" o "Revisá la categoría 'Todas'"
+  - Mostrar cuando `products.length === 0 && searchQuery.length > 0`
+
+---
+
+### 10.3 Sin cálculo de precio por unidad (⬜ PENDIENTE)
+- **Problema:** No se puede comparar justamente "Leche 1L a $1200" vs "Leche 500ml a $700". El usuario debe hacer la cuenta mentalmente.
+- **Mejora:**
+  - Agregar campo `unitPrice` al modelo `Product` (precio por litro/kg/unidad)
+  - Calcular en el seed y en el scraper: `price / volume_in_units`
+  - Mostrar en `ProductCard`: `$1200/L` vs `$1400/L` junto al precio normal
+  - Badge visual "Mejor precio por unidad" que puede diferir del "más barato"
+
+---
+
+### 10.4 Botón "Optimizar compra" no genera link compartible (⬜ PENDIENTE)
+- **Archivo:** `frontend/src/components/CartSidebar.tsx`
+- **Problema:** El botón solo hace scroll al ganador. No genera un resumen para compartir ni abre WhatsApp con la lista formateada.
+- **Mejora:**
+  - Generar texto formateado:
+```
+🛒 Mi lista de compras en Ahorro Tuc:
+
+✅ COTO - Total: $15,230
+- Leche Entera x2: $2,400
+- Pan Lactal x1: $1,850
+...
+
+💰 Ahorro vs más caro: $3,120
+
+Compará en: https://ahorrotuc.com
+```
+  - Botón primario: "Compartir por WhatsApp" → `https://wa.me/?text={encoded}`
+  - Botón secundario: "Copiar al portapapeles"
+
+---
+
+### 10.5 Sin warning si localStorage es purgado (⬜ PENDIENTE)
+- **Archivo:** `frontend/src/store.ts`
+- **Problema:** Si el usuario limpia datos del navegador o entra en modo incógnito, el carrito desaparece sin aviso ni opción de recovery.
+- **Mejora:**
+  - Detectar si `localStorage` está disponible al montar la app
+  - Si no está disponible, mostrar toast: "El carrito se guarda localmente. Si limpiás el navegador, se perderá."
+  - En Phase 8: botón "Guardar lista en la nube" (requiere auth)
+
+---
+
+## 🧪 Categoría 11: Testing y Deuda Técnica (Prioridad MEDIA)
+
+### 11.1 Cero cobertura de tests para scrapers (⬜ PENDIENTE)
+- **Archivos:** `backend/src/scraper/` (todos los providers, `sync.ts`, `fetcher.ts`, `BaseScraper.ts`)
+- **Problema:** No existe un solo test para la lógica de extracción. Si un provider cambia su API, no hay forma automatizada de detectar la rotura antes de deployar.
+- **Mejora:**
+  - Tests unitarios para `fuzzyMatch()` en `sync.ts` con casos conocidos
+  - Tests para `sanitizeName()` con edge cases (tildes, comas, 1L vs 1lt)
+  - Mock de `fetchWithRetry` para testear retry logic y backoff
+  - Tests de integración con fixtures HTML de cada proveedor (archivos `.html` en `tests/fixtures/`)
+
+---
+
+### 11.2 Dependencias muertas en package.json (✅ COMPLETADO — 10/04/2026)
+- **Implementado:**
+  - ✅ Removidos `ts-node` y `@types/helmet` del backend
+  - ✅ `react-router-dom` ya estaba removido del frontend
+- **Archivo:** `backend/package.json`, `frontend/package.json`
+- **Problema:**
+  - Backend: `ts-node` instalado pero no se usa (reemplazado por `tsx`), `@types/helmet` innecesario (tipos incluidos en helmet)
+  - Frontend: `react-router-dom` instalado pero nunca importado (~13KB gzipped desperdiciados)
+- **Fix:**
+```bash
+cd backend && npm uninstall ts-node @types/helmet
+cd frontend && npm uninstall react-router-dom
+```
+
+---
+
+### 11.3 Tipos `any` dispersos en servicios y controladores (✅ COMPLETADO — 10/04/2026)
+- **Implementado:**
+  - ✅ `OptimizationService`: `bestHybrid: HybridResult | null`, `currentSplits: Record<string, HybridSplitItem[]>`
+  - ✅ `asyncHandler`: `Promise<unknown>` en vez de `Promise<any>`
+  - ✅ Global error handler: `Error & { statusCode?: number }` en vez de `any`
+  - ✅ `sync.ts`: `_deprecated: undefined` en vez de `_prisma: any`
+  - ✅ `scraper/index.ts`: `ScrapeStat` interface tipada
+- **Archivos:** `OptimizationService.ts` (línea 58: `let bestHybrid: any`), `scraper/index.ts` (línea 12: `const scrapeStats: any[]`)
+- **Problema:** TypeScript pierde toda su utilidad con `any`. Si cambia la estructura de datos, el compilador no avisa.
+- **Fix:**
+```ts
+// OptimizationService.ts
+interface HybridResult {
+    supermarket1: { id: number; name: string; total: number; items: CartItem[] };
+    supermarket2: { id: number; name: string; total: number; items: CartItem[] };
+    combinedTotal: number;
+    savings: number;
+}
+let bestHybrid: HybridResult | null = null;
+
+// scraper/index.ts
+interface ScrapeStat {
+    provider: string;
+    itemsScraped: number;
+    errors: number;
+    duration: number;
+}
+const scrapeStats: ScrapeStat[] = [];
+```
+
+---
+
+### 11.4 Sin timeout en proceso scraper del cron (⬜ PENDIENTE)
+- **Archivo:** `backend/src/scraper/cron.ts`
+- **Problema:** El `spawn()` del scraper no tiene timeout. Si un provider se cuelga indefinidamente, el proceso cron nunca termina y el siguiente cron se superpone.
+- **Mejora:**
+```ts
+const scraper = spawn('node', ['dist/scraper/index.js'], { timeout: 30 * 60 * 1000 }); // 30 min max
+scraper.on('error', (err) => { /* handle */ });
+scraper.on('close', (code) => {
+    if (code === null) {
+        console.error('Scraper process timed out after 30 minutes');
+        // send alert webhook
+    }
+});
+```
+
+---
+
+### 11.5 Error handler global no respeta status codes de errores conocidos (⬜ PENDIENTE)
+- **Archivo:** `backend/src/index.ts` (error handler middleware)
+- **Problema:** El global error handler devuelve `{ error: 'Error Interno del Servidor' }` para TODOS los errores, incluyendo 400s que slipped through validation. Debería respetar `err.statusCode` si existe.
+- **Fix:**
+```ts
+app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+    const status = err.statusCode || 500;
+    const message = status === 500 ? 'Error Interno del Servidor' : err.message;
+    res.status(status).json({ error: message });
+});
+```
+
+---
+
+## 📊 Resumen Ejecutivo Actualizado
+
+| Prioridad | Categoría | Items | Esfuerzo estimado |
+|---|---|---|---|
+| 🔴 CRÍTICA | Bugs y Problemas Reales (Cat. 1) | 6 | ~1 hora |
+| 🔴 CRÍTICA | Seguridad y Autenticación (Cat. 8) | 4 | ~8 horas |
+| 🟠 ALTA | Arquitectura Backend (Cat. 2) | 5 | ~2 horas |
+| 🟠 ALTA | Performance y Escalabilidad (Cat. 9) | 4 | ~6 horas |
+| 🟠 ALTA | Frontend React/State (Cat. 3) | 5 | ~2 horas |
+| 🟡 MEDIA | CSS y UX (Cat. 4) | 5 | ~1.5 horas |
+| 🟡 MEDIA | UX y Frontend (Cat. 10) | 5 | ~3 horas |
+| 🟡 MEDIA | Testing y Deuda Técnica (Cat. 11) | 5 | ~4 horas |
+| 🟡 MEDIA | Testing y CI/CD (Cat. 5) | 4 | ~2 horas |
+| 🟢 BAJA | DevOps y Config (Cat. 6) | 5 | ~1 hora |
+| | **TOTAL** | **48** | **~30 horas** |
+
+## Orden Recomendado de Ejecución
+
+1. **Cat. 8** — Autenticación y seguridad (bloquea Phase 8)
+2. **Cat. 11** — Limpiar deuda técnica y tests (estabilidad)
+3. **Cat. 9** — Performance y escalabilidad (crecimiento)
+4. **Cat. 10** — UX y frontend (experiencia de usuario)
+5. **Cat. 1-7** — Ya completados ✅

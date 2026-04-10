@@ -77,7 +77,26 @@ model ProductAlias {
 model UserList {
   id          Int       @id @default(autoincrement())
   name        String
-  userId      String    // Placeholder for Auth implementation
+  userId      String    @map("user_id")
   products    Product[] @relation("ListProducts")
   createdAt   DateTime  @default(now()) @map("created_at")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now()) @map("created_at")
+}
+
+model ScraperLog {
+  id           Int      @id @default(autoincrement())
+  provider     String
+  status       String   // OK, WARNING, FAILED
+  itemsScraped Int      @default(0) @map("items_scraped")
+  errors       Int      @default(0)
+  errorMessage String?  @map("error_message")
+  startedAt    DateTime @map("started_at")
+  finishedAt   DateTime @default(now()) @map("finished_at")
 }

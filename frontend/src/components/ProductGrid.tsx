@@ -1,5 +1,6 @@
 import React from 'react';
 import { ProductCard } from './ProductCard';
+import { EmptyState } from './EmptyState';
 import type { Product } from '../types';
 
 interface Props {
@@ -37,10 +38,11 @@ export const ProductGrid: React.FC<Props> = ({
                         <ProductSkeleton key={n} />
                     ))}
                 </div>
+            ) : products.length === 0 && debouncedQuery ? (
+                <EmptyState query={debouncedQuery} />
             ) : products.length === 0 ? (
-                <div className="empty-state">
-                    <p>No encontramos productos para <strong>"{debouncedQuery}"</strong>.</p>
-                    <span>Probá con otro nombre o categoría.</span>
+                <div className="empty-state" role="status" aria-live="polite">
+                    <p>No hay productos disponibles.</p>
                 </div>
             ) : (
                 <div className="products-grid">

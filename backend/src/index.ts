@@ -68,9 +68,11 @@ async function main() {
     app.use('/api', apiRoutes);
 
     // ── Manejador Global de Errores (Silenciador) ─────────────────────────────
-    app.use((err: any, req: Request, res: Response, _next: express.NextFunction) => {
-        console.error('[💥 Error Event]', new Date().toISOString(), err.message || err);
-        res.status(500).json({ error: 'Error Interno del Servidor' });
+    app.use((err: Error & { statusCode?: number }, req: Request, res: Response, _next: express.NextFunction) => {
+        const status = err.statusCode || 500;
+        const message = status === 500 ? 'Error Interno del Servidor' : err.message;
+        console.error(`[💥 ${status}]`, new Date().toISOString(), err.message || err);
+        res.status(status).json({ error: message });
     });
 
     app.listen(port, () => {

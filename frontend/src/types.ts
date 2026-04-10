@@ -40,3 +40,14 @@ export interface CartTotals {
     incompleteSupermarkets?: { id: string; name: string; missingProducts: number }[];
     hybridOptimization?: HybridOptimization | null;
 }
+
+export interface User {
+    id: string;
+    email: string;
+    name: string | null;
+}
+
+export interface AuthResponse {
+    user: User;
+    token: string;
+}

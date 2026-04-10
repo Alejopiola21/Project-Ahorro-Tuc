@@ -32,7 +32,7 @@ function fuzzyMatch(dbName: string, scrapedName: string): boolean {
 }
 
 export async function syncSupermarketData(
-    _prisma: any, // Ignorado, ahora usamos ScraperRepository y aislamos la capa de persistencia
+    _deprecated: undefined,
     supermarketId: string,
     scrapedProducts: ScrapedProduct[]
 ) {

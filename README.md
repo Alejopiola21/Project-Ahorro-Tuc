@@ -24,7 +24,18 @@ En un contexto de constante variación de precios, saber dónde comprar puede si
 
 ## 🏪 Supermercados Incluidos
 
-`Coto` · `Carrefour` · `Jumbo` · `Vea` · `Disco` · `Día` · `Gómez Pardo` · `ChangoMás` · `Libertad` · `Comodín`
+`Coto` · `Carrefour` · `Jumbo` · `Vea` · `Disco` · `Día` · `Gómez Pardo` · `ChangoMás` · `Libertad` · `Comodín` · `Maxiconsumo` · `La Anónima`
+
+## 🆕 Novedades Recientes (10/04/2026)
+
+| Feature | Descripción |
+|---------|-------------|
+| 🔐 **Autenticación JWT** | Registro, login y perfil de usuario con JWT 24h. Sesión persistente con localStorage. |
+| 📊 **Scraper Health Persistente** | Estado del scraping guardado en DB (sobrevive reinicios). Endpoint `/api/scraper/logs`. |
+| 📄 **Cursor Pagination** | API `/products` con paginación por cursor para catálogos grandes. |
+| 🏪 **13 Supermercados** | Se agregaron Maxiconsumo y La Anónima. Cada scraper busca 34 términos (antes 4-8). |
+| 🧹 **Empty State de Búsqueda** | Mensaje amigable cuando no hay resultados con sugerencias. |
+| 🧹 **Limpieza de `any`** | Tipado estricto en OptimizationService, asyncHandler y error handler. |
 
 ## 🛠️ Stack Tecnológico
 
@@ -142,7 +153,7 @@ cd frontend && npm run dev
 | 6.0 | Auditoría Completa: 30 bugs identificados y corregidos (Cats. 1–6) | ✅ Completada |
 | 6.1 | CI/CD, DevOps, Tests E2E, Skeletons y Estabilidad Anti-Regresión | ✅ Completada |
 | 7.0 | Experiencia Visual (Gráficos Recharts) y Motor de Carrito Híbrido | ✅ Completada |
-| 8.0 | Gestión de Usuarios y Backend Cloud | 🔜 Roadmap en MEJORAS.md |
+| 8.0 | Autenticación JWT, Scraper Health, Expansión de Scrapers | 🔧 En Progreso |
 
 
 > 📋 Ver [PLANNING.md](./PLANNING.md) para detalles completos de cada fase.

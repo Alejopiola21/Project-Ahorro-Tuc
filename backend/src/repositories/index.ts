@@ -62,10 +62,42 @@ export const ProductRepository = {
         const products = await prisma.product.findMany({
             where: category && category !== 'Todas' ? { category: { equals: category, mode: 'insensitive' } } : undefined,
             orderBy: [{ category: 'asc' }, { name: 'asc' }],
-            take: 100, // Previene colapso si findAll es llamado
+            take: 100, // Previene colapso si findAll es llamado directamente
             include: withCurrentPrices,
         });
         return products.map(buildProductWithPrices);
+    },
+
+    /**
+     * Paginación por cursor para datasets grandes.
+     * Retorna productos + cursor siguiente (o null si es el final).
+     */
+    async findAllPaginated(
+        category?: string,
+        cursor?: number,
+        limit: number = 50
+    ): Promise<{ products: ProductWithPrices[]; nextCursor: number | null }> {
+        const safeLimit = Math.min(limit, 100);
+
+        const products = await prisma.product.findMany({
+            where: category && category !== 'Todas'
+                ? { category: { equals: category, mode: 'insensitive' } }
+                : undefined,
+            orderBy: [{ id: 'asc' }],
+            take: safeLimit + 1, // Pedimos 1 extra para saber si hay más
+            skip: cursor ? 1 : 0,
+            cursor: cursor ? { id: cursor } : undefined,
+            include: withCurrentPrices,
+        });
+
+        const hasMore = products.length > safeLimit;
+        const nextCursor = hasMore ? products[products.length - 1].id : null;
+        if (hasMore) products.pop();
+
+        return {
+            products: products.map(buildProductWithPrices),
+            nextCursor,
+        };
     },
 
     async findByIds(ids: number[]): Promise<ProductWithPrices[]> {
@@ -94,15 +126,15 @@ export const ProductRepository = {
             take: 50,
             include: withCurrentPrices
         });
-        
+
         return products.map(buildProductWithPrices);
     },
 
     async getPriceHistory(productId: number, supermarketId?: string) {
         return prisma.priceHistory.findMany({
-            where: { 
-                productId, 
-                supermarketId: supermarketId ? supermarketId : undefined 
+            where: {
+                productId,
+                supermarketId: supermarketId ? supermarketId : undefined
             },
             orderBy: { date: 'asc' }, // Recharts dibuja cronológicamente limpio (izq a der) con asc
             take: 120, // 4 meses si scrapea a diario en 1 super. Al ser múltiple lo expandimos

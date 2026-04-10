@@ -9,8 +9,29 @@ export class ChangomasScraper extends BaseScraper {
     }
 
     async performScraping(): Promise<void> {
-        // Expandimos los términos de búsqueda para cubrir las nuevas categorías
-        const searchTerms = ['leche', 'fideos', 'azucar', 'papel', 'coca', 'cerveza', 'perro', 'hamburguesa'];
+        const searchTerms = [
+            // Lácteos
+            'leche', 'yogur', 'queso', 'manteca', 'dulce de leche',
+            // Almacén
+            'fideos', 'arroz', 'aceite', 'azucar', 'harina', 'sal', 'atun', 'salsa de tomate',
+            'galletitas', 'yerba', 'cafe', 'agua mineral',
+            // Limpieza
+            'detergente', 'lavandina', 'papel higienico', 'jabon', 'suavizante',
+            // Bebidas
+            'coca cola', 'cerveza', 'jugo', 'vino', 'gaseosa',
+            // Carnes
+            'pollo', 'carne picada', 'milanesa',
+            // Panadería
+            'pan lactal', 'facturas', 'pan dulce',
+            // Mascotas
+            'alimento perro', 'alimento gato',
+            // Perfumería
+            'shampoo', 'desodorante', 'crema dental', 'protector solar',
+            // Verdulería
+            'papa', 'tomate', 'cebolla', 'banana', 'limon',
+            // Congelados
+            'empanada', 'hamburguesa', 'pizza congelada',
+        ];
 
         for (const term of searchTerms) {
             console.log(`[Provider:ChangoMás] Buscando: "${term}"...`);

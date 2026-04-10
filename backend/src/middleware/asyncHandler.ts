@@ -5,7 +5,7 @@ import { Request, Response, NextFunction } from 'express';
  * y los pasa al middleware global de errores, eliminando la necesidad
  * de try/catch repetidos en cada controlador.
  */
-export const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) =>
+export const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>) =>
     (req: Request, res: Response, next: NextFunction) => {
         Promise.resolve(fn(req, res, next)).catch(next);
     };

@@ -1,5 +1,19 @@
 import { ProductRepository, SupermarketRepository } from '../repositories';
 
+interface HybridSplitItem {
+    productId: number;
+    name: string;
+    price: number;
+    quantity: number;
+    totalPrice: number;
+}
+
+interface HybridResult {
+    supermarkets: [string, string];
+    total: number;
+    splits: Record<string, HybridSplitItem[]>;
+}
+
 export class OptimizationService {
     static async optimizeCart(cartItems: { productId: number, quantity: number }[]) {
         const productIds = cartItems.map(item => item.productId);
@@ -56,16 +70,16 @@ export class OptimizationService {
         const singleWinnerPrice = sortedTotals.length > 0 ? sortedTotals[0][1] : Infinity;
 
         // ── 🧪 Cálculo de Híbrido (Mejor combinación de 2 supermercados) ──
-        let bestHybrid: any = null;
+        let bestHybrid: HybridResult | null = null;
 
         for (let i = 0; i < supermarkets.length; i++) {
             for (let j = i + 1; j < supermarkets.length; j++) {
                 const s1 = supermarkets[i].id;
                 const s2 = supermarkets[j].id;
-                
+
                 let pairTotal = 0;
                 let isComplete = true;
-                const currentSplits: Record<string, any[]>  = { [s1]: [], [s2]: [] };
+                const currentSplits: Record<string, HybridSplitItem[]>  = { [s1]: [], [s2]: [] };
 
                 for (const item of products) {
                     const cartItem = cartItems.find(c => c.productId === item.id);

@@ -1,11 +1,11 @@
 import { fetchWithRetry } from '../core/fetcher';
 import { BaseScraper } from '../core/BaseScraper';
 
-const DISCO_SEARCH_API = 'https://www.disco.com.ar/api/catalog_system/pub/products/search';
+const LAANONIMA_SEARCH_API = 'https://www.laanonima.com.ar/api/catalog_system/pub/products/search';
 
-export class DiscoScraper extends BaseScraper {
+export class LaAnonimaScraper extends BaseScraper {
     constructor() {
-        super('disco');
+        super('laanonima');
     }
 
     async performScraping(): Promise<void> {
@@ -34,12 +34,12 @@ export class DiscoScraper extends BaseScraper {
         ];
 
         for (const term of searchTerms) {
-            console.log(`[Provider:Disco] Buscando: "${term}"...`);
-            
-            const data = await fetchWithRetry<any[]>(`${DISCO_SEARCH_API}?ft=${term}`);
+            console.log(`[Provider:LaAnonima] Buscando: "${term}"...`);
+
+            const data = await fetchWithRetry<any[]>(`${LAANONIMA_SEARCH_API}?ft=${term}`);
 
             if (!Array.isArray(data)) {
-                console.warn(`[Provider:Disco] Respuesta inválida para ${term}`);
+                console.warn(`[Provider:LaAnonima] Respuesta inválida para ${term}`);
                 continue;
             }
 
@@ -49,7 +49,7 @@ export class DiscoScraper extends BaseScraper {
                 const sku = item.items?.[0];
                 const ean = sku?.ean;
                 const price = sku?.sellers?.[0]?.commertialOffer?.Price;
-                const sourceUrl = item.link || `https://www.disco.com.ar${item.linkText}/p`;
+                const sourceUrl = item.link || `https://www.laanonima.com.ar${item.linkText}/p`;
                 const imageUrl = sku?.images?.[0]?.imageUrl;
 
                 this.addResult({
