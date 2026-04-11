@@ -1,4 +1,4 @@
-import { MeiliSearch, Index } from 'meilisearch';
+// import { Meilisearch, Index } from 'meilisearch'; // Eliminado por incompatibilidad ESM/CJS
 
 export interface SearchProduct {
     id: number;
@@ -10,8 +10,8 @@ export interface SearchProduct {
 }
 
 export class SearchService {
-    private client: MeiliSearch | null = null;
-    private index: Index | null = null;
+    private client: any | null = null;
+    private index: any | null = null;
     private enabled: boolean = false;
 
     constructor() {
@@ -19,15 +19,21 @@ export class SearchService {
         const apiKey = process.env.MEILI_MASTER_KEY;
 
         if (apiKey) {
-            try {
-                this.client = new MeiliSearch({ host, apiKey });
-                this.index = this.client.index('products');
-                this.enabled = true;
-                this.initializeIndex();
-                console.log(`[SearchService] 🟢 MeiliSearch conectado en ${host}`);
-            } catch (err) {
-                console.error('[SearchService] ❌ Error inicializando MeiliSearch:', err);
-            }
+            // Carga dinámica para soportar ESM en un proyecto CommonJS
+            // @ts-ignore - Incompatibilidad ESM/CJS en compilación
+            (import('meilisearch') as any).then(({ Meilisearch }: any) => {
+                try {
+                    this.client = new Meilisearch({ host, apiKey });
+                    this.index = this.client.index('products');
+                    this.enabled = true;
+                    this.initializeIndex();
+                    console.log(`[SearchService] 🟢 MeiliSearch conectado en ${host}`);
+                } catch (err) {
+                    console.error('[SearchService] ❌ Error inicializando MeiliSearch:', err);
+                }
+            }).catch((err: any) => {
+                console.error('[SearchService] ❌ Error cargando módulo meilisearch:', err);
+            });
         } else {
             console.log('[SearchService] ⚠️ MEILI_MASTER_KEY no configurado. Búsqueda NoSQL desactivada.');
         }
@@ -68,7 +74,7 @@ export class SearchService {
                 limit: options.limit || 50
             });
             
-            return result.hits.map(h => h.id as number);
+            return result.hits.map((h: any) => h.id as number);
         } catch (err) {
             console.error('[SearchService] Fallo en búsqueda:', err);
             return null;

@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import { useState, lazy, Suspense, memo } from 'react';
 import { Award, TrendingUp } from 'lucide-react';
 import type { Product } from '../types';
 import { useSupermarketStore, getCheapest } from '../store';
-import { ProductHistoryChart } from './ProductHistoryChart';
+
+const ProductHistoryChart = lazy(() => import('./ProductHistoryChart').then(m => ({ default: m.ProductHistoryChart })));
 
 interface Props {
     product: Product;
     onAddToCart: (p: Product) => void;
 }
 
-export const ProductCard: React.FC<Props> = ({ product, onAddToCart }) => {
+export const ProductCard = memo<Props>(({ product, onAddToCart }) => {
     const getSupermarket = useSupermarketStore(state => state.getSupermarket);
     const [showHistory, setShowHistory] = useState(false);
     const cheapest = getCheapest(product.prices);
@@ -22,7 +23,14 @@ export const ProductCard: React.FC<Props> = ({ product, onAddToCart }) => {
     return (
         <div className="product-card">
             <div className="product-image-container">
-                <img src={product.image} alt={`Imagen de ${product.name}`} loading="lazy" />
+                <img 
+                    src={product.image} 
+                    alt={`Imagen de ${product.name}`} 
+                    loading="lazy"
+                    onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=Sin+Imagen';
+                    }}
+                />
                 <div className="badge-best-price"><Award size={14} /> Mejor Precio</div>
             </div>
             <div className="product-info">
@@ -85,9 +93,11 @@ export const ProductCard: React.FC<Props> = ({ product, onAddToCart }) => {
             {showHistory && (
                 <div className="w-full border-t border-[var(--border-color)] bg-[var(--bg-color)] p-4 rounded-b-[16px]">
                     <h5 className="text-[14px] font-bold text-[var(--text-primary)] mb-2">Evolución de precios (Última semana)</h5>
-                    <ProductHistoryChart productId={product.id} />
+                    <Suspense fallback={<div className="p-8 text-center text-secondary/60 animate-pulse">Cargando gráfico...</div>}>
+                        <ProductHistoryChart productId={product.id} />
+                    </Suspense>
                 </div>
             )}
         </div>
     );
-};
+});

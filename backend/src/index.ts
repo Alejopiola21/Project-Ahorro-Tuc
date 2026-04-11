@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
+import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import { seedDatabase } from './db/seed';
 import apiRoutes from './routes/api';
@@ -23,8 +24,9 @@ async function main() {
     const port = process.env.PORT || 3001;
     const isDev = process.env.NODE_ENV === 'development';
 
-    // Seguridad
+    // Seguridad y Performance
     app.use(helmet());
+    app.use(compression());
 
     const limiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutos

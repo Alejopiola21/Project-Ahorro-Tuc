@@ -108,9 +108,9 @@
 - [x] **Migrar CacheService a Redis**: Adapter opcional con `REDIS_URL`, fallback a in-memory.
 - [ ] **Timeout en Cron Scraper**: `spawn()` con timeout de 30 minutos.
 - [x] **Estado Vacío de Búsqueda**: Componente `EmptyState` con icono, mensaje y sugerencias.
-- [ ] **Precio por Unidad**: Campo `unitPrice` en modelo `Product`.
-- [ ] **Loading State en Optimización**: `isOptimizing` en hook + spinner.
-- [ ] **Persistencia Warning**: Toast si `localStorage` no está disponible.
+- [x] **Precio por Unidad**: Campo `unitPrice` en modelo `Product`. (Normalización Kg/L/U)
+- [x] **Loading State en Optimización**: `isOptimizing` en hook + spinner.
+- [x] **Persistencia Warning**: Toast si `localStorage` no está disponible.
 - [ ] **Tests de Scrapers**: Tests unitarios para `fuzzyMatch()`, `sanitizeName()`, retry logic.
 - [x] **Limpiar Dependencias Muertas**: Removidos `ts-node`, `@types/helmet`, `react-router-dom`.
 - [x] **Tipar todos los `any`**: `HybridResult`, `ScrapeStat`, `Error & { statusCode }`.
@@ -118,6 +118,10 @@
 - [x] **Expansión de Scrapers — Términos x5**: 11 scrapers de 4-8 términos a **34 términos** (10 categorías).
 - [x] **Maxiconsumo**: 12° cadena agregada (VTEX Classic, `#ff8c00`).
 - [x] **La Anónima**: 13° cadena agregada (VTEX Classic, `#1a5276`).
+- [x] **Backend Performance (Compresión)**: Middleware `compression` activo.
+- [x] **Política de Retención**: Limpieza semanal de datos > 3 meses.
+- [x] **Concurrencia Configurable**: `SCRAPER_CONCURRENCY` vía ENV.
+- [x] **Frontend Performance**: Bundle shaving (-57%), Lazy Loading, Memoization y Image optimization.
 
 ## Notas para Desarrollo IA
 Este documento servirá para no olvidar el contexto del proyecto y en qué fase estamos. Continuar refiriéndose a este `PLANNING.md` para seguir avanzando en cada tarea sugerida.

@@ -30,4 +30,14 @@ export default defineConfig({
       }
     })
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-recharts': ['recharts'],
+          'vendor-lucide': ['lucide-react'],
+        }
+      }
+    }
+  }
 })

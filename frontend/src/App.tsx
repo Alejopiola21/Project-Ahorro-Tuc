@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Toaster, toast } from 'sonner';
 import './index.css';
 
@@ -92,7 +92,7 @@ export default function App() {
   }, [setSupermarkets]);
 
   // Helpers de UI
-  const handleAddToCart = (p: Product) => {
+  const handleAddToCart = useCallback((p: Product) => {
     addToCart(p);
     const existing = cart.find(i => i.product.id === p.id);
     toast.success(
@@ -101,7 +101,7 @@ export default function App() {
         : `${p.name} agregado a tu lista ✅`,
       { duration: 2000 }
     );
-  };
+  }, [addToCart, cart]);
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 

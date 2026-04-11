@@ -48,7 +48,6 @@ export const useCartStore = create<CartState>()(
                             : i
                     )
             })),
-            },
             clearCart: () => set({ cart: [] }),
             hasSeenPersistenceWarning: false,
             setHasSeenPersistenceWarning: (val) => set({ hasSeenPersistenceWarning: val }),

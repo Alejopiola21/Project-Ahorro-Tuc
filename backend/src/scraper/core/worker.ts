@@ -20,7 +20,7 @@ export class ScraperWorker {
             return this.processScrape(providerId);
         }, {
             connection: { url: redisUrl },
-            concurrency: 2, // Ejecutar hasta 2 scrapers en paralelo en este nodo
+            concurrency: Number(process.env.SCRAPER_CONCURRENCY) || 2, // Configurable vía ENV
             limiter: {
                 max: 1, // Prevenir ráfagas al mismo tiempo
                 duration: 1000

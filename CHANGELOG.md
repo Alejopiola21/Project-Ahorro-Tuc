@@ -1,5 +1,21 @@
 # Changelog - Ahorro Tuc
 
+## [1.3.0] - 2026-04-11
+### Optimización de Rendimiento Full-Stack (Fase 11)
+* **Frontend - Bundle Shaving & UX**:
+    - Se redujo el bundle de JavaScript inicial de **667 kB a 283 kB (-57.5%)**.
+    - Implementación de **Lazy Loading** (`React.lazy`) para `ProductHistoryChart` y `AuthModal`.
+    - Optimización de renderizado mediante **Memoization** (`React.memo` y `useCallback`) en el grid de productos.
+    - Carga diferida nativa de imágenes (`loading="lazy"`) con sistema de fallback automático para imágenes rotas.
+* **Backend - Compresión y Retención**:
+    - Integración de middleware de **compresión (Brotli/Gzip)**, reduciendo el tamaño de las respuestas JSON de búsqueda.
+    - Nueva **Política de Retención de Datos**: Implementación del `CleanupService` para eliminar historial de precios de más de 90 días y logs de más de 30 días, agendado semanalmente en el Cron.
+    - **Concurrencia Configurable**: Parametrización de `SCRAPER_CONCURRENCY` vía variables de entorno para escalabilidad de los workers.
+* **Estabilización e Infraestructura**:
+    - Corrección de bugs de compilación en `SearchService.ts` relacionados con la resolución de módulos ESM de Meilisearch en un entorno CommonJS.
+    - Actualización de `tsconfig.json` para dar soporte a resoluciones de rutas más modernas.
+    - Configuración de `manualChunks` en Vite para optimizar la caché del navegador separando dependencias pesadas.
+
 ## [1.2.0] - Fase 9: Performance y Escalabilidad del Backend
 ### Fuzzy Matching Optimizado + Caché Redis para Horizontal Scaling
 * **9.1 Fuzzy Matching O(N²) → O(M log N)**: Reemplazado el loop lineal del sincronizador de scraping por un **índice invertido** (`word → Set<productId>`). Construcción O(N_db × W) una vez por sync, lookup O(1) por palabra scrapeada. Reducción de ~18,500 a ~8 operaciones con el catálogo actual (99.9% menos). Normalización mejorada de unidades (`500 gr→500g`, `1000g→1kg`, `750 ml→750ml`, tildes, puntuación). 21 tests unitarios (`SyncService.test.ts`).

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { TrendingDown, MapPin, ShoppingCart, Sun, Moon, LogIn, LogOut, UserCircle } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useAuthStore } from '../store/authStore';
 import { toast } from 'sonner';
-import { AuthModal } from './AuthModal';
+
+const AuthModal = lazy(() => import('./AuthModal').then(m => ({ default: m.AuthModal })));
 
 interface Props {
     cartCount: number;
@@ -62,7 +63,9 @@ export const Header: React.FC<Props> = ({ cartCount, onOpenCart }) => {
                 </div>
             </header>
 
-            <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+            <Suspense fallback={null}>
+                <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+            </Suspense>
         </>
     );
 };
