@@ -195,9 +195,15 @@ export async function syncSupermarketData(
         }
 
         // Producto match exitoso: Apuntar para batch transaction. Evitamos N queries upsert!
+        const product = dbProducts.find(p => p.id === dbProductId);
+        const unitPrice = (product && product.unitValue && product.unitValue > 0)
+            ? parseFloat((scraped.price / product.unitValue).toFixed(2))
+            : null;
+
         batchUpdates.push({
             productId: dbProductId,
             price: scraped.price,
+            unitPrice,
             sourceUrl: scraped.sourceUrl
         });
     }

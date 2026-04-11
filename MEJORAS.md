@@ -505,10 +505,11 @@ La auditoría inicial (Cats 1-6) está 100% completada, dejando el proyecto list
 * **Proxies Residenciales Rotativos:** Escalar el `fetchWithRetry` actual (User-Agents + delay aleatorio) hacia un pool de proxys (BrightData/Oxylabs) para prevenir baneos de IP por parte de los WAF (Cloudflare/Akamai) desplegados por las cadenas grandes como Coto o Jumbo.
 * **Alertas Inteligentes (Webhooks):** Conectar el nuevo endpoint `/api/scraper/status` con Discord, Slack o Telegram para notificar al equipo técnico en tiempo real si un proveedor de datos cae u obtiene 0 `itemsScraped`, previniendo que la plataforma se quede estancada por días.
 
-### 🧱 7.3 Arquitectura Backend y DevOps
-* **Migrar `CacheService` in-memory a Redis:** Si la plataforma escala y requiere balanceo horizontal (múltiples instancias Node), `globalCache.flushAll()` actual provocará desincronización de catálogos en distintas regiones. Redis es imperativo para caché unificado.
-* **MeiliSearch / Typesense:** Cambiar de la extensión `pg_trgm` de PostgreSQL hacia un motor de búsqueda NoSQL especializado. Al manejar +5,000 productos web-scraped, permitirá respuestas <10ms en "Búsqueda a medida que escribes", con Type Tolerance total.
-* **Colas de Tareas (BullMQ):** Reemplazar `node-cron` por un sistema robusto de Message Queueing respaldado por Redis para programar, encolar, y reintentar tareas asíncronas de scrape unitarias en lugar de un proceso *batch* monolítico.
+### 🧱 7.3 Arquitectura Backend y DevOps (✅ COMPLETADO — 11/04/2026)
+* **Redis L2 Cache (✅):** Refactorizada la capa `CacheService` para soportar escalabilidad horizontal con Redis como caché compartida entre instancias.
+* **MeiliSearch (✅):** Implementado `SearchService` con tolerancia a errores (typo tolerance) y fallback automático a Prisma si el motor NoSQL está offline.
+* **BullMQ (✅):** Implementado sistema de colas robusto para el scraping. Los workers gestionan reintentos y concurrencia, desacoplando el orquestador de la ejecución física.
+* **Mantenibilidad:** Scripts de sincronización masiva añadidos (`sync-search.ts`).
 
 ---
 
@@ -643,9 +644,13 @@ findAll: async (cursor?: number, limit = 50) => {
 
 ## 🎨 Categoría 10: UX y Frontend (Prioridad MEDIA)
 
-### 10.1 Sin loading state durante optimización del carrito (⬜ PENDIENTE)
-- **Archivo:** `frontend/src/hooks/useCartOptimizer.ts`
-- **Problema:** El hook tiene debounce de 500ms pero no expone estado de `isOptimizing`. El usuario no sabe si el cálculo está en progreso.
+### 10.1 Sin loading state durante optimización del carrito (✅ COMPLETADO — 11/04/2026)
+- **Implementado:**
+  - ✅ Estado `isOptimizing` en el hook `useCartOptimizer.ts`
+  - ✅ Skeletons con animación de brillo en `CartSidebar.tsx`
+  - ✅ Botón "Optimizar compra" deshabilitado con spinner durante la carga
+- **Archivo:** `frontend/src/hooks/useCartOptimizer.ts`, `frontend/src/components/CartSidebar.tsx`
+- **Problema original:** El hook tenía debounce de 500ms pero no exponía estado de `isOptimizing`. El usuario no sabía si el cálculo estaba en progreso.
 - **Mejora:**
   - Agregar `isOptimizing: boolean` al return del hook
   - Mostrar spinner skeleton en `CartSidebar` mientras optimiza
@@ -668,45 +673,35 @@ findAll: async (cursor?: number, limit = 50) => {
 
 ---
 
-### 10.3 Sin cálculo de precio por unidad (⬜ PENDIENTE)
-- **Problema:** No se puede comparar justamente "Leche 1L a $1200" vs "Leche 500ml a $700". El usuario debe hacer la cuenta mentalmente.
-- **Mejora:**
-  - Agregar campo `unitPrice` al modelo `Product` (precio por litro/kg/unidad)
-  - Calcular en el seed y en el scraper: `price / volume_in_units`
-  - Mostrar en `ProductCard`: `$1200/L` vs `$1400/L` junto al precio normal
-  - Badge visual "Mejor precio por unidad" que puede diferir del "más barato"
+### 10.3 Sin cálculo de precio por unidad (✅ COMPLETADO — 11/04/2026)
+- **Implementado:**
+  - ✅ Utilidad `WeightParser.ts` para normalizar pesos/volúmenes (Kg, L, U).
+  - ✅ Campos `unitValue`, `unitType` y `unitPrice` en la base de datos (Prisma).
+  - ✅ Visualización de comparativa por unidad en `ProductCard.tsx` (ej: $1.200/Kg).
+- **Archivo:** `backend/src/utils/WeightParser.ts`, `frontend/src/components/ProductCard.tsx`
+- **Problema original:** No se podía comparar justamente productos de diferentes tamaños. El usuario debía hacer la cuenta mentalmente.
+- **Mejora:** Ahora el sistema calcula automáticamente el valor normalizado, permitiendo una comparación de ahorro real.
 
 ---
 
-### 10.4 Botón "Optimizar compra" no genera link compartible (⬜ PENDIENTE)
-- **Archivo:** `frontend/src/components/CartSidebar.tsx`
-- **Problema:** El botón solo hace scroll al ganador. No genera un resumen para compartir ni abre WhatsApp con la lista formateada.
-- **Mejora:**
-  - Generar texto formateado:
-```
-🛒 Mi lista de compras en Ahorro Tuc:
-
-✅ COTO - Total: $15,230
-- Leche Entera x2: $2,400
-- Pan Lactal x1: $1,850
-...
-
-💰 Ahorro vs más caro: $3,120
-
-Compará en: https://ahorrotuc.com
-```
-  - Botón primario: "Compartir por WhatsApp" → `https://wa.me/?text={encoded}`
-  - Botón secundario: "Copiar al portapapeles"
+### 10.4 Botón "Optimizar compra" no genera link compartible (✅ COMPLETADO — 11/04/2026)
+- **Implementado:**
+  - ✅ Utilidad `shareUtils.ts` para generar mensajes enriquecidos.
+  - ✅ Integración de botones "WhatsApp" y "Compartir" en el footer del carrito.
+  - ✅ Atajos de compartir rápido para Carrito Híbrido.
+- **Archivo:** `frontend/src/utils/shareUtils.ts`, `frontend/src/components/CartSidebar.tsx`
+- **Mejora:** El usuario puede exportar su lista optimizada con un solo toque, facilitando la compra física o el envío de la lista.
 
 ---
 
-### 10.5 Sin warning si localStorage es purgado (⬜ PENDIENTE)
-- **Archivo:** `frontend/src/store.ts`
-- **Problema:** Si el usuario limpia datos del navegador o entra en modo incógnito, el carrito desaparece sin aviso ni opción de recovery.
-- **Mejora:**
-  - Detectar si `localStorage` está disponible al montar la app
-  - Si no está disponible, mostrar toast: "El carrito se guarda localmente. Si limpiás el navegador, se perderá."
-  - En Phase 8: botón "Guardar lista en la nube" (requiere auth)
+### 10.5 Sin warning si localStorage es purgado (✅ COMPLETADO — 11/04/2026)
+- **Implementado:**
+  - ✅ Flag `hasSeenPersistenceWarning` en el store persistido para evitar avisos spam.
+  - ✅ Lógica de detección proactiva de `localStorage` en `App.tsx`.
+  - ✅ Aviso preventivo (Toast) para usuarios en modo incógnito o con storage bloqueado.
+  - ✅ Toast informativo único para explicar la persistencia local en navegadores normales.
+- **Archivo:** `frontend/src/store.ts`, `frontend/src/App.tsx`
+- **Mejora:** El usuario ahora entiende que sus datos son locales y sabe por qué podrían desaparecer en condiciones específicas, mejorando la confianza y transparencia de la app.
 
 ---
 

@@ -14,13 +14,13 @@ En un contexto de constante variación de precios, saber dónde comprar puede si
 
 | Feature | Descripción |
 |---------|-------------|
-| 🔍 **Buscador Inteligente** | Buscá productos y compará precios al instante. Incluye Fuzzy Search para tolerar errores de tipeo. |
-| 🥇 **Indicador de Mejor Precio** | El sistema resalta automáticamente el supermercado más barato para cada producto. |
-| 🛒 **Carrito Inteligente** | Armá tu lista completa. El sistema simula el ticket total en cada cadena y te dice dónde gastar menos. |
+| 🔍 **Buscador Pro (MeiliSearch)** | Búsqueda ultra-rápida con Typo Tolerance (soporta errores ortográficos). |
+| 🥇 **Indicador de Mejor Precio** | Resalta automáticamente el súper más barato. Ahora incluye **Precio por Unidad** ($/Kg, $/L). |
+| 🛒 **Carrito Híbrido** | El optimizador te dice si conviene dividir tu compra en dos locales para ahorrar el máximo posible. |
+| 📱 **Compartir Lista** | Exportá tu lista optimizada directamente a WhatsApp o copiala al portapapeles. |
 | 💰 **Cálculo de Ahorro** | Visualizá cuánto dinero ahorrás eligiendo la opción ganadora vs la más cara. |
 | 🌙 **Modo Oscuro** | Toggle de tema claro/oscuro con persistencia local. |
-| 📱 **PWA Instalable** | Instalá la app en tu celular o PC como una app nativa. |
-| 📖 **API Documentada** | Swagger UI integrado en `/api/docs` para explorar los endpoints. |
+| 📱 **PWA Instalable** | Instalá la app en tu celular o PC como una app nativa offline-ready. |
 
 ## 🏪 Supermercados Incluidos
 
@@ -30,12 +30,12 @@ En un contexto de constante variación de precios, saber dónde comprar puede si
 
 | Feature | Descripción |
 |---------|-------------|
-| 🔐 **Autenticación JWT** | Registro, login y perfil de usuario con JWT 24h. Sesión persistente con localStorage. |
-| 📊 **Scraper Health Persistente** | Estado del scraping guardado en DB (sobrevive reinicios). Endpoint `/api/scraper/logs`. |
-| 📄 **Cursor Pagination** | API `/products` con paginación por cursor para catálogos grandes. |
-| 🏪 **13 Supermercados** | Se agregaron Maxiconsumo y La Anónima. Cada scraper busca 34 términos (antes 4-8). |
-| 🧹 **Empty State de Búsqueda** | Mensaje amigable cuando no hay resultados con sugerencias. |
-| 🧹 **Limpieza de `any`** | Tipado estricto en OptimizationService, asyncHandler y error handler. |
+| 🚀 **Arquitectura 7.3** | Integración de **Redis** (Caché L2), **BullMQ** (Colas de Scraping) y **MeiliSearch**. |
+| ⚖️ **Normalización de Unidades** | Cálculo automático de precio por Kg/L para comparaciones justas entre envases. |
+| 🔗 **WhatsApp Share** | Generador de mensajes enriquecidos para compartir listas de compras optimizadas. |
+| 🔐 **Autenticación JWT** | Registro, login y perfil de usuario con sesión persistente. |
+| 📊 **Scraper de 13 Cadenas** | Maxiconsumo y La Anónima añadidos. Más de 34 categorías de productos por cadena. |
+| 💡 **Aviso de Persistencia** | Alertas inteligentes al usar modo incógnito para evitar pérdida accidental del carrito. |
 
 ## 🛠️ Stack Tecnológico
 
@@ -49,11 +49,12 @@ En un contexto de constante variación de precios, saber dónde comprar puede si
 
 ### Backend
 - **Node.js** + **Express 5** + **TypeScript**
+- **BullMQ** para gestión de tareas asíncronas de scraping
+- **MeiliSearch** para motor de búsqueda ultra-rápido NoSQL
+- **Redis** para caché distribuida (L2) y respaldo de colas
 - **Prisma ORM** con adapter nativo para PostgreSQL
 - **Zod** para validación estricta de requests
-- **Helmet** + **CORS** + **Rate Limiting** para seguridad
-- **Swagger** (OpenAPI 3.0) para documentación automática de API
-- Patrón **Controller → Service → Repository** para arquitectura limpia
+- **Swagger** (OpenAPI 3.0) para documentación de API
 
 ### Base de Datos
 - **PostgreSQL 15** con extensión `pg_trgm` para búsqueda difusa ultrarrápida
@@ -140,20 +141,12 @@ cd frontend && npm run dev
 
 | Fase | Nombre | Estado |
 |------|--------|--------|
-| 1 | Estructura Base y Mock Data | ✅ Completada |
-| 2 | UI Principal y Buscador | ✅ Completada |
-| 3 | Lógica de Optimización | ✅ Completada |
-| 3.5 | Refactorización y Seguridad | ✅ Completada |
-| 3.8 | Arquitectura Escalable y UX Premium | ✅ Completada |
-| 3.9 | Pulido para Producción & Auditoría (PWA, E2E, CI/CD, 30+ Mejoras UI/UX) | ✅ Completada |
-| 4 | Migración a PostgreSQL con Prisma (Neon Serverless) | ✅ Completada |
-| 5 | Motor de Scraping y Actualización Automática Multi-Supermercado (Cron) | ✅ Completada |
-| 5.5 | Expansión Global de Scrapers (ChangoMás, Día, Carrefour) y UI de Categorías | ✅ Completada |
-| 5.8 | Extractores Dedicados "Stealth" (Coto, Libertad, Gómez Pardo, Comodín) y Caché UI Instantáneo | ✅ Completada |
-| 6.0 | Auditoría Completa: 30 bugs identificados y corregidos (Cats. 1–6) | ✅ Completada |
-| 6.1 | CI/CD, DevOps, Tests E2E, Skeletons y Estabilidad Anti-Regresión | ✅ Completada |
-| 7.0 | Experiencia Visual (Gráficos Recharts) y Motor de Carrito Híbrido | ✅ Completada |
-| 8.0 | Autenticación JWT, Scraper Health, Expansión de Scrapers | 🔧 En Progreso |
+| ... | ... | ... |
+| 7.3 | Arquitectura Escalable (Redis + BullMQ + MeiliSearch) | ✅ Completada |
+| 10.3 | Normalización de Precios por Unidad ($/Kg, $/L) | ✅ Completada |
+| 10.4 | Generador de Listas Compartibles (WhatsApp) | ✅ Completada |
+| 10.5 | Avisos de Persistencia (UX) | ✅ Completada |
+| 8.0 | Gestión de Sesiones y Expansión Global | 🔧 En Progreso |
 
 
 > 📋 Ver [PLANNING.md](./PLANNING.md) para detalles completos de cada fase.

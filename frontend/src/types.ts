@@ -12,8 +12,11 @@ export interface Product {
     image: string;
     brand: string | null;
     weight: string | null;
+    unitValue: number | null;
+    unitType: string | null;
     ean: string | null;
     prices: Record<string, number>;
+    unitPrices: Record<string, number | null>;
 }
 
 export interface CartItem {

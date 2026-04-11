@@ -101,7 +101,7 @@ export class CacheService {
      * @returns Los datos cacheados o null
      */
     async getAsync<T = any>(key: string): Promise<T | null> {
-        // 1. Intentar in-memory primero
+        // L1: Intentar in-memory primero (ultrarrápido)
         const item = this.cache.get(key);
         if (item) {
             if (Date.now() <= item.expiry) {
@@ -110,21 +110,23 @@ export class CacheService {
             this.cache.delete(key);
         }
 
-        // 2. Consultar Redis
+        // L2: Consultar Redis (Escalabilidad horizontal)
         if (this.redis?.isConnected()) {
             try {
                 const serialized = await this.redis.get(key);
                 if (serialized) {
                     const data = JSON.parse(serialized) as T;
                     
-                    // Populating in-memory para próximos reads
-                    // (usar TTL default ya que no sabemos el TTL original)
-                    this.cache.set(key, { data, expiry: Date.now() + 300000 });
+                    // Populate L1 para próximos reads instantáneos en este nodo
+                    this.cache.set(key, { 
+                        data, 
+                        expiry: Date.now() + 300000 // 5 min default de L1 para datos de Redis
+                    });
                     
                     return data;
                 }
-            } catch {
-                // Ignorar errores
+            } catch (err) {
+                console.error(`[CacheService] Redis getAsync error for key ${key}:`, err);
             }
         }
 

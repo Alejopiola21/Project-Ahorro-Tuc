@@ -35,7 +35,14 @@ export const ProductCard: React.FC<Props> = ({ product, onAddToCart }) => {
                             <div className="supermarket-tag" style={{ backgroundColor: cheapestSup.color }}>
                                 {cheapestSup.name}
                             </div>
-                            <div className="price-value">${cheapestPrice.toLocaleString('es-AR')}</div>
+                            <div className="price-value">
+                                ${cheapestPrice.toLocaleString('es-AR')}
+                                {product.unitPrices[cheapestId] && (
+                                    <span className="unit-price-tag">
+                                        (${product.unitPrices[cheapestId]?.toLocaleString('es-AR')}/{product.unitType})
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     )}
                     <div className="other-prices">
@@ -44,9 +51,13 @@ export const ProductCard: React.FC<Props> = ({ product, onAddToCart }) => {
                             .slice(0, 3)
                             .map(([id, price]) => {
                                 const s = getSupermarket(id);
+                                const up = product.unitPrices[id];
                                 return (
                                     <div key={id} className="mini-price">
-                                        <span style={{ color: s?.color }}>{s?.logo}:</span> ${(price as number).toLocaleString('es-AR')}
+                                        <div className="flex justify-between w-full">
+                                            <span style={{ color: s?.color }}>{s?.logo}: ${(price as number).toLocaleString('es-AR')}</span>
+                                            {up && <span className="text-[10px] opacity-60 ml-1">(${up.toLocaleString('es-AR')}/{product.unitType})</span>}
+                                        </div>
                                     </div>
                                 );
                             })}

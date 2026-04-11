@@ -8,6 +8,8 @@ interface CartState {
     removeFromCart: (productId: number) => void;
     updateQuantity: (productId: number, quantity: number) => void;
     clearCart: () => void;
+    hasSeenPersistenceWarning: boolean;
+    setHasSeenPersistenceWarning: (val: boolean) => void;
 }
 
 interface SupermarketState {
@@ -46,7 +48,10 @@ export const useCartStore = create<CartState>()(
                             : i
                     )
             })),
-            clearCart: () => set({ cart: [] })
+            },
+            clearCart: () => set({ cart: [] }),
+            hasSeenPersistenceWarning: false,
+            setHasSeenPersistenceWarning: (val) => set({ hasSeenPersistenceWarning: val }),
         }),
         {
             name: 'ahorroTucCart-zustand',

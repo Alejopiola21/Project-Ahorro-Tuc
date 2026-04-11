@@ -1,5 +1,6 @@
 import { prisma } from '../db/client';
 import { Prisma } from '@prisma/client';
+import { globalSearch } from '../services/SearchService';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 // Tipo de retorno consistente con lo que el frontend espera
@@ -10,8 +11,11 @@ interface ProductWithPrices {
     image: string;
     brand: string | null;
     weight: string | null;
+    unitValue: number | null;
+    unitType: string | null;
     ean: string | null;
     prices: Record<string, number>;
+    unitPrices: Record<string, number | null>;
 }
 
 // Include clause reutilizable para traer precios junto con productos
@@ -20,6 +24,7 @@ const withCurrentPrices = {
         select: {
             supermarketId: true,
             price: true,
+            unitPrice: true,
         },
     },
 } satisfies Prisma.ProductInclude;
@@ -30,9 +35,11 @@ type ProductWithPricesPayload = Prisma.ProductGetPayload<{ include: typeof withC
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function buildProductWithPrices(product: ProductWithPricesPayload): ProductWithPrices {
     const prices: Record<string, number> = {};
+    const unitPrices: Record<string, number | null> = {};
     if (product.currentPrices) {
         for (const p of product.currentPrices) {
             prices[p.supermarketId] = p.price;
+            unitPrices[p.supermarketId] = p.unitPrice;
         }
     }
     return {
@@ -42,8 +49,11 @@ function buildProductWithPrices(product: ProductWithPricesPayload): ProductWithP
         image: product.imageUrl,
         brand: product.brand ?? null,
         weight: product.weight ?? null,
+        unitValue: product.unitValue ?? null,
+        unitType: product.unitType ?? null,
         ean: product.ean ?? null,
         prices,
+        unitPrices,
     };
 }
 
@@ -109,7 +119,17 @@ export const ProductRepository = {
     },
 
     async search(query: string, category?: string): Promise<ProductWithPrices[]> {
-        // Implementación segura nativa de Prisma para evitar errores si pg_trgm no está habilitado
+        // 1. Intentar búsqueda rápida con MeiliSearch (Escalabilidad NoSQL)
+        if (globalSearch.isAvailable()) {
+            const productIds = await globalSearch.search(query, { category, limit: 100 });
+            
+            if (productIds && productIds.length > 0) {
+                // Traer datos completos y precios de los IDs encontrados
+                return this.findByIds(productIds);
+            }
+        }
+
+        // 2. Fallback: Búsqueda nativa de Prisma (pg_trgm o contains)
         const products = await prisma.product.findMany({
             where: {
                 AND: [

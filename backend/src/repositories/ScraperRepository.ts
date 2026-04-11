@@ -3,6 +3,7 @@ import { prisma } from '../db/client';
 export interface ScraperPriceUpdate {
     productId: number;
     price: number;
+    unitPrice?: number | null;
     sourceUrl?: string;
 }
 
@@ -12,7 +13,7 @@ export const ScraperRepository = {
      */
     async getAllProductsForMatching() {
         return prisma.product.findMany({
-            select: { id: true, name: true, ean: true }
+            select: { id: true, name: true, ean: true, unitValue: true, unitType: true }
         });
     },
 
@@ -47,8 +48,8 @@ export const ScraperRepository = {
                             supermarketId: supermarketId
                         }
                     },
-                    update: { price: update.price, updatedAt: new Date() },
-                    create: { productId: update.productId, supermarketId: supermarketId, price: update.price }
+                    update: { price: update.price, unitPrice: update.unitPrice, updatedAt: new Date() },
+                    create: { productId: update.productId, supermarketId: supermarketId, price: update.price, unitPrice: update.unitPrice }
                 })
             );
 

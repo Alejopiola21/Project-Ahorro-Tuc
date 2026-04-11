@@ -1,4 +1,5 @@
 import { prisma } from './client';
+import { extractWeightInfo } from '../utils/WeightParser';
 
 const SUPERMARKETS = [
     { id: 'coto', name: 'Coto', color: '#e63946', logo: 'C' },
@@ -73,13 +74,7 @@ const PRODUCTS = [
 ];
 
 export async function seedDatabase() {
-    console.log('🌱 Iniciando DB Seed...');
-
-    const count = await prisma.supermarket.count();
-    if (count > 0 && process.env.SKIP_SEED === 'true') {
-        console.log('✅ Base de datos ya contiene datos. Saltando seed masivo.');
-        return;
-    }
+    console.log('🌱 Iniciando DB Seed con normalización de unidades...');
 
     // 1. Supermercados
     for (const sup of SUPERMARKETS) {
@@ -92,7 +87,8 @@ export async function seedDatabase() {
 
     // 2. Base Products & Prices
     for (const prodData of PRODUCTS) {
-        // Encontrar por nombre para evitar duplicados en seed-re-runs
+        const weightInfo = extractWeightInfo(prodData.name);
+        
         let product = await prisma.product.findFirst({
             where: { name: prodData.name }
         });
@@ -104,6 +100,8 @@ export async function seedDatabase() {
                     category: prodData.category,
                     brand: prodData.brand,
                     ean: prodData.ean,
+                    unitValue: weightInfo?.unitValue,
+                    unitType: weightInfo?.unitType,
                     imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400',
                 }
             });
@@ -111,6 +109,10 @@ export async function seedDatabase() {
 
         // Upsert Prices
         for (const [supId, price] of Object.entries(prodData.prices)) {
+            const unitPrice = weightInfo && weightInfo.unitValue > 0 
+                ? parseFloat(((price as number) / weightInfo.unitValue).toFixed(2)) 
+                : null;
+
             await prisma.price.upsert({
                 where: {
                     productId_supermarketId: {
@@ -118,15 +120,16 @@ export async function seedDatabase() {
                         supermarketId: supId
                     }
                 },
-                update: { price },
+                update: { price: price as number, unitPrice },
                 create: {
                     productId: product.id,
                     supermarketId: supId,
-                    price
+                    price: price as number,
+                    unitPrice
                 }
             });
 
-            // Registrar Historial solo una vez por día en seed
+            // Registrar Historial
             const startOfDay = new Date();
             startOfDay.setHours(0, 0, 0, 0);
 
@@ -143,7 +146,7 @@ export async function seedDatabase() {
                     data: {
                         productId: product.id,
                         supermarketId: supId,
-                        price,
+                        price: price as number,
                         date: new Date()
                     }
                 });

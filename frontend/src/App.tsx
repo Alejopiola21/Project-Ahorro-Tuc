@@ -29,7 +29,7 @@ export default function App() {
   } = useProductSearch();
 
   // 2. Lógica de Optimización de Carrito encapsulada (se suscribe autonómicamente)
-  const { cartTotals } = useCartOptimizer();
+  const { cartTotals, isOptimizing } = useCartOptimizer();
 
   // 3. Zustand Stores para lógica de UI global
   const cart = useCartStore(state => state.cart);
@@ -38,10 +38,50 @@ export default function App() {
   const setSupermarkets = useSupermarketStore(state => state.setSupermarkets);
   const checkAuth = useAuthStore(state => state.checkAuth);
 
-  // Verificar auth al montar la app (restaura sesión desde localStorage)
+  const hasSeenPersistenceWarning = useCartStore(state => state.hasSeenPersistenceWarning);
+  const setHasSeenPersistenceWarning = useCartStore(state => state.setHasSeenPersistenceWarning);
+
+  // Verificar auth y persistencia al montar la app
   useEffect(() => {
     checkAuth();
-  }, [checkAuth]);
+
+    // 1. Verificar si localStorage está disponible y funcional
+    let storageAvailable = false;
+    try {
+      const testKey = '__storage_test__';
+      localStorage.setItem(testKey, testKey);
+      localStorage.removeItem(testKey);
+      storageAvailable = true;
+    } catch (e) {
+      storageAvailable = false;
+    }
+
+    if (!storageAvailable) {
+      toast.error('Storage no disponible. Tu lista se perderá al cerrar esta pestaña.', {
+        duration: Infinity,
+        id: 'storage-blocked-warning',
+        description: 'Parece que estás en modo incógnito estricto o tenés el almacenamiento bloqueado.'
+      });
+      return;
+    }
+
+    // 2. Mostrar aviso informativo una sola vez para nuevos usuarios
+    if (!hasSeenPersistenceWarning) {
+      setTimeout(() => {
+        toast.info('💡 Tu lista se guarda localmente en este navegador.', {
+          description: 'Si limpiás el historial o cambiás de navegador, tu lista no estará disponible.',
+          duration: 10000,
+          id: 'persistence-tip',
+          action: {
+            label: 'Entendido',
+            onClick: () => setHasSeenPersistenceWarning(true)
+          }
+        });
+        // Marcar como visto para que no moleste en la siguiente carga
+        setHasSeenPersistenceWarning(true);
+      }, 2000);
+    }
+  }, [checkAuth, hasSeenPersistenceWarning, setHasSeenPersistenceWarning]);
 
   // Carga inicial de datos estáticos (Supermercados) - Este es el único fetch que queda aquí
   // porque necesita correr solo una vez on-mount para popular el Zustand store base.
@@ -90,6 +130,7 @@ export default function App() {
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cartTotals={cartTotals}
+        isOptimizing={isOptimizing}
       />
 
       <Footer />
