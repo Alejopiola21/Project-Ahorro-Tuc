@@ -219,7 +219,9 @@ export async function syncSupermarketData(
 
     // CREAR productos nuevos que no existían en la DB
     if (newProducts.length > 0) {
-        console.log(`\n[Sync] 🆕 Creando ${newProducts.length} productos nuevos en la base de datos...`);
+        console.log(`\n[Sync] 🆕 Procesando ${newProducts.length} productos nuevos en la base de datos...`);
+
+        let alreadyExisted = 0;
 
         for (const { scraped, inferredCategory } of newProducts) {
             // Calcular unitValue si hay peso/volumen en el nombre
@@ -236,7 +238,26 @@ export async function syncSupermarketData(
                 unitType: unitInfo.unitType,
             });
 
-            // Ahora agregar el precio para este supermercado
+            // Verificar si el producto ya existía (EAN duplicate caso)
+            const existingProduct = dbProducts.find(p => p.id === createdProduct.id);
+            if (existingProduct) {
+                alreadyExisted++;
+                // Actualizar precio del producto existente
+                const unitPrice = existingProduct.unitValue && existingProduct.unitValue > 0
+                    ? parseFloat((scraped.price / existingProduct.unitValue).toFixed(2))
+                    : null;
+
+                await ScraperRepository.createPrice({
+                    productId: createdProduct.id,
+                    supermarketId,
+                    price: scraped.price,
+                    unitPrice,
+                    sourceUrl: scraped.sourceUrl,
+                });
+                continue;
+            }
+
+            // Producto realmente nuevo - agregar el precio para este supermercado
             const unitPrice = unitInfo.unitValue && unitInfo.unitValue > 0
                 ? parseFloat((scraped.price / unitInfo.unitValue).toFixed(2))
                 : null;
@@ -266,7 +287,7 @@ export async function syncSupermarketData(
             }
         }
 
-        console.log(`[Sync] ✅ ${createdCount} productos nuevos creados exitosamente`);
+        console.log(`[Sync] ✅ ${createdCount} productos nuevos creados, ${alreadyExisted} ya existían (EAN duplicate)`);
     }
 
     console.log(`\n[Sync:${supermarketId}] ✔ Sincronización finalizada.`);
