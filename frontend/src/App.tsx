@@ -25,6 +25,7 @@ export default function App() {
   const {
     query, setQuery, debouncedQuery,
     activeCategory, setActiveCategory,
+    filters, setFilters, clearCache,
     products, loading
   } = useProductSearch();
 
@@ -111,18 +112,21 @@ export default function App() {
       <Header cartCount={totalItems} onOpenCart={() => setIsCartOpen(true)} />
 
       <Hero query={query} setQuery={setQuery} />
-      
+
       <SupermarketsBar />
-      
-      <CategoryNav 
-        activeCategory={activeCategory} 
-        onSelect={(cat) => setActiveCategory(cat)} 
+
+      <CategoryNav
+        activeCategory={activeCategory}
+        onSelect={(cat) => setActiveCategory(cat)}
       />
 
       <ProductGrid
         loading={loading}
         products={products}
         debouncedQuery={debouncedQuery}
+        filters={filters}
+        onFilterChange={setFilters}
+        onClearCache={clearCache}
         onAddToCart={handleAddToCart}
       />
 

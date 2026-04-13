@@ -81,6 +81,9 @@
 - [ ] **Gestión de Usuarios (Fase 8)**: Sistema de autenticación para guardar carritos en la nube, marcarlos como favoritos y generar "Ticket de Compra PDF" o links directos a WhatsApp.
 - [x] **Navegación Intuitiva de Categorías `O(1)`**: UI paralela interactiva con prefetching `in-memory` alojado a nivel del DOM reactivo.
 - [x] **Infraestructura Caché Automática**: Implementación exitosa de capa `In-Memory TTL Cache` amortizando la DB y un `flushAll()` dinámico atado al crontab del backend.
+- [x] **Filtros Avanzados de Búsqueda**: Filtros por precio, marca, stock y ordenamiento. FilterBar UI con panel colapsable. Backend con query params avanzados.
+- [x] **Compartir por WhatsApp**: Botón en `CartSidebar` con texto formateado de lista optimizada + ahorros.
+- [x] **Generación de Ticket PDF**: PDF profesional descargable desde el carrito con lista de compras, precios y totales.
 
 ### FASE 7: Motor Híbrido y Visualización (Completada ✅)
 - [x] **Cálculo de Carrito Híbrido**: El optimizador ahora te indica cómo dividir la compra en dos cadenas para lograr el precio mínimo absoluto.
@@ -91,6 +94,12 @@
 - [ ] **Alerta de Ofertón (Notificaciones)**: Implementar Web Push Notifications. El Backend, al ver un "Drop" (descuento del 40% súbito en Leche) alerta a los usuarios suscriptos de la bajada masiva.
 - [ ] **Monitor de Integridad & Logs vía Bot**: Si el diseño web de Coto cambia y rompe las estrofas de `cheerio`, un bot de Discord de la aplicación detecta el error en Try/Catch nocturno y avisa a los ingenieros de la rotura para un fix Rápido.
 
+### FASE 13: Mejoras de Scraping y Catálogo Dinámico (Completada ✅)
+- [x] **Endpoint HTTP para Trigger Manual**: `POST /api/scraper/trigger` ejecuta scraping síncrono sin BullMQ/Redis. Opcional `?provider=X`.
+- [x] **Paginación en Intelligent-Search**: Carrefour, Libertad, Comodin ahora traen hasta 5 páginas (75 productos vs 15 anteriores).
+- [x] **Creación Automática de Productos**: Sync engine crea productos nuevos cuando no encuentra match. Inferencia de categoría y extracción de peso/volumen.
+- [x] **Catálogo Dinámico**: El catálogo crece automáticamente con cada scrapeo, sin intervención manual.
+
 ### FASE 8: Gestión de Usuarios, Seguridad y Escalabilidad (En Progreso �)
 - [x] **Modelo User en Prisma**: Creado `User` con `id`, `email`, `passwordHash`, `name`, `createdAt`. Relación `UserList.userId` → `User.id` lista para Fase 8.2.
 - [x] **Autenticación JWT**: AuthService con bcrypt + jsonwebtoken. Middleware `authenticateToken`. Endpoints `/api/auth/register`, `/api/auth/login`, `/api/auth/me`.
@@ -100,8 +109,8 @@
 - [ ] **CRUD de Listas de Usuario**: Endpoints protegidos para guardar/carritos entre dispositivos.
 - [ ] **Favoritos de Productos**: Modelo `UserFavorite` (`userId`, `productId`).
 - [ ] **Alertas Discord/Slack**: Webhook `DISCORD_WEBHOOK_URL` al fallar un provider.
-- [ ] **Generación de Ticket PDF**: Endpoint `POST /api/lists/:id/export/pdf`.
-- [ ] **Compartir por WhatsApp**: Botón en `CartSidebar` con texto formateado.
+- [x] **Generación de Ticket PDF**: PDF profesional descargable desde el carrito con lista de compras, precios y totales.
+- [x] **Compartir por WhatsApp**: Botón en `CartSidebar` con texto formateado con lista optimizada + ahorros.
 - [x] **Cursor-based Pagination**: `ProductRepository.findAllPaginated()` con `?cursor=X&limit=Y`. Frontend `loadMore()`.
 - [x] **Optimización de Fuzzy Matching**: Reducir O(N²) a O(M log N) con índice invertido.
 - [ ] **Scrapers en Paralelo**: `Promise.allSettled()` con timeout individual.

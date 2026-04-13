@@ -6,7 +6,9 @@
       "Bash(timeout *)",
       "Bash(curl *)",
       "Bash(npm run *)",
-      "Bash(taskkill *)"
+      "Bash(taskkill *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
     ]
   },
   "$version": 3

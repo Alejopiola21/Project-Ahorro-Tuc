@@ -3,6 +3,7 @@ import { BaseScraper } from '../core/BaseScraper';
 
 // VTEX Intelligent Search API o GraphQL Segment
 const LIBERTAD_SEARCH_API = 'https://www.libertadsa.com.ar/api/io/_v/api/intelligent-search/product_search/';
+const MAX_PAGES = 5;
 
 export class LibertadScraper extends BaseScraper {
     constructor() {
@@ -36,38 +37,53 @@ export class LibertadScraper extends BaseScraper {
 
         for (const term of searchTerms) {
             console.log(`[Provider:Libertad] Exploración VTEX Stealth: "${term}"...`);
-            
-            try {
-                // Algoritmo de retraso defensivo inter-requests
-                await randomSleep(3500, 6000);
 
-                // Empleando el endpoint de Intelligent Search que suele ser menos restrictivo que catalog_system si se inyectan headers
-                const url = `${LIBERTAD_SEARCH_API}?query=${encodeURIComponent(term)}&page=1&count=15`;
-                
-                const data = await fetchWithRetry<any>(url, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'x-vtex-tenant': 'libertadsa',
-                        'Referer': 'https://www.libertadsa.com.ar/',
-                        'Origin': 'https://www.libertadsa.com.ar'
-                    }
-                });
+            let page = 1;
+            let hasMorePages = true;
 
-                if (!data || !Array.isArray(data.products)) continue;
+            while (hasMorePages && page <= MAX_PAGES) {
+                try {
+                    await randomSleep(2000, 4000);
 
-                for (const item of data.products) {
-                    const sku = item.items?.[0];
-                    this.addResult({
-                        name: item.productName,
-                        price: sku?.sellers?.[0]?.commertialOffer?.Price,
-                        ean: sku?.ean,
-                        brand: item.brand,
-                        sourceUrl: item.link || `https://www.libertadsa.com.ar${item.linkText}/p`,
-                        imageUrl: sku?.images?.[0]?.imageUrl
+                    const url = `${LIBERTAD_SEARCH_API}?query=${encodeURIComponent(term)}&page=${page}&count=15`;
+
+                    const data = await fetchWithRetry<any>(url, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'x-vtex-tenant': 'libertadsa',
+                            'Referer': 'https://www.libertadsa.com.ar/',
+                            'Origin': 'https://www.libertadsa.com.ar'
+                        }
                     });
+
+                    if (!data || !Array.isArray(data.products) || data.products.length === 0) {
+                        hasMorePages = false;
+                        break;
+                    }
+
+                    for (const item of data.products) {
+                        const sku = item.items?.[0];
+                        this.addResult({
+                            name: item.productName,
+                            price: sku?.sellers?.[0]?.commertialOffer?.Price,
+                            ean: sku?.ean,
+                            brand: item.brand,
+                            sourceUrl: item.link || `https://www.libertadsa.com.ar${item.linkText}/p`,
+                            imageUrl: sku?.images?.[0]?.imageUrl
+                        });
+                    }
+
+                    console.log(`[Provider:Libertad] Página ${page}: ${data.products.length} productos`);
+
+                    if (data.products.length < 15) {
+                        hasMorePages = false;
+                    }
+
+                    page++;
+                } catch (error) {
+                    console.warn(`[Provider:Libertad] Error en página ${page} de "${term}".`);
+                    hasMorePages = false;
                 }
-            } catch (error) {
-                console.warn(`[Provider:Libertad] Barrera WAF detectada al extraer "${term}".`);
             }
         }
     }

@@ -1,12 +1,17 @@
 import React from 'react';
 import { ProductCard } from './ProductCard';
 import { EmptyState } from './EmptyState';
+import { FilterBar } from './FilterBar';
 import type { Product } from '../types';
+import type { SearchFilters } from '../hooks/useProductSearch';
 
 interface Props {
     loading: boolean;
     products: Product[];
     debouncedQuery: string;
+    filters: SearchFilters;
+    onFilterChange: (filters: SearchFilters) => void;
+    onClearCache: () => void;
     onAddToCart: (p: Product) => void;
 }
 
@@ -23,7 +28,7 @@ const ProductSkeleton = () => (
 );
 
 export const ProductGrid: React.FC<Props> = ({
-    loading, products, debouncedQuery, onAddToCart
+    loading, products, debouncedQuery, filters, onFilterChange, onClearCache, onAddToCart
 }) => {
     return (
         <main className="main-content" role="main">
@@ -31,6 +36,12 @@ export const ProductGrid: React.FC<Props> = ({
                 <h3>{debouncedQuery ? `Resultados para "${debouncedQuery}"` : 'Productos Destacados'}</h3>
                 {!loading && <p>{products.length} productos encontrados</p>}
             </div>
+
+            <FilterBar
+                filters={filters}
+                onFilterChange={onFilterChange}
+                onClearCache={onClearCache}
+            />
 
             {loading ? (
                 <div className="products-grid" aria-busy="true">

@@ -1,5 +1,55 @@
 # Changelog - Ahorro Tuc
 
+## [1.5.0] - 2026-04-13
+### Mejoras de Scraping y Catálogo Dinámico (Fase 13)
+* **Endpoint HTTP para Trigger Manual**:
+    - Nuevo endpoint `POST /api/scraper/trigger` ejecuta scraping síncrono (sin BullMQ/Redis).
+    - Parámetro opcional `?provider=carrefour` para ejecutar un solo provider.
+    - Ejecuta scraping + sync + invalidación de caché automáticamente.
+    - Retorna JSON con resultados detallados por provider.
+    - Funciona sin Redis (ideal para dev/testing).
+* **Paginación en Intelligent-Search**:
+    - Carrefour, Libertad y Comodin ahora traen hasta 5 páginas por término (75 productos vs 15 anteriores).
+    - Detección inteligente de última página (cuando trae < 15 productos).
+    - Reducción de sleep entre requests (2-4s vs 3.5-7s anterior).
+    - Impacto estimado: **x5 más productos** por provider intelligent-search.
+* **Creación Automática de Productos**:
+    - Sync engine ahora **CREA productos nuevos** cuando no encuentra match en la DB.
+    - Inferencia automática de categoría basada en nombre del producto (48+ keywords).
+    - Extracción automática de peso/volumen del nombre (500g, 1kg, 500ml, 1.5l, etc.).
+    - Cálculo automático de `unitValue` y `unitPrice` para nuevos productos.
+    - Productos nuevos se agregan al índice en memoria para match en la misma corrida.
+    - **Impacto:** El catálogo crece dinámicamente con cada scrapeo (de 34 a cientos/miles).
+
+## [1.4.0] - 2026-04-13
+### Filtros Avanzados, Compartir WhatsApp y Generación de PDF (Fase 12)
+* **Frontend - Filtros Avanzados de Búsqueda**:
+    - Nuevo componente `FilterBar.tsx` con panel de filtros colapsable y responsive.
+    - Filtro por **rango de precio** (min-max) con inputs numéricos.
+    - Filtro por **marcas** con checkboxes múltiples en grid scrollable.
+    - Toggle **"solo productos con stock"** (precio > 0 en al menos 1 super).
+    - **Ordenamiento** por precio (menor/mayor), marca (A-Z/Z-A), nombre.
+    - Hook `useProductSearch` extendido con `filters`, `setFilters`, `clearCache`.
+    - Integración completa en `ProductGrid.tsx` y `App.tsx`.
+* **Backend - Soporte de Filtros**:
+    - Nuevo endpoint `GET /api/brands` para listar marcas disponibles (con caché).
+    - `ProductController` ahora acepta query params: `minPrice`, `maxPrice`, `brands`, `inStock`, `sort`.
+    - `ProductRepository.findAllPaginated()` soporta filtros avanzados con ordenamiento.
+    - Caché actualizada con clave compuesta incluyendo todos los filtros.
+    - Documentación Swagger actualizada con nuevos parámetros.
+* **Frontend - Compartir WhatsApp Mejorado**:
+    - Formato de mensaje optimizado con emojis y estructura profesional.
+    - Soporte completo para modo single y carrito híbrido.
+    - Botón de copiar al portapapeles con feedback visual (check icon).
+* **Frontend - Generación de Ticket PDF**:
+    - Nueva utilidad `pdfGenerator.ts` sin dependencias externas (zero extra packages).
+    - Genera PDF profesional usando `window.open` + Print API.
+    - Diseño profesional con tablas, colores por supermercado, y summary de ahorros.
+    - Soporte para carrito híbrido (muestra división por supermercado).
+    - Botón rojo "PDF" en `CartSidebar` junto a WhatsApp.
+    - PDF incluye disclaimer de precios y link a la app.
+    - Compatible con A4, optimizado para impresión y guardado como PDF.
+
 ## [1.3.0] - 2026-04-11
 ### Optimización de Rendimiento Full-Stack (Fase 11)
 * **Frontend - Bundle Shaving & UX**:

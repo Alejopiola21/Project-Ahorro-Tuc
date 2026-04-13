@@ -5,6 +5,7 @@ import { OptimizationController } from '../controllers/OptimizationController';
 import { CategoryController } from '../controllers/CategoryController';
 import { ScraperController } from '../controllers/ScraperController';
 import { AuthController } from '../controllers/AuthController';
+import { BrandController } from '../controllers/BrandController';
 import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = Router();
@@ -116,6 +117,26 @@ router.get('/scraper/logs', ScraperController.getRecentLogs);
 
 /**
  * @openapi
+ * /api/scraper/trigger:
+ *   post:
+ *     summary: Dispara el scraper manualmente (síncrono, sin BullMQ)
+ *     tags: [Health]
+ *     parameters:
+ *       - in: query
+ *         name: provider
+ *         schema:
+ *           type: string
+ *         description: Provider específico a ejecutar (opcional, ejecuta todos si no se especifica)
+ *     responses:
+ *       200:
+ *         description: Scraping completado con resultados
+ *       500:
+ *         description: Error durante el scraping
+ */
+router.post('/scraper/trigger', ScraperController.triggerScraper);
+
+/**
+ * @openapi
  * /api/categories:
  *   get:
  *     summary: Obtiene rubros de productos disponibles
@@ -125,6 +146,18 @@ router.get('/scraper/logs', ScraperController.getRecentLogs);
  *         description: Arreglo de categorías
  */
 router.get('/categories', CategoryController.getCategories);
+
+/**
+ * @openapi
+ * /api/brands:
+ *   get:
+ *     summary: Obtiene la lista de marcas disponibles
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: Lista de marcas únicas
+ */
+router.get('/brands', BrandController.getBrands);
 
 /**
  * @openapi
@@ -142,7 +175,7 @@ router.get('/supermarkets', SupermarketController.getSupermarkets);
  * @openapi
  * /api/products:
  *   get:
- *     summary: Busca productos (con paginación opcional por cursor)
+ *     summary: Busca productos (con filtros avanzados y paginación opcional por cursor)
  *     tags: [Products]
  *     parameters:
  *       - in: query
@@ -166,6 +199,32 @@ router.get('/supermarkets', SupermarketController.getSupermarkets);
  *           type: integer
  *           default: 50
  *         description: Cantidad de productos por página (máx 100)
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: number
+ *         description: Precio mínimo
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: number
+ *         description: Precio máximo
+ *       - in: query
+ *         name: brands
+ *         schema:
+ *           type: string
+ *         description: Lista de marcas separadas por coma
+ *       - in: query
+ *         name: inStock
+ *         schema:
+ *           type: boolean
+ *         description: Solo productos con precio > 0
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *           enum: [price_asc, price_desc, name_asc, name_desc, brand_asc, brand_desc]
+ *         description: Ordenamiento de resultados
  *     responses:
  *       200:
  *         description: Resultados de la búsqueda con { products, nextCursor }

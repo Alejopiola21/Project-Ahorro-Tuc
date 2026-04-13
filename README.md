@@ -14,10 +14,12 @@ En un contexto de constante variación de precios, saber dónde comprar puede si
 
 | Feature | Descripción |
 |---------|-------------|
-| 🔍 **Buscador Pro (MeiliSearch)** | Búsqueda ultra-rápida con Typo Tolerance (soporta errores ortográficos). |
+| 🔍 **Buscador Pro** | Búsqueda con filtros avanzados: texto, categoría, precio, marca y stock. |
+| 🎛️ **Filtros Avanzados** | Panel de filtros colapsable: rango de precio, marcas, solo con stock, ordenamiento por precio/marca/nombre. |
 | 🥇 **Indicador de Mejor Precio** | Resalta automáticamente el súper más barato. Ahora incluye **Precio por Unidad** ($/Kg, $/L). |
 | 🛒 **Carrito Híbrido** | El optimizador te dice si conviene dividir tu compra en dos locales para ahorrar el máximo posible. |
-| 📱 **Compartir Lista** | Exportá tu lista optimizada directamente a WhatsApp o copiala al portapapeles. |
+| 📱 **Compartir Lista** | Exportá tu lista optimizada directamente a WhatsApp, copiala al portapapeles o descargala como **PDF profesional**. |
+| 📄 **Ticket PDF** | Generá un comprobante formal de tu lista con precios, totales y ahorros para imprimir o guardar. |
 | 💰 **Cálculo de Ahorro** | Visualizá cuánto dinero ahorrás eligiendo la opción ganadora vs la más cara. |
 | 🌙 **Modo Oscuro** | Toggle de tema claro/oscuro con persistencia local. |
 | 📱 **PWA Instalable** | Instalá la app en tu celular o PC como una app nativa offline-ready. |
@@ -26,13 +28,15 @@ En un contexto de constante variación de precios, saber dónde comprar puede si
 
 `Coto` · `Carrefour` · `Jumbo` · `Vea` · `Disco` · `Día` · `Gómez Pardo` · `ChangoMás` · `Libertad` · `Comodín` · `Maxiconsumo` · `La Anónima`
 
-## 🆕 Novedades Recientes (10/04/2026)
+## 🆕 Novedades Recientes (13/04/2026)
 
 | Feature | Descripción |
 |---------|-------------|
+| 🎛️ **Filtros Avanzados de Búsqueda** | Panel de filtros con precio, marcas, stock y ordenamiento. Backend con query params avanzados. |
+| 📄 **Generación de Ticket PDF** | PDF profesional descargable desde el carrito con lista, precios y totales optimizados. |
+| 📱 **WhatsApp Share Mejorado** | Mensaje formateado con emojis, estructura profesional y soporte para carrito híbrido. |
 | 🚀 **Arquitectura 7.3** | Integración de **Redis** (Caché L2), **BullMQ** (Colas de Scraping) y **MeiliSearch**. |
 | ⚖️ **Normalización de Unidades** | Cálculo automático de precio por Kg/L para comparaciones justas entre envases. |
-| 🔗 **WhatsApp Share** | Generador de mensajes enriquecidos para compartir listas de compras optimizadas. |
 | 🔐 **Autenticación JWT** | Registro, login y perfil de usuario con sesión persistente. |
 | 📊 **Scraper de 13 Cadenas** | Maxiconsumo y La Anónima añadidos. Más de 34 categorías de productos por cadena. |
 | 💡 **Aviso de Persistencia** | Alertas inteligentes al usar modo incógnito para evitar pérdida accidental del carrito. |
@@ -74,8 +78,9 @@ En un contexto de constante variación de precios, saber dónde comprar puede si
 ahorro-tuc/
 ├── frontend/                # React + Vite + TypeScript
 │   ├── src/
-│   │   ├── components/      # Header, Hero, ProductCard, ProductGrid, CartSidebar, SupermarketsBar
-│   │   ├── hooks/           # useTheme (dark mode)
+│   │   ├── components/      # Header, Hero, ProductCard, ProductGrid, CartSidebar, FilterBar, SupermarketsBar
+│   │   ├── hooks/           # useTheme (dark mode), useProductSearch, useCartOptimizer
+│   │   ├── utils/           # shareUtils.ts, pdfGenerator.ts
 │   │   ├── api.ts           # Axios instance + interceptores
 │   │   ├── store.ts         # Zustand cart store
 │   │   ├── types.ts         # TypeScript interfaces
@@ -83,8 +88,8 @@ ahorro-tuc/
 │   └── tests/               # Playwright E2E
 ├── backend/
 │   ├── src/
-│   │   ├── controllers/     # ProductController, SupermarketController, OptimizationController
-│   │   ├── services/        # OptimizationService
+│   │   ├── controllers/     # ProductController, SupermarketController, OptimizationController, BrandController
+│   │   ├── services/        # OptimizationService, CacheService, SearchService
 │   │   ├── repositories/    # Data access layer (PrismaClient)
 │   │   ├── routes/          # Express routes con Swagger docs
 │   │   └── db/              # Prisma client singleton + seed
@@ -146,6 +151,9 @@ cd frontend && npm run dev
 | 10.3 | Normalización de Precios por Unidad ($/Kg, $/L) | ✅ Completada |
 | 10.4 | Generador de Listas Compartibles (WhatsApp) | ✅ Completada |
 | 10.5 | Avisos de Persistencia (UX) | ✅ Completada |
+| 12.1 | Filtros Avanzados de Búsqueda | ✅ Completada |
+| 12.2 | WhatsApp Share Mejorado | ✅ Completada |
+| 12.3 | Generación de Ticket PDF | ✅ Completada |
 | 8.0 | Gestión de Sesiones y Expansión Global | 🔧 En Progreso |
 
 

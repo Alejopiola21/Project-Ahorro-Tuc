@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import { asyncHandler } from '../middleware/asyncHandler';
 import { globalCache } from '../services/CacheService';
 import { ScraperLogRepository } from '../repositories/ScraperLogRepository';
+import { providersRegistry } from '../scraper/providers';
+import { syncSupermarketData } from '../scraper/core/sync';
+import { globalQueues } from '../services/QueueService';
 
 function formatDuration(ms: number): string {
     const seconds = Math.floor(ms / 1000);
@@ -12,6 +15,103 @@ function formatDuration(ms: number): string {
 }
 
 export const ScraperController = {
+    /**
+     * Dispara el scraper manualmente (síncrono, sin BullMQ).
+     * POST /api/scraper/trigger
+     * Opcional: query param ?provider=carrefour para ejecutar solo uno
+     */
+    triggerScraper: asyncHandler(async (req: Request, res: Response) => {
+        const { provider } = req.query;
+        const providerFilter = typeof provider === 'string' ? provider : null;
+
+        // Filtrar providers si se especificó uno
+        const providersToRun = providerFilter
+            ? providersRegistry.filter(p => p.id === providerFilter)
+            : providersRegistry;
+
+        if (providersToRun.length === 0) {
+            res.status(404).json({ error: `Provider '${providerFilter}' no encontrado` });
+            return;
+        }
+
+        console.log(`\n[API Trigger] Iniciando scrapeo ${providerFilter ? `de '${providerFilter}'` : 'COMPLETO'} (${providersToRun.length} providers)...`);
+
+        const globalStart = Date.now();
+        let totalItems = 0;
+        let totalErrors = 0;
+        const results: Array<{ provider: string; status: string; items: number; error?: string }> = [];
+
+        // Ejecutar cada provider secuencialmente
+        for (const provider of providersToRun) {
+            const start = Date.now();
+            try {
+                console.log(`\n[API] 🔄 Ejecutando ${provider.id}...`);
+                const scrapedItems = await provider.scrape();
+                const items = scrapedItems.length;
+                totalItems += items;
+
+                // Sincronizar con la base de datos
+                await syncSupermarketData(undefined, provider.id, scrapedItems);
+
+                const duration = Date.now() - start;
+                console.log(`[API] ✅ ${provider.id} completado: ${items} productos en ${formatDuration(duration)}`);
+
+                results.push({ provider: provider.id, status: 'OK', items });
+
+                // Log a DB
+                await ScraperLogRepository.createLog({
+                    provider: provider.id,
+                    status: 'OK',
+                    itemsScraped: items,
+                    errors: 0,
+                    startedAt: new Date(start),
+                    finishedAt: new Date(),
+                });
+            } catch (error) {
+                const errMsg = (error as Error).message || String(error);
+                totalErrors++;
+                console.error(`[API] ❌ ${provider.id} falló: ${errMsg}`);
+                results.push({ provider: provider.id, status: 'FAILED', items: 0, error: errMsg });
+
+                await ScraperLogRepository.createLog({
+                    provider: provider.id,
+                    status: 'FAILED',
+                    itemsScraped: 0,
+                    errors: 1,
+                    errorMessage: errMsg,
+                    startedAt: new Date(start),
+                    finishedAt: new Date(),
+                });
+            }
+        }
+
+        // Log global
+        await ScraperLogRepository.createGlobalSummary({
+            status: totalErrors > 0 ? 'WARNING' : 'OK',
+            itemsScraped: totalItems,
+            errors: totalErrors,
+            startedAt: new Date(globalStart),
+            finishedAt: new Date(),
+        });
+
+        const duration = Date.now() - globalStart;
+        console.log(`\n[API] 🏁 Scraping completado: ${totalItems} productos totales en ${formatDuration(duration)}`);
+
+        // Invalidar caché de productos para que el frontend vea los nuevos precios/productos
+        globalCache.flushAll();
+        console.log('[API] 🧹 Caché invalidada');
+
+        res.json({
+            status: totalErrors > 0 ? 'WARNING' : 'OK',
+            duration: formatDuration(duration),
+            providersRun: providersToRun.length,
+            totalItemsScraped: totalItems,
+            totalErrors,
+            results,
+            message: `Scraping ${providerFilter ? `de '${providerFilter}'` : 'completo'} completado. ${totalItems} productos procesados.`,
+        });
+    }),
+
     /**
      * Devuelve las métricas de salud del último proceso de extracción.
      * Prioriza la base de datos (persistente) sobre el caché (volátil).

@@ -85,16 +85,65 @@ export const ProductRepository = {
     async findAllPaginated(
         category?: string,
         cursor?: number,
-        limit: number = 50
+        limit: number = 50,
+        filters?: {
+            minPrice?: number;
+            maxPrice?: number;
+            brands?: string[];
+            inStock?: boolean;
+            sortBy?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'brand_asc' | 'brand_desc';
+        }
     ): Promise<{ products: ProductWithPrices[]; nextCursor: number | null }> {
         const safeLimit = Math.min(limit, 100);
 
+        // Construir WHERE clause con filtros avanzados
+        const whereClause: Prisma.ProductWhereInput = {
+            ...(category && category !== 'Todas' ? { category: { equals: category, mode: 'insensitive' } } : {}),
+        };
+
+        // Filtro por marcas
+        if (filters?.brands && filters.brands.length > 0) {
+            whereClause.brand = { in: filters.brands };
+        }
+
+        // Filtro de stock: al menos un precio > 0
+        if (filters?.inStock) {
+            whereClause.currentPrices = {
+                some: {
+                    price: { gt: 0 },
+                },
+            };
+        }
+
+        // Determinar ordenamiento
+        let orderBy: Prisma.ProductOrderByWithRelationInput[] = [{ id: 'asc' }];
+        if (filters?.sortBy) {
+            switch (filters.sortBy) {
+                case 'price_asc':
+                    orderBy = [{ name: 'asc' }]; // Se ordena post-query por precio
+                    break;
+                case 'price_desc':
+                    orderBy = [{ name: 'asc' }];
+                    break;
+                case 'name_asc':
+                    orderBy = [{ name: 'asc' }];
+                    break;
+                case 'name_desc':
+                    orderBy = [{ name: 'desc' }];
+                    break;
+                case 'brand_asc':
+                    orderBy = [{ brand: 'asc' }, { name: 'asc' }];
+                    break;
+                case 'brand_desc':
+                    orderBy = [{ brand: 'desc' }, { name: 'asc' }];
+                    break;
+            }
+        }
+
         const products = await prisma.product.findMany({
-            where: category && category !== 'Todas'
-                ? { category: { equals: category, mode: 'insensitive' } }
-                : undefined,
-            orderBy: [{ id: 'asc' }],
-            take: safeLimit + 1, // Pedimos 1 extra para saber si hay más
+            where: Object.keys(whereClause).length > 0 ? whereClause : undefined,
+            orderBy,
+            take: safeLimit + 1,
             skip: cursor ? 1 : 0,
             cursor: cursor ? { id: cursor } : undefined,
             include: withCurrentPrices,
@@ -104,8 +153,32 @@ export const ProductRepository = {
         const nextCursor = hasMore ? products[products.length - 1].id : null;
         if (hasMore) products.pop();
 
+        let resultProducts = products.map(buildProductWithPrices);
+
+        // Aplicar filtros de precio (post-query porque necesitamos prices calculado)
+        if (filters?.minPrice || filters?.maxPrice) {
+            resultProducts = resultProducts.filter(p => {
+                const minPrice = Math.min(...Object.values(p.prices).filter(pr => pr > 0));
+                if (isNaN(minPrice)) return false;
+                if (filters.minPrice && minPrice < filters.minPrice) return false;
+                if (filters.maxPrice && minPrice > filters.maxPrice) return false;
+                return true;
+            });
+        }
+
+        // Ordenar por precio si es necesario
+        if (filters?.sortBy === 'price_asc' || filters?.sortBy === 'price_desc') {
+            resultProducts.sort((a, b) => {
+                const minA = Math.min(...Object.values(a.prices).filter(p => p > 0));
+                const minB = Math.min(...Object.values(b.prices).filter(p => p > 0));
+                const priceA = isNaN(minA) ? Infinity : minA;
+                const priceB = isNaN(minB) ? Infinity : minB;
+                return filters.sortBy === 'price_asc' ? priceA - priceB : priceB - priceA;
+            });
+        }
+
         return {
-            products: products.map(buildProductWithPrices),
+            products: resultProducts,
             nextCursor,
         };
     },
@@ -122,7 +195,7 @@ export const ProductRepository = {
         // 1. Intentar búsqueda rápida con MeiliSearch (Escalabilidad NoSQL)
         if (globalSearch.isAvailable()) {
             const productIds = await globalSearch.search(query, { category, limit: 100 });
-            
+
             if (productIds && productIds.length > 0) {
                 // Traer datos completos y precios de los IDs encontrados
                 return this.findByIds(productIds);
@@ -175,6 +248,21 @@ export const CategoryRepository = {
         return rawCategories
             .filter(c => c.category && c.category.trim() !== '')
             .map(c => ({ name: c.category, count: c._count._all }));
+    },
+};
+
+// ── Brand Repository ──────────────────────────────────────────────────────────
+export const BrandRepository = {
+    async findAll(): Promise<string[]> {
+        const brands = await prisma.product.findMany({
+            where: {
+                brand: { not: null },
+            },
+            select: { brand: true },
+        });
+
+        const uniqueBrands = [...new Set(brands.map(b => b.brand).filter((b): b is string => b !== null))];
+        return uniqueBrands.sort();
     },
 };
 

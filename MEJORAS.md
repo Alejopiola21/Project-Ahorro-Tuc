@@ -797,6 +797,86 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
 
 ---
 
+## 🚀 Categoría 12: Mejoras de UX y Funcionalidad Avanzada (Prioridad ALTA)
+
+### 12.1 Filtros Avanzados de Búsqueda (✅ COMPLETADO — 13/04/2026)
+- **Archivos:** `frontend/src/hooks/useProductSearch.ts`, `frontend/src/components/FilterBar.tsx`, `frontend/src/components/ProductGrid.tsx`, `frontend/src/App.tsx`
+- **Archivos Backend:** `backend/src/repositories/index.ts`, `backend/src/controllers/ProductController.ts`, `backend/src/controllers/BrandController.ts`, `backend/src/routes/api.ts`
+- **Implementado:**
+  - ✅ Filtro por rango de precio (min-max) con inputs numéricos
+  - ✅ Filtro por marca (checkboxes múltiples) con grid scrollable
+  - ✅ Ordenar por precio (menor/mayor), marca (A-Z/Z-A), nombre
+  - ✅ Toggle "solo productos con stock" (precio > 0 en al menos 1 super)
+  - ✅ UI responsive con panel de filtros colapsable en mobile
+  - ✅ Backend: endpoint acepta nuevos query params: `?minPrice=X&maxPrice=Y&brands=A,B&inStock=true&sort=price_asc`
+  - ✅ Nuevo endpoint `GET /api/brands` para listar marcas disponibles
+  - ✅ Caché actualizada con clave compuesta incluyendo filtros
+  - ✅ FilterBar component con animaciones y dark mode support
+  - ✅ Integración completa en App.tsx y ProductGrid
+
+### 12.2 Compartir Lista por WhatsApp (✅ COMPLETADO — 13/04/2026)
+- **Archivos:** `frontend/src/utils/shareUtils.ts`, `frontend/src/components/CartSidebar.tsx`
+- **Implementado:**
+  - ✅ Botón "Compartir por WhatsApp" en CartSidebar (ya existía, mejorado)
+  - ✅ Genera texto formateado: lista de productos + precios del super más barato + total
+  - ✅ Abre `wa.me` con texto pre-llenado
+  - ✅ Soporte para modo single y carrito híbrido
+  - ✅ Formato optimizado con emojis y separadores para WhatsApp
+  - ✅ Botón de copiar al portapapeles con feedback visual
+  - ✅ Ejemplo: `🛒 *AHORRO TUC - MI LISTA DE COMPRAS*\n\n🏆 *GANADOR: COTO*\n💰 *TOTAL: $6.000*\n🔥 *AHORRO: $1.200*...`
+
+### 12.3 Generación de Ticket PDF (✅ COMPLETADO — 13/04/2026)
+- **Archivos:** `frontend/src/utils/pdfGenerator.ts`, `frontend/src/components/CartSidebar.tsx`, `frontend/src/index.css`
+- **Implementado:**
+  - ✅ Función `generateCartPDF()` genera PDF profesional usando window.open + print API
+  - ✅ PDF con logo, fecha, supermercado, lista de productos con cantidades y precios
+  - ✅ Diseño profesional con tablas, colores por supermercado, y summary de ahorros
+  - ✅ Soporte para carrito híbrido (muestra división por supermercado)
+  - ✅ Botón "PDF" rojo en CartSidebar junto a WhatsApp
+  - ✅ PDF incluye disclaimer de precios y link a la app
+  - ✅ Compatible con A4, optimizado para impresión y guardado como PDF
+  - ✅ Funciona sin dependencias externas (zero extra packages)
+
+---
+
+## 🚀 Categoría 13: Mejoras de Scraping y Catálogo de Productos (Prioridad CRÍTICA)
+
+### 13.1 Endpoint HTTP para Trigger Manual del Scraper (✅ COMPLETADO — 13/04/2026)
+- **Archivos:** `backend/src/controllers/ScraperController.ts`, `backend/src/routes/api.ts`
+- **Problema:** Solo se podía ejecutar el scraper desde CLI (`npm run scrape`), no desde la API o frontend.
+- **Implementado:**
+  - ✅ Nuevo endpoint `POST /api/scraper/trigger` ejecuta scraping síncrono (sin BullMQ/Redis)
+  - ✅ Parámetro opcional `?provider=carrefour` para ejecutar un solo provider
+  - ✅ Ejecuta scraping + sync + invalidación de caché automáticamente
+  - ✅ Retorna JSON con resultados detallados por provider
+  - ✅ Logs persisten en DB (ScraperLog)
+  - ✅ Funciona sin Redis (ideal para dev/testing)
+
+### 13.2 Paginación en Scrapers VTEX Intelligent-Search (✅ COMPLETADO — 13/04/2026)
+- **Archivos:** `backend/src/scraper/providers/carrefour.ts`, `libertad.ts`, `comodin.ts`
+- **Problema:** Scrapers como Carrefour/Libertad/Comodin solo traían 15 productos por término (page=1, count=15).
+- **Implementado:**
+  - ✅ Paginación automática hasta 5 páginas por término (75 productos max por término)
+  - ✅ Detección inteligente de última página (cuando trae < 15 productos)
+  - ✅ Reducción de sleep entre requests (2-4s vs 3.5-7s anterior)
+  - ✅ Logs de progreso por página: `Página 1: 15 productos`
+  - ✅ Impacto estimado: **x5 más productos** por provider intelligent-search
+
+### 13.3 Sync Engine Puede CREAR Productos Nuevos (✅ COMPLETADO — 13/04/2026)
+- **Archivos:** `backend/src/scraper/core/sync.ts`, `backend/src/repositories/ScraperRepository.ts`
+- **Problema:** El sync engine SOLO podía actualizar precios de productos existentes. Productos scrapeados sin match se descartaban silenciosamente.
+- **Implementado:**
+  - ✅ Cuando un producto scrapeado no matchea, se **CREA automáticamente** en la DB
+  - ✅ Inferencia inteligente de categoría basada en nombre del producto (48+ keywords)
+  - ✅ Extracción automática de peso/volumen del nombre (500g, 1kg, 500ml, 1.5l, etc.)
+  - ✅ Cálculo automático de `unitValue` y `unitPrice` para nuevos productos
+  - ✅ Productos nuevos se agregan al índice en memoria para match en la misma corrida
+  - ✅ Estadísticas detalladas: `Matcheados: X | Creados: Y | Ignorados: Z`
+  - ✅ Repositorio extendido con `createProduct()` y `createPrice()`
+  - ✅ **Impacto:** El catálogo crece dinámicamente con cada scrapeo
+
+---
+
 ## 📊 Resumen Ejecutivo Actualizado
 
 | Prioridad | Categoría | Items | Esfuerzo estimado |
@@ -806,17 +886,19 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
 | 🟠 ALTA | Arquitectura Backend (Cat. 2) | 5 | ~2 horas |
 | 🟠 ALTA | Performance y Escalabilidad (Cat. 9) | 4 | ~6 horas |
 | 🟠 ALTA | Frontend React/State (Cat. 3) | 5 | ~2 horas |
+| 🟠 ALTA | UX y Funcionalidad Avanzada (Cat. 12) | 3 | ~8 horas |
 | 🟡 MEDIA | CSS y UX (Cat. 4) | 5 | ~1.5 horas |
 | 🟡 MEDIA | UX y Frontend (Cat. 10) | 5 | ~3 horas |
 | 🟡 MEDIA | Testing y Deuda Técnica (Cat. 11) | 5 | ~4 horas |
 | 🟡 MEDIA | Testing y CI/CD (Cat. 5) | 4 | ~2 horas |
 | 🟢 BAJA | DevOps y Config (Cat. 6) | 5 | ~1 hora |
-| | **TOTAL** | **48** | **~30 horas** |
+| | **TOTAL** | **51** | **~38 horas** |
 
 ## Orden Recomendado de Ejecución
 
 1. **Cat. 8** — Autenticación y seguridad (bloquea Phase 8)
 2. **Cat. 11** — Limpiar deuda técnica y tests (estabilidad)
 3. **Cat. 9** — Performance y escalabilidad (crecimiento)
-4. **Cat. 10** — UX y frontend (experiencia de usuario)
-5. **Cat. 1-7** — Ya completados ✅
+4. **Cat. 12** — UX y funcionalidad avanzada (valor de usuario)
+5. **Cat. 10** — UX y frontend (experiencia de usuario)
+6. **Cat. 1-7** — Ya completados ✅
