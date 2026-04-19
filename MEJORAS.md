@@ -799,6 +799,29 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
 
 ## 🚀 Categoría 12: Mejoras de UX y Funcionalidad Avanzada (Prioridad ALTA)
 
+---
+
+## 🔮 Categoría 13: Futuras y Sugerencias Radicales (Roadmap Visionario)
+
+### 13.1 Sugeridor de Sustitución Inteligente (⬜ PENDIENTE)
+- **Concepto:** Módulo heurístico que analiza el carrito e indica cambios de marca o presentación paramétrica (e.g. comprar formato 1L vs 500ml) para maximizar el margen absoluto de ahorro sin que el usuario lo solicite explícitamente.
+
+### 13.2 Geolocalización de Rentabilidad (⬜ PENDIENTE)
+- **Concepto:** Integración con Google Maps u OSM. Calcula la ruta lógica al supermercado recomendado y contrarresta el delta de ahorro obtenido versus el costo (combustible/pasaje) y tiempo de desplazamiento.
+
+### 13.3 Auditoría Ciudadana o Crowdsourcing (⬜ PENDIENTE)
+- **Concepto:** Botón "Reportar Precio en Tienda" en la Product Card para que los usuarios físicos validen desviaciones entre el precio extraído y la góndola real, ajustando de forma dinámica la prioridad del reclamo para el Scraper.
+
+### 13.4 Analítica de Consumo Personal y Gamificación (⬜ PENDIENTE)
+- **Concepto:** Panel de usuario individual desglosando el flujo de gasto proyectado basado en listas históricas guardadas. Otorgar insignias ("Smart Saver") por hitos de economía generada frente al costo base.
+
+### 13.5 Comparativas Visuales Superpuestas (⬜ PENDIENTE)
+- **Concepto:** Gráficos multilineales en React (Recharts) permitiendo seleccionar dos o más productos idénticos/semejantes para monitorizar sus tendencias simultáneamente.
+
+### 13.6 Sistema de Recetas a Menor Costo (⬜ PENDIENTE)
+- **Concepto:** Sistema inverso. El usuario carga una receta (e.g. "Milanesas con puré") y la plataforma resuelve el listado de ingredientes estrictamente en la versión más económica ponderada a nivel multi-sucursal.
+
+
 ### 12.1 Filtros Avanzados de Búsqueda (✅ COMPLETADO — 13/04/2026)
 - **Archivos:** `frontend/src/hooks/useProductSearch.ts`, `frontend/src/components/FilterBar.tsx`, `frontend/src/components/ProductGrid.tsx`, `frontend/src/App.tsx`
 - **Archivos Backend:** `backend/src/repositories/index.ts`, `backend/src/controllers/ProductController.ts`, `backend/src/controllers/BrandController.ts`, `backend/src/routes/api.ts`

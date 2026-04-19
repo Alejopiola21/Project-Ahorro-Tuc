@@ -41,22 +41,26 @@ export const ScraperController = {
         let totalErrors = 0;
         const results: Array<{ provider: string; status: string; items: number; error?: string }> = [];
 
-        // Ejecutar cada provider secuencialmente
-        for (const provider of providersToRun) {
+        const TIMEOUT_MS = 120_000; // 120 segundos
+
+        const scrapePromises = providersToRun.map(async (provider) => {
             const start = Date.now();
             try {
                 console.log(`\n[API] 🔄 Ejecutando ${provider.id}...`);
-                const scrapedItems = await provider.scrape();
+                
+                const scrapeTask = provider.scrape();
+                const timeoutTask = new Promise<never>((_, reject) => 
+                    setTimeout(() => reject(new Error(`Timeout de ${TIMEOUT_MS}ms excedido`)), TIMEOUT_MS)
+                );
+                
+                const scrapedItems = await Promise.race([scrapeTask, timeoutTask]) as any[];
                 const items = scrapedItems.length;
-                totalItems += items;
 
                 // Sincronizar con la base de datos
                 await syncSupermarketData(undefined, provider.id, scrapedItems);
 
                 const duration = Date.now() - start;
                 console.log(`[API] ✅ ${provider.id} completado: ${items} productos en ${formatDuration(duration)}`);
-
-                results.push({ provider: provider.id, status: 'OK', items });
 
                 // Log a DB
                 await ScraperLogRepository.createLog({
@@ -67,11 +71,11 @@ export const ScraperController = {
                     startedAt: new Date(start),
                     finishedAt: new Date(),
                 });
+
+                return { provider: provider.id, status: 'OK', items };
             } catch (error) {
                 const errMsg = (error as Error).message || String(error);
-                totalErrors++;
                 console.error(`[API] ❌ ${provider.id} falló: ${errMsg}`);
-                results.push({ provider: provider.id, status: 'FAILED', items: 0, error: errMsg });
 
                 await ScraperLogRepository.createLog({
                     provider: provider.id,
@@ -82,8 +86,23 @@ export const ScraperController = {
                     startedAt: new Date(start),
                     finishedAt: new Date(),
                 });
+
+                return { provider: provider.id, status: 'FAILED', items: 0, error: errMsg };
             }
-        }
+        });
+
+        const executed = await Promise.allSettled(scrapePromises);
+        
+        executed.forEach(result => {
+            if (result.status === 'fulfilled') {
+                const data = result.value;
+                results.push(data);
+                totalItems += data.items;
+                if (data.status === 'FAILED') totalErrors++;
+            } else {
+                totalErrors++;
+            }
+        });
 
         // Log global
         await ScraperLogRepository.createGlobalSummary({

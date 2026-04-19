@@ -94,7 +94,7 @@ export const ProductRepository = {
             sortBy?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'brand_asc' | 'brand_desc';
         }
     ): Promise<{ products: ProductWithPrices[]; nextCursor: number | null }> {
-        const safeLimit = Math.min(limit, 100);
+        const safeLimit = Math.min(limit, 500);
 
         // Construir WHERE clause con filtros avanzados
         const whereClause: Prisma.ProductWhereInput = {
@@ -194,7 +194,7 @@ export const ProductRepository = {
     async search(query: string, category?: string): Promise<ProductWithPrices[]> {
         // 1. Intentar búsqueda rápida con MeiliSearch (Escalabilidad NoSQL)
         if (globalSearch.isAvailable()) {
-            const productIds = await globalSearch.search(query, { category, limit: 100 });
+            const productIds = await globalSearch.search(query, { category, limit: 200 });
 
             if (productIds && productIds.length > 0) {
                 // Traer datos completos y precios de los IDs encontrados
@@ -216,7 +216,7 @@ export const ProductRepository = {
                     }
                 ]
             },
-            take: 50,
+            take: 200,
             include: withCurrentPrices
         });
 

@@ -3,7 +3,7 @@ import { api } from '../api';
 import type { Product } from '../types';
 
 // Caché in-memory a nivel de módulo para búsquedas instantáneas
-const localSearchCache = new Map<string, Product[]>();
+const localSearchCache = new Map<string, PaginatedResponse>();
 
 interface PaginatedResponse {
   products: Product[];
@@ -42,9 +42,10 @@ export function useProductSearch() {
 
     // Si existe en caché local, servir instantáneo (Sin layout stutters)
     if (localSearchCache.has(cacheKey)) {
-      setProducts(localSearchCache.get(cacheKey)!);
-      setNextCursor(null);
-      setHasMore(false);
+      const cached = localSearchCache.get(cacheKey)!;
+      setProducts(cached.products);
+      setNextCursor(cached.nextCursor);
+      setHasMore(cached.nextCursor !== null);
       setLoading(false);
       return;
     }
@@ -64,7 +65,7 @@ export function useProductSearch() {
     // Si hay búsqueda de texto, no paginamos (el backend ya limita a 50)
     // Si es listado por categoría, usamos paginación por cursor
     if (!debouncedQuery) {
-      params.limit = '50';
+      params.limit = '200';
     }
 
     api.get<PaginatedResponse>('/products', { params })
@@ -73,7 +74,7 @@ export function useProductSearch() {
         setProducts(data.products);
         setNextCursor(data.nextCursor);
         setHasMore(data.nextCursor !== null);
-        localSearchCache.set(cacheKey, data.products);
+        localSearchCache.set(cacheKey, data);
       })
       .catch((err) => console.error("Error fetching products:", err))
       .finally(() => setLoading(false));
@@ -85,7 +86,7 @@ export function useProductSearch() {
 
     const params: Record<string, string> = {
       cursor: String(nextCursor),
-      limit: '50',
+      limit: '200',
     };
     if (activeCategory !== 'Todas') params.category = activeCategory;
 
@@ -99,7 +100,14 @@ export function useProductSearch() {
     try {
       const r = await api.get<PaginatedResponse>('/products', { params });
       const data = r.data;
-      setProducts(prev => [...prev, ...data.products]);
+      setProducts(prev => {
+        const newProducts = [...prev, ...data.products];
+        // Actualizar caché para que si vuelve a montar no pierda lo cargado
+        const filterKey = JSON.stringify(filters);
+        const cacheKey = `${activeCategory}_${debouncedQuery}_${filterKey}`;
+        localSearchCache.set(cacheKey, { products: newProducts, nextCursor: data.nextCursor });
+        return newProducts;
+      });
       setNextCursor(data.nextCursor);
       setHasMore(data.nextCursor !== null);
     } catch (err) {

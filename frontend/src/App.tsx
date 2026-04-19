@@ -26,7 +26,7 @@ export default function App() {
     query, setQuery, debouncedQuery,
     activeCategory, setActiveCategory,
     filters, setFilters, clearCache,
-    products, loading
+    products, loading, hasMore, loadMore
   } = useProductSearch();
 
   // 2. Lógica de Optimización de Carrito encapsulada (se suscribe autonómicamente)
@@ -128,6 +128,8 @@ export default function App() {
         onFilterChange={setFilters}
         onClearCache={clearCache}
         onAddToCart={handleAddToCart}
+        hasMore={hasMore}
+        loadMore={loadMore}
       />
 
       <CartSidebar

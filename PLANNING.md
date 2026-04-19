@@ -113,14 +113,14 @@
 - [x] **Compartir por WhatsApp**: Botón en `CartSidebar` con texto formateado con lista optimizada + ahorros.
 - [x] **Cursor-based Pagination**: `ProductRepository.findAllPaginated()` con `?cursor=X&limit=Y`. Frontend `loadMore()`.
 - [x] **Optimización de Fuzzy Matching**: Reducir O(N²) a O(M log N) con índice invertido.
-- [ ] **Scrapers en Paralelo**: `Promise.allSettled()` con timeout individual.
+- [x] **Scrapers en Paralelo**: `Promise.allSettled()` con timeout individual.
 - [x] **Migrar CacheService a Redis**: Adapter opcional con `REDIS_URL`, fallback a in-memory.
 - [ ] **Timeout en Cron Scraper**: `spawn()` con timeout de 30 minutos.
 - [x] **Estado Vacío de Búsqueda**: Componente `EmptyState` con icono, mensaje y sugerencias.
 - [x] **Precio por Unidad**: Campo `unitPrice` en modelo `Product`. (Normalización Kg/L/U)
 - [x] **Loading State en Optimización**: `isOptimizing` en hook + spinner.
 - [x] **Persistencia Warning**: Toast si `localStorage` no está disponible.
-- [ ] **Tests de Scrapers**: Tests unitarios para `fuzzyMatch()`, `sanitizeName()`, retry logic.
+- [x] **Tests de Scrapers**: Tests unitarios para `fuzzyMatch()`, `sanitizeName()`, retry logic.
 - [x] **Limpiar Dependencias Muertas**: Removidos `ts-node`, `@types/helmet`, `react-router-dom`.
 - [x] **Tipar todos los `any`**: `HybridResult`, `ScrapeStat`, `Error & { statusCode }`.
 - [x] **pgAdmin Credenciales Seguras**: Variables de entorno en docker-compose.

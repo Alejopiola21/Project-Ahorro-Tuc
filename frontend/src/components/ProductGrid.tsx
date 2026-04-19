@@ -13,6 +13,8 @@ interface Props {
     onFilterChange: (filters: SearchFilters) => void;
     onClearCache: () => void;
     onAddToCart: (p: Product) => void;
+    hasMore: boolean;
+    loadMore: () => void;
 }
 
 const ProductSkeleton = () => (
@@ -28,7 +30,7 @@ const ProductSkeleton = () => (
 );
 
 export const ProductGrid: React.FC<Props> = ({
-    loading, products, debouncedQuery, filters, onFilterChange, onClearCache, onAddToCart
+    loading, products, debouncedQuery, filters, onFilterChange, onClearCache, onAddToCart, hasMore, loadMore
 }) => {
     return (
         <main className="main-content" role="main">
@@ -56,14 +58,28 @@ export const ProductGrid: React.FC<Props> = ({
                     <p>No hay productos disponibles.</p>
                 </div>
             ) : (
-                <div className="products-grid">
-                    {products.map(product => (
-                        <ProductCard
-                            key={product.id}
-                            product={product}
-                            onAddToCart={onAddToCart}
-                        />
-                    ))}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    <div className="products-grid">
+                        {products.map(product => (
+                            <ProductCard
+                                key={product.id}
+                                product={product}
+                                onAddToCart={onAddToCart}
+                            />
+                        ))}
+                    </div>
+                    {hasMore && (
+                        <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+                            <button 
+                                className="checkout-btn" 
+                                onClick={loadMore} 
+                                disabled={loading}
+                                style={{ width: 'auto', padding: '1rem 3rem' }}
+                            >
+                                {loading ? 'Cargando...' : 'Cargar más productos'}
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
         </main>

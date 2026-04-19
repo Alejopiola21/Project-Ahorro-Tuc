@@ -12,7 +12,7 @@ export interface ScrapedProduct {
 }
 
 // Helper de sanitización
-function sanitizeString(str: string): string {
+export function sanitizeString(str: string): string {
     let result = str.toLowerCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g, "") // Quitar tildes
         .replace(/[^a-z0-9\s]/g, '') // Quitar puntuación
@@ -34,7 +34,7 @@ function sanitizeString(str: string): string {
 /**
  * Extrae palabras significativas de un string (longitud > 2)
  */
-function extractSignificantWords(str: string): string[] {
+export function extractSignificantWords(str: string): string[] {
     return sanitizeString(str).split(/\s+/).filter(w => w.length > 2);
 }
 
@@ -43,12 +43,12 @@ function extractSignificantWords(str: string): string[] {
  * Construcción: O(N_db × W) donde W = palabras por producto
  * Lookup: O(1) por palabra en lugar de O(N_db) linear scan
  */
-interface InvertedIndex {
+export interface InvertedIndex {
     wordToProducts: Map<string, Set<number>>;
     productNameCache: Map<number, string>; // Para fuzzy verification posterior
 }
 
-function buildInvertedIndex(dbProducts: Array<{ id: number; name: string; ean: string | null }>): InvertedIndex {
+export function buildInvertedIndex(dbProducts: Array<{ id: number; name: string; ean: string | null }>): InvertedIndex {
     const wordToProducts = new Map<string, Set<number>>();
     const productNameCache = new Map<number, string>();
 
@@ -81,7 +81,7 @@ function buildInvertedIndex(dbProducts: Array<{ id: number; name: string; ean: s
  *   - W_scraped << N_db (3-5 palabras vs miles de productos)
  *   - avg_products_per_word << N_db (pocos productos comparten misma palabra)
  */
-function searchWithInvertedIndex(
+export function searchWithInvertedIndex(
     scrapedName: string,
     index: InvertedIndex
 ): number | undefined {
@@ -124,7 +124,7 @@ function searchWithInvertedIndex(
     return undefined;
 }
 
-function fuzzyMatch(dbName: string, scrapedName: string): boolean {
+export function fuzzyMatch(dbName: string, scrapedName: string): boolean {
     const dbClean = sanitizeString(dbName);
     const scrapedClean = sanitizeString(scrapedName);
 
@@ -299,7 +299,7 @@ export async function syncSupermarketData(
 /**
  * Intenta inferir la categoría de un producto basado en su nombre
  */
-function inferCategory(scraped: ScrapedProduct): string {
+export function inferCategory(scraped: ScrapedProduct): string {
     const name = scraped.name.toLowerCase();
 
     // Mapeo de palabras clave a categorías
@@ -363,7 +363,7 @@ function inferCategory(scraped: ScrapedProduct): string {
 /**
  * Extrae información de peso/volumen del nombre del producto
  */
-function extractUnitInfo(name: string): { weight: string | null; unitValue: number | null; unitType: string | null } {
+export function extractUnitInfo(name: string): { weight: string | null; unitValue: number | null; unitType: string | null } {
     const cleanName = name.toLowerCase();
 
     // Patrones de peso/volumen: "500g", "1kg", "500ml", "1l", "1.5l"

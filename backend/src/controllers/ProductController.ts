@@ -10,7 +10,7 @@ export class ProductController {
         const qStr = typeof q === 'string' ? q.trim() : '';
         const catStr = typeof category === 'string' && category.trim() !== 'Todas' ? category.trim() : '';
         const cursorNum = cursor ? Number(cursor) : undefined;
-        const limitNum = limit ? Math.min(Number(limit), 100) : 50;
+        const limitNum = limit ? Math.min(Number(limit), 500) : 100;
 
         // Nuevos filtros
         const minPriceNum = minPrice ? parseFloat(String(minPrice)) : undefined;
