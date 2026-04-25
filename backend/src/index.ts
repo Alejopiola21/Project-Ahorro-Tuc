@@ -70,7 +70,12 @@ async function main() {
     app.use('/api', apiRoutes);
 
     // ── Manejador Global de Errores (Silenciador) ─────────────────────────────
-    app.use((err: Error & { statusCode?: number }, req: Request, res: Response, _next: express.NextFunction) => {
+    app.use((err: Error & { statusCode?: number, issues?: any }, req: Request, res: Response, _next: express.NextFunction) => {
+        if (err.name === 'ZodError') {
+            console.error('[💥 400 ZodError]', new Date().toISOString(), err.message);
+            res.status(400).json({ error: 'Datos inválidos', details: err.issues || (err as any).errors });
+            return;
+        }
         const status = err.statusCode || 500;
         const message = status === 500 ? 'Error Interno del Servidor' : err.message;
         console.error(`[💥 ${status}]`, new Date().toISOString(), err.message || err);

@@ -15,11 +15,14 @@ cron.schedule('0 0 * * *', () => {
     const scraperProcess = spawn('npm', ['run', 'scrape'], {
         cwd: path.resolve(__dirname, '../../'),
         stdio: 'inherit',
-        shell: true
+        shell: true,
+        timeout: 30 * 60 * 1000 // 30 minutos de timeout máximo
     });
 
-    scraperProcess.on('close', (code) => {
-        if (code === 0) {
+    scraperProcess.on('close', (code, signal) => {
+        if (signal === 'SIGTERM' || signal === 'SIGKILL') {
+            console.error(`[Cron] ❌ El proceso fue terminado por timeout (30 min excedidos).`);
+        } else if (code === 0) {
             console.log(`[Cron] ✅ Rutina finalizada con éxito.`);
         } else {
             console.error(`[Cron] ❌ La rutina falló con código de salida ${code}.`);

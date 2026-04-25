@@ -630,15 +630,10 @@ findAll: async (cursor?: number, limit = 50) => {
 
 ---
 
-### 9.4 Scrapers se ejecutan secuencialmente (⬜ PENDIENTE)
-- **Archivo:** `backend/src/scraper/index.ts`
-- **Problema:** Los 10 providers se ejecutan uno tras otro. Cada uno duerme 3-7 segundos entre requests. Un scrape completo tarda 2-5 minutos.
-- **Impacto:** Ventana de scraping larga, mayor chance de timeout o bloqueo.
-- **Mejora:**
-  - Ejecutar providers independientes en paralelo con `Promise.allSettled()`
-  - Agrupar por familia de plataforma (VTEX: Vea/Jumbo/Disco juntos; Coto solo; etc.)
-  - Respetar rate limits por dominio sin bloquear otros providers
-  - Timeout global por provider (ej. 60s máximo por cada uno)
+### 9.4 Scrapers se ejecutan secuencialmente (✅ COMPLETADO — 25/04/2026)
+- **Implementado:**
+  - ✅ Se configuró un iterador de lotes limitados (`CHUNK_SIZE = 3`) en el trigger unificado `ScraperController`.
+  - ✅ Se previenen bloqueos hacia las bases de datos o agotamiento de mem de Node por concurrencia masiva cruzada.
 
 ---
 

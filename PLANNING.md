@@ -115,7 +115,7 @@
 - [x] **Optimización de Fuzzy Matching**: Reducir O(N²) a O(M log N) con índice invertido.
 - [x] **Scrapers en Paralelo**: `Promise.allSettled()` con timeout individual.
 - [x] **Migrar CacheService a Redis**: Adapter opcional con `REDIS_URL`, fallback a in-memory.
-- [ ] **Timeout en Cron Scraper**: `spawn()` con timeout de 30 minutos.
+- [x] **Timeout en Cron Scraper**: `spawn()` con timeout de 30 minutos.
 - [x] **Estado Vacío de Búsqueda**: Componente `EmptyState` con icono, mensaje y sugerencias.
 - [x] **Precio por Unidad**: Campo `unitPrice` en modelo `Product`. (Normalización Kg/L/U)
 - [x] **Loading State en Optimización**: `isOptimizing` en hook + spinner.
@@ -127,6 +127,7 @@
 - [x] **Expansión de Scrapers — Términos x5**: 11 scrapers de 4-8 términos a **34 términos** (10 categorías).
 - [x] **Maxiconsumo**: 12° cadena agregada (VTEX Classic, `#ff8c00`).
 - [x] **La Anónima**: 13° cadena agregada (VTEX Classic, `#1a5276`).
+- [x] **Makro**: 14° cadena agregada (VTEX Classic, auditoría de endpoints superada).
 - [x] **Backend Performance (Compresión)**: Middleware `compression` activo.
 - [x] **Política de Retención**: Limpieza semanal de datos > 3 meses.
 - [x] **Concurrencia Configurable**: `SCRAPER_CONCURRENCY` vía ENV.

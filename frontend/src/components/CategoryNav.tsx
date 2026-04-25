@@ -17,6 +17,7 @@ export function CategoryNav({ activeCategory, onSelect }: Props) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(true);
+    const [isExpandedMenu, setIsExpandedMenu] = useState(false);
 
     useEffect(() => {
         api.get<CategoryResult[]>('/categories')
@@ -80,22 +81,27 @@ export function CategoryNav({ activeCategory, onSelect }: Props) {
 
             <div className="category-scroll-container" ref={scrollContainerRef}>
                 <button
-                    onClick={() => onSelect('Todas')}
+                    onClick={() => {
+                        onSelect('Todas');
+                        setIsExpandedMenu(!isExpandedMenu);
+                    }}
                     className={`category-btn ${activeCategory === 'Todas' ? 'active' : ''}`}
                 >
                     <LayoutGrid size={16} /> Todas
                 </button>
 
-                {categories.map(c => (
-                    <button
-                        key={c.name}
-                        onClick={() => onSelect(c.name)}
-                        className={`category-btn ${activeCategory === c.name ? 'active' : ''}`}
-                        title={`${c.count} ítem(s)`}
-                    >
-                        {getCategoryIcon(c.name)} {c.name}
-                    </button>
-                ))}
+                <div className={`category-dynamic-list ${isExpandedMenu ? 'expanded' : ''}`}>
+                    {categories.map(c => (
+                        <button
+                            key={c.name}
+                            onClick={() => onSelect(c.name)}
+                            className={`category-btn ${activeCategory === c.name ? 'active' : ''}`}
+                            title={`${c.count} ítem(s)`}
+                        >
+                            {getCategoryIcon(c.name)} {c.name}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {showRightArrow && categories.length > 4 && (

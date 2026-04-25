@@ -12,6 +12,7 @@ import { LibertadScraper } from './libertad';
 import { ComodinScraper } from './comodin';
 import { MaxiconsumoScraper } from './maxiconsumo';
 import { LaAnonimaScraper } from './laanonima';
+import { MakroScraper } from './makro';
 
 // Cualquier scraper agregado aquí será ejecutado automáticamente en cron/batch
 export const providersRegistry: BaseScraper[] = [
@@ -27,4 +28,5 @@ export const providersRegistry: BaseScraper[] = [
     new ComodinScraper(),
     new MaxiconsumoScraper(),
     new LaAnonimaScraper(),
+    new MakroScraper(),
 ];
