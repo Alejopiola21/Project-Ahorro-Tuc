@@ -14,6 +14,7 @@ const SUPERMARKETS = [
     { id: 'comodin', name: 'Comodín', color: '#32cd32', logo: 'Co' },
     { id: 'maxiconsumo', name: 'Maxiconsumo', color: '#ff8c00', logo: 'MC' },
     { id: 'laanonima', name: 'La Anónima', color: '#1a5276', logo: 'LA' },
+    { id: 'makro', name: 'Makro', color: '#df0a00', logo: 'MK' },
 ];
 
 const PRODUCTS = [

@@ -4,7 +4,7 @@
 
 [![CI/CD](https://github.com/Alejopiola21/Project-Ahorro-Tuc/actions/workflows/ci.yml/badge.svg)](https://github.com/Alejopiola21/Project-Ahorro-Tuc/actions)
 
-**Ahorro Tuc** es una plataforma web inteligente diseñada específicamente para los habitantes de San Miguel de Tucumán y alrededores. Nuestra misión es ayudar a las familias tucumanas a combatir la inflación y ahorrar dinero en sus compras cotidianas comparando precios en tiempo real entre **14 cadenas de supermercados**.
+**Ahorro Tuc** es una plataforma web inteligente diseñada específicamente para los habitantes de San Miguel de Tucumán y alrededores. Nuestra misión es ayudar a las familias tucumanas a combatir la inflación y ahorrar dinero en sus compras cotidianas comparando precios en tiempo real entre **13 cadenas de supermercados**.
 
 ## 🌟 ¿Por qué Ahorro Tuc?
 
@@ -38,7 +38,7 @@ En un contexto de constante variación de precios, saber dónde comprar puede si
 | 🚀 **Arquitectura 7.3** | Integración de **Redis** (Caché L2), **BullMQ** (Colas de Scraping) y **MeiliSearch**. |
 | ⚖️ **Normalización de Unidades** | Cálculo automático de precio por Kg/L para comparaciones justas entre envases. |
 | 🔐 **Autenticación JWT** | Registro, login y perfil de usuario con sesión persistente. |
-| 📊 **Scraper de 14 Cadenas** | Makro, Maxiconsumo y La Anónima añadidos. Más de 34 categorías de productos por cadena. |
+| 📊 **Scraper de 13 Cadenas** | Makro, Maxiconsumo y La Anónima añadidos. Más de 34 categorías de productos por cadena. |
 | 💡 **Aviso de Persistencia** | Alertas inteligentes al usar modo incógnito para evitar pérdida accidental del carrito. |
 | 🧠 **Scraper en Lotes Paralelos** | Orquestador optimizado mediante `Chunks` configurables blindando la tolerancia a bloqueos anti-bot. |
 | 📱 **UX Móvil Responsiva** | Compresión de listas en botones dinámicos deslizables liberando espacio crítico visual en Mobile. |
