@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/AuthService';
+import { ApiError } from '../utils/ApiError';
 
 export interface AuthRequest extends Request {
     userId?: string;
@@ -15,14 +16,14 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-        res.status(401).json({ error: 'Token de autenticación requerido' });
+        next(new ApiError('Token de autenticación requerido', 401));
         return;
     }
 
     const token = authHeader.split(' ')[1]; // "Bearer <token>"
 
     if (!token) {
-        res.status(401).json({ error: 'Token de autenticación requerido' });
+        next(new ApiError('Token de autenticación requerido', 401));
         return;
     }
 
@@ -32,7 +33,7 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
         req.userEmail = decoded.email;
         next();
     } catch (error: any) {
-        res.status(error.statusCode || 401).json({ error: error.message || 'Token inválido o expirado' });
+        next(error);
         return;
     }
 };

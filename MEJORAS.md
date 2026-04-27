@@ -778,17 +778,10 @@ scraper.on('close', (code) => {
 
 ---
 
-### 11.5 Error handler global no respeta status codes de errores conocidos (⬜ PENDIENTE)
-- **Archivo:** `backend/src/index.ts` (error handler middleware)
-- **Problema:** El global error handler devuelve `{ error: 'Error Interno del Servidor' }` para TODOS los errores, incluyendo 400s que slipped through validation. Debería respetar `err.statusCode` si existe.
-- **Fix:**
-```ts
-app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
-    const status = err.statusCode || 500;
-    const message = status === 500 ? 'Error Interno del Servidor' : err.message;
-    res.status(status).json({ error: message });
-});
-```
+### 11.5 Error handler global no respeta status codes de errores conocidos (✅ COMPLETADO — 27/04/2026)
+- **Implementado:**
+  - ✅ El middleware de error global actual en `backend/src/index.ts` ya extrae y respeta dinámicamente `err.statusCode`.
+  - ✅ Se inyectó la clase `ApiError` en `backend/src/utils/ApiError.ts` para que todos los controladores puedan lanzar fácilmente `throw new ApiError('Mensaje', status)` propagando los fallos orgánicamente en lugar de responder JSON manual.
 
 ---
 

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { ProductRepository } from '../repositories';
 import { asyncHandler } from '../middleware/asyncHandler';
 import { globalCache } from '../services/CacheService';
+import { ApiError } from '../utils/ApiError';
 
 export class ProductController {
     static getProducts = asyncHandler(async (req: Request, res: Response) => {
@@ -112,8 +113,7 @@ export class ProductController {
     static getProductHistory = asyncHandler(async (req: Request, res: Response) => {
         const id = Number(req.params.id);
         if (isNaN(id) || id <= 0) {
-            res.status(400).json({ error: 'ID de producto inválido' });
-            return;
+            throw new ApiError('ID de producto inválido', 400);
         }
 
         // El frontend ahora lo pedirá como Query Parameter u otro path, pero flexibilizamos

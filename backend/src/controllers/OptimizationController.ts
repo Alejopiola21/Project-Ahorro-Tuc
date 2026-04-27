@@ -12,17 +12,7 @@ const OptimizeCartSchema = z.object({
 
 export class OptimizationController {
     static optimizeCart = asyncHandler(async (req: Request, res: Response) => {
-        const parseResult = OptimizeCartSchema.safeParse(req.body);
-
-        if (!parseResult.success) {
-            res.status(400).json({
-                error: 'Payload inválido o malicioso',
-                details: parseResult.error.issues
-            });
-            return;
-        }
-
-        const { cartItems } = parseResult.data;
+        const { cartItems } = OptimizeCartSchema.parse(req.body);
         const result = await OptimizationService.optimizeCart(cartItems);
         res.json(result);
     });

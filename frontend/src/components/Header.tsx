@@ -26,8 +26,7 @@ export const Header: React.FC<Props> = ({ cartCount, onOpenCart }) => {
             <header className="navbar" role="navigation" aria-label="Navegación principal">
                 <div className="navbar-container">
                     <div className="logo-section">
-                        <div className="logo-icon"><TrendingDown size={28} /></div>
-                        <h1 className="logo-text">Ahorro <span className="accent-text">Tuc</span></h1>
+                        <img src="/logo.png" alt="Ahorro Tuc Logo" className="brand-logo" />
                     </div>
                     <div className="header-actions">
                         <button className="theme-toggle-btn" onClick={toggleTheme} aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}>

@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../db/client';
+import { ApiError } from '../utils/ApiError';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'ahorrotuc-dev-secret-change-in-production';
 const JWT_EXPIRES_IN = '24h';
@@ -33,9 +34,7 @@ export class AuthService {
         });
 
         if (existing) {
-            const error = new Error('El email ya está registrado');
-            (error as any).statusCode = 409;
-            throw error;
+            throw new ApiError('El email ya está registrado', 409);
         }
 
         const hashedPassword = await bcrypt.hash(input.password, BCRYPT_SALT_ROUNDS);
@@ -66,17 +65,13 @@ export class AuthService {
         });
 
         if (!user) {
-            const error = new Error('Credenciales inválidas');
-            (error as any).statusCode = 401;
-            throw error;
+            throw new ApiError('Credenciales inválidas', 401);
         }
 
         const isValid = await bcrypt.compare(input.password, user.password);
 
         if (!isValid) {
-            const error = new Error('Credenciales inválidas');
-            (error as any).statusCode = 401;
-            throw error;
+            throw new ApiError('Credenciales inválidas', 401);
         }
 
         const token = this.generateToken(user.id, user.email);
@@ -103,9 +98,7 @@ export class AuthService {
         });
 
         if (!user) {
-            const error = new Error('Usuario no encontrado');
-            (error as any).statusCode = 404;
-            throw error;
+            throw new ApiError('Usuario no encontrado', 404);
         }
 
         return user;
@@ -124,9 +117,7 @@ export class AuthService {
             const decoded = jwt.verify(token, JWT_SECRET) as { sub: string; email: string };
             return decoded;
         } catch {
-            const error = new Error('Token inválido o expirado');
-            (error as any).statusCode = 401;
-            throw error;
+            throw new ApiError('Token inválido o expirado', 401);
         }
     }
 }
