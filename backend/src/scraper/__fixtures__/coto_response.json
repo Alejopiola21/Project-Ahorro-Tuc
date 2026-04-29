@@ -1,0 +1,47 @@
+{
+  "products": [
+    {
+      "displayName": "Yerba Mate Taragüí 1kg",
+      "name": "Yerba Mate Taragui 1000g",
+      "listPrice": "4500.00",
+      "price": "4200",
+      "repositoryId": "7790580003001",
+      "id": "301",
+      "brand": "Taragüí",
+      "route": "/yerba-mate-taragui-1kg/p",
+      "imageUrl": "https://cotodigital3.com.ar/img/yerba.jpg"
+    },
+    {
+      "displayName": "Galletitas Criollitas 300g",
+      "name": "Galletitas Criollitas Paq 300g",
+      "listPrice": "850.50",
+      "price": "780",
+      "repositoryId": "",
+      "id": "302",
+      "brand": "Criollitas",
+      "route": "/galletitas-criollitas/p",
+      "imageUrl": "https://cotodigital3.com.ar/img/galletitas.jpg"
+    },
+    {
+      "displayName": "",
+      "name": "",
+      "listPrice": "invalid",
+      "price": "not_a_number",
+      "repositoryId": "",
+      "id": "303",
+      "brand": "",
+      "route": ""
+    },
+    {
+      "displayName": "Papel Higiénico Elite 4x30m",
+      "name": null,
+      "listPrice": null,
+      "price": "1200",
+      "repositoryId": "7790580003004",
+      "id": "304",
+      "brand": "Elite",
+      "route": "/papel-higienico-elite/p",
+      "imageUrl": "https://cotodigital3.com.ar/img/papel.jpg"
+    }
+  ]
+}

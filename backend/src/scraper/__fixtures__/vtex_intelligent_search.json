@@ -1,0 +1,73 @@
+{
+  "products": [
+    {
+      "productId": "201",
+      "productName": "Fideos Spaghetti Matarazzo 500g",
+      "brand": "Matarazzo",
+      "link": "https://www.carrefour.com.ar/fideos-matarazzo/p",
+      "linkText": "fideos-matarazzo",
+      "items": [
+        {
+          "itemId": "201-sku",
+          "ean": "7790580001001",
+          "images": [
+            { "imageUrl": "https://img.vtex.com/fideos.jpg" }
+          ],
+          "sellers": [
+            {
+              "commertialOffer": {
+                "Price": 890,
+                "ListPrice": 1050,
+                "AvailableQuantity": 200
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "productId": "202",
+      "productName": "Cerveza Quilmes Cristal 1L",
+      "brand": "Quilmes",
+      "link": "",
+      "linkText": "cerveza-quilmes-1l",
+      "items": [
+        {
+          "itemId": "202-sku",
+          "ean": "7790580002002",
+          "images": [
+            { "imageUrl": "https://img.vtex.com/quilmes.jpg" }
+          ],
+          "sellers": [
+            {
+              "commertialOffer": {
+                "Price": 2450,
+                "ListPrice": 2800,
+                "AvailableQuantity": 85
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "productId": "203",
+      "productName": "Detergente Magistral 750ml",
+      "brand": "Magistral",
+      "items": [
+        {
+          "itemId": "203-sku",
+          "ean": "",
+          "images": [],
+          "sellers": [
+            {
+              "commertialOffer": {
+                "Price": 1380.75
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

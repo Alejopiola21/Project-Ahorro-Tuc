@@ -1,0 +1,38 @@
+[
+  {
+    "productName": "Harina 000 Blancaflor 1kg",
+    "name": "Harina Blancaflor 000 1000g",
+    "price": "1250",
+    "barcode": "7790580004001",
+    "brand": "Blancaflor",
+    "id": "401",
+    "link": "https://gomezpardo.com.ar/producto/401",
+    "image": "https://gomezpardo.com.ar/img/harina.jpg"
+  },
+  {
+    "productName": "Azúcar Ledesma 1kg",
+    "price": 980,
+    "barcode": "7790580004002",
+    "brand": "Ledesma",
+    "id": 402,
+    "link": "https://gomezpardo.com.ar/producto/402",
+    "image": "https://gomezpardo.com.ar/img/azucar.jpg"
+  },
+  {
+    "name": "Café Instantáneo Nescafé 170g",
+    "price": 3800,
+    "brand": "Nescafé",
+    "id": "403"
+  },
+  {
+    "productName": "Producto Roto Sin Precio",
+    "price": "abc_not_a_number",
+    "brand": "TestBrand",
+    "id": "404"
+  },
+  {
+    "unexpectedField": "data",
+    "price": 100,
+    "weirdNesting": { "deep": true }
+  }
+]

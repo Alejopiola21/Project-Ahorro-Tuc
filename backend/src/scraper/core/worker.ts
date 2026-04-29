@@ -4,10 +4,16 @@ import { syncSupermarketData } from './sync';
 import { ScraperLogRepository } from '../../repositories/ScraperLogRepository';
 import { globalCache } from '../../services/CacheService';
 
+// Timeout máximo por job individual (5 minutos).
+// Si un scraper no responde en este intervalo, se mata y se registra como TIMEOUT.
+const JOB_TIMEOUT_MS = Number(process.env.SCRAPER_JOB_TIMEOUT_MS) || 5 * 60 * 1000;
+
 /**
  * ScraperWorker — El "músculo" que ejecuta las tareas de scrape en segundo plano.
  * 
  * Se puede escalar horizontalmente lanzando múltiples instancias de este worker.
+ * Cada job tiene un timeout configurable (SCRAPER_JOB_TIMEOUT_MS, default 5 min)
+ * y un lockDuration de 10 min para prevenir que BullMQ lo re-encole prematuramente.
  */
 export class ScraperWorker {
     private worker: Worker;
@@ -17,12 +23,13 @@ export class ScraperWorker {
         
         this.worker = new Worker('scraper-tasks', async (job: Job) => {
             const { providerId } = job.data;
-            return this.processScrape(providerId);
+            return this.processScrapeWithTimeout(providerId);
         }, {
             connection: { url: redisUrl },
-            concurrency: Number(process.env.SCRAPER_CONCURRENCY) || 2, // Configurable vía ENV
+            concurrency: Number(process.env.SCRAPER_CONCURRENCY) || 2,
+            lockDuration: 10 * 60 * 1000, // 10 min — evita re-encolado prematuro durante scrapes largos
             limiter: {
-                max: 1, // Prevenir ráfagas al mismo tiempo
+                max: 1,
                 duration: 1000
             }
         });
@@ -35,7 +42,25 @@ export class ScraperWorker {
             console.error(`[Worker] ❌ Tarea fallida para ${job?.data?.providerId}:`, err);
         });
 
-        console.log('[Worker] 👷 Scraper Worker listo y escuchando tareas...');
+        console.log(`[Worker] 👷 Scraper Worker listo (timeout por job: ${JOB_TIMEOUT_MS / 1000}s, lock: 10min)`);
+    }
+
+    /**
+     * Envuelve processScrape con un timeout duro.
+     * Si el scraper excede JOB_TIMEOUT_MS, se aborta y se lanza error controlado.
+     */
+    private async processScrapeWithTimeout(providerId: string): Promise<void> {
+        const timeoutPromise = new Promise<never>((_, reject) => {
+            setTimeout(() => {
+                reject(new Error(`[TIMEOUT] Scraper '${providerId}' excedió el límite de ${JOB_TIMEOUT_MS / 1000}s`));
+            }, JOB_TIMEOUT_MS);
+        });
+
+        // Promise.race: gana el scrape o el timeout, lo que ocurra primero
+        await Promise.race([
+            this.processScrape(providerId),
+            timeoutPromise,
+        ]);
     }
 
     private async processScrape(providerId: string) {

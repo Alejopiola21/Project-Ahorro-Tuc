@@ -1,0 +1,111 @@
+[
+  {
+    "productId": "101",
+    "productName": "Leche Entera La Serenísima 1L",
+    "brand": "La Serenísima",
+    "link": "https://www.vea.com.ar/leche-entera-la-serenisima-1l/p",
+    "linkText": "leche-entera-la-serenisima-1l",
+    "items": [
+      {
+        "itemId": "101-sku",
+        "ean": "7790010001001",
+        "images": [
+          { "imageUrl": "https://img.vtex.com/leche_1l.jpg" }
+        ],
+        "sellers": [
+          {
+            "commertialOffer": {
+              "Price": 1450.99,
+              "ListPrice": 1600,
+              "AvailableQuantity": 50
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "productId": "102",
+    "productName": "Arroz Largo Fino Gallo 1kg",
+    "brand": "Gallo",
+    "link": "https://www.vea.com.ar/arroz-gallo-1kg/p",
+    "linkText": "arroz-gallo-1kg",
+    "items": [
+      {
+        "itemId": "102-sku",
+        "ean": "7790010002002",
+        "images": [
+          { "imageUrl": "https://img.vtex.com/arroz_gallo.jpg" }
+        ],
+        "sellers": [
+          {
+            "commertialOffer": {
+              "Price": 2100,
+              "ListPrice": 2300,
+              "AvailableQuantity": 120
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "productId": "103",
+    "productName": "Aceite de Girasol Natura 1.5L",
+    "brand": "Natura",
+    "link": "",
+    "linkText": "aceite-natura-1-5l",
+    "items": [
+      {
+        "itemId": "103-sku",
+        "ean": "",
+        "images": [],
+        "sellers": [
+          {
+            "commertialOffer": {
+              "Price": 3200.5,
+              "ListPrice": 3500,
+              "AvailableQuantity": 0
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "productId": "104",
+    "productName": "",
+    "brand": "MarcaX",
+    "link": "",
+    "items": [
+      {
+        "itemId": "104-sku",
+        "sellers": [
+          {
+            "commertialOffer": {
+              "Price": 500
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "productId": "105",
+    "productName": "Yogur Firme Frutilla 120g",
+    "brand": "Yogurísimo",
+    "items": [
+      {
+        "itemId": "105-sku",
+        "ean": "7790010005005",
+        "sellers": [
+          {
+            "commertialOffer": {
+              "Price": null
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
