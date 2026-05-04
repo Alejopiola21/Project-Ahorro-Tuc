@@ -15,7 +15,7 @@ export interface SearchFilters {
   maxPrice?: number;
   brands?: string[];
   inStock?: boolean;
-  sortBy?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'brand_asc' | 'brand_desc';
+  sortBy?: 'price_asc' | 'price_desc' | 'unit_price_asc' | 'unit_price_desc' | 'name_asc' | 'name_desc' | 'brand_asc' | 'brand_desc';
 }
 
 export function useProductSearch() {

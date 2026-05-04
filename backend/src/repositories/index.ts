@@ -91,7 +91,7 @@ export const ProductRepository = {
             maxPrice?: number;
             brands?: string[];
             inStock?: boolean;
-            sortBy?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'brand_asc' | 'brand_desc';
+            sortBy?: 'price_asc' | 'price_desc' | 'unit_price_asc' | 'unit_price_desc' | 'name_asc' | 'name_desc' | 'brand_asc' | 'brand_desc';
         }
     ): Promise<{ products: ProductWithPrices[]; nextCursor: number | null }> {
         const safeLimit = Math.min(limit, 500);
@@ -120,9 +120,11 @@ export const ProductRepository = {
         if (filters?.sortBy) {
             switch (filters.sortBy) {
                 case 'price_asc':
+                case 'unit_price_asc':
                     orderBy = [{ name: 'asc' }]; // Se ordena post-query por precio
                     break;
                 case 'price_desc':
+                case 'unit_price_desc':
                     orderBy = [{ name: 'asc' }];
                     break;
                 case 'name_asc':
@@ -174,6 +176,17 @@ export const ProductRepository = {
                 const priceA = isNaN(minA) ? Infinity : minA;
                 const priceB = isNaN(minB) ? Infinity : minB;
                 return filters.sortBy === 'price_asc' ? priceA - priceB : priceB - priceA;
+            });
+        }
+
+        // Ordenar por precio unitario
+        if (filters?.sortBy === 'unit_price_asc' || filters?.sortBy === 'unit_price_desc') {
+            resultProducts.sort((a, b) => {
+                const minA = Math.min(...Object.values(a.unitPrices).filter((p): p is number => p !== null && p > 0));
+                const minB = Math.min(...Object.values(b.unitPrices).filter((p): p is number => p !== null && p > 0));
+                const priceA = isNaN(minA) || minA === Infinity ? Infinity : minA;
+                const priceB = isNaN(minB) || minB === Infinity ? Infinity : minB;
+                return filters.sortBy === 'unit_price_asc' ? priceA - priceB : priceB - priceA;
             });
         }
 

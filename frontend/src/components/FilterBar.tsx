@@ -117,6 +117,18 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, onFilterChange, o
                                 Mayor precio
                             </button>
                             <button 
+                                className={`filter-option ${filters.sortBy === 'unit_price_asc' ? 'active' : ''}`}
+                                onClick={() => handleSortChange('unit_price_asc')}
+                            >
+                                Menor precio x unidad
+                            </button>
+                            <button 
+                                className={`filter-option ${filters.sortBy === 'unit_price_desc' ? 'active' : ''}`}
+                                onClick={() => handleSortChange('unit_price_desc')}
+                            >
+                                Mayor precio x unidad
+                            </button>
+                            <button 
                                 className={`filter-option ${filters.sortBy === 'name_asc' ? 'active' : ''}`}
                                 onClick={() => handleSortChange('name_asc')}
                             >

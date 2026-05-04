@@ -18,7 +18,7 @@ export class ProductController {
         const maxPriceNum = maxPrice ? parseFloat(String(maxPrice)) : undefined;
         const brandsArr = brands && typeof brands === 'string' ? brands.split(',').filter(Boolean) : [];
         const inStockBool = inStock === 'true';
-        const sortStr = typeof sort === 'string' ? (sort as 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'brand_asc' | 'brand_desc') : undefined;
+        const sortStr = typeof sort === 'string' ? (sort as 'price_asc' | 'price_desc' | 'unit_price_asc' | 'unit_price_desc' | 'name_asc' | 'name_desc' | 'brand_asc' | 'brand_desc') : undefined;
 
         // 1. Interceptor de Caché: Construir Llave multi-variable
         const cacheKey = `search_c:${catStr.toLowerCase()}_q:${qStr.toLowerCase()}_cur:${cursorNum || 0}_lim:${limitNum}_min:${minPriceNum || 0}_max:${maxPriceNum || 0}_b:${brandsArr.join('-')}_stock:${inStockBool}_sort:${sortStr || 'default'}`;
@@ -74,6 +74,20 @@ export class ProductController {
                                 const minA = Math.min(...Object.values(a.prices).filter(p => p > 0));
                                 const minB = Math.min(...Object.values(b.prices).filter(p => p > 0));
                                 return (isNaN(minB) ? Infinity : minB) - (isNaN(minA) ? Infinity : minA);
+                            }
+                            case 'unit_price_asc': {
+                                const minA = Math.min(...Object.values(a.unitPrices).filter((p): p is number => p !== null && p > 0));
+                                const minB = Math.min(...Object.values(b.unitPrices).filter((p): p is number => p !== null && p > 0));
+                                const priceA = isNaN(minA) || minA === Infinity ? Infinity : minA;
+                                const priceB = isNaN(minB) || minB === Infinity ? Infinity : minB;
+                                return priceA - priceB;
+                            }
+                            case 'unit_price_desc': {
+                                const minA = Math.min(...Object.values(a.unitPrices).filter((p): p is number => p !== null && p > 0));
+                                const minB = Math.min(...Object.values(b.unitPrices).filter((p): p is number => p !== null && p > 0));
+                                const priceA = isNaN(minA) || minA === Infinity ? Infinity : minA;
+                                const priceB = isNaN(minB) || minB === Infinity ? Infinity : minB;
+                                return priceB - priceA;
                             }
                             case 'name_asc': return a.name.localeCompare(b.name);
                             case 'name_desc': return b.name.localeCompare(a.name);

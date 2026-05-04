@@ -9,10 +9,10 @@
 - **Autenticación sin Contraseña:** El módulo `Magic Links` (Fase 8) permanece pendiente de implementación.
 
 ## Propuestas de Optimización Arquitectónica
-- **Control de Subprocesos:** Inyectar parámetro `{ timeout: 1800000 }` (30 mins max) en la invocación de `spawn` de `backend/src/scraper/cron.ts` acoplado a un handler de destrucción de procesos muertos.
+- **~~Control de Subprocesos:~~** ✅ COMPLETADO. Inyectado parámetro `timeout` dinámico (`CRON_TIMEOUT_MS` o 1800000) en `backend/src/scraper/cron.ts` con uso directo de `npx tsx` acoplado a un handler (`taskkill /t /f` en Win, `kill -9` en Unix) de destrucción de la jerarquía de procesos muertos.
 - **~~Fixtures de Regresión:~~** ✅ COMPLETADO. 4 archivos JSON estáticos en `__fixtures__/` (vtex_classic, vtex_intelligent_search, coto_response, gomez_pardo_response) con edge cases. Mock de `fetchWithRetry` elimina dependencia de red.
 - **Integración Webhook:** Conectar las salidas de `ScraperLogRepository` con la red corporativa. Disparar alertas si `status === 'ERROR'` o `itemsScraped === 0`.
-- **Indexación por Precio Unitario:** Modificar el motor Prisma y los endpoints del Frontend para permitir el filtrado y ordenamiento estricto por `unitPrice` (precio real por kg/litro) como vector principal, desplazando al precio nominal.
+- **~~Indexación por Precio Unitario:~~** ✅ COMPLETADO. Modificado el backend (repositorio de Prisma y controlador) y los endpoints del frontend para permitir filtrado y ordenamiento estricto por `unit_price_asc` y `unit_price_desc` (precio real por kg/litro/unidad), manteniendo a su vez las opciones por precio nominal.
 
 ## Nuevas Mejoras Funcionales (Roadmap Avanzado)
 - **Sustitución Heurística de Formato:** Interceptar el Carrito Híbrido y sugerir reducciones volumétricas rentables (ej: recomendar comprar 2x 500g en lugar de 1x 1kg de la misma marca si el PPU final es inferior).

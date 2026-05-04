@@ -12,16 +12,27 @@ console.log('La limpieza de DB (Retención) se ejecutará los domingos a las 03:
 cron.schedule('0 0 * * *', () => {
     console.log(`\n[Cron] 🕒 Ejecutando rutina de actualización de precios: ${new Date().toISOString()}`);
 
-    const scraperProcess = spawn('npm', ['run', 'scrape'], {
+    const timeoutMs = Number(process.env.CRON_TIMEOUT_MS) || 1800000;
+    const isWin = process.platform === 'win32';
+
+    const scraperProcess = spawn(isWin ? 'npx.cmd' : 'npx', ['tsx', 'src/scraper/index.ts'], {
         cwd: path.resolve(__dirname, '../../'),
         stdio: 'inherit',
-        shell: true,
-        timeout: 30 * 60 * 1000 // 30 minutos de timeout máximo
+        shell: false,
+        detached: !isWin,
+        timeout: timeoutMs
     });
 
     scraperProcess.on('close', (code, signal) => {
         if (signal === 'SIGTERM' || signal === 'SIGKILL') {
-            console.error(`[Cron] ❌ El proceso fue terminado por timeout (30 min excedidos).`);
+            console.error(`[Cron] ❌ El proceso fue terminado por timeout (${timeoutMs / 1000}s excedidos). Destruyendo procesos muertos.`);
+            if (scraperProcess.pid) {
+                if (isWin) {
+                    spawn('taskkill', ['/pid', scraperProcess.pid.toString(), '/t', '/f'], { stdio: 'ignore' });
+                } else {
+                    try { process.kill(-scraperProcess.pid, 'SIGKILL'); } catch (e) {}
+                }
+            }
         } else if (code === 0) {
             console.log(`[Cron] ✅ Rutina finalizada con éxito.`);
         } else {
