@@ -17,6 +17,7 @@ model Supermarket {
   priceHistories PriceHistory[]
   currentPrices  Price[]
   aliases        ProductAlias[]
+  priceReports   PriceReport[]
 }
 
 model Product {
@@ -32,7 +33,8 @@ model Product {
   priceHistories PriceHistory[]
   currentPrices  Price[]
   aliases        ProductAlias[]
-  userLists      UserList[]     @relation("ListProducts")
+  userListItems  UserListItem[] @relation("ProductListItems")
+  priceReports   PriceReport[]
 }
 
 model Price {
@@ -78,19 +80,34 @@ model ProductAlias {
 }
 
 model UserList {
-  id          Int       @id @default(autoincrement())
+  id          Int            @id @default(autoincrement())
   name        String
-  userId      String    @map("user_id")
-  products    Product[] @relation("ListProducts")
-  createdAt   DateTime  @default(now()) @map("created_at")
+  userId      String         @map("user_id")
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       UserListItem[]
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @default(now()) @updatedAt @map("updated_at")
+}
+
+model UserListItem {
+  id          Int       @id @default(autoincrement())
+  listId      Int       @map("list_id")
+  list        UserList  @relation(fields: [listId], references: [id], onDelete: Cascade)
+  productId   Int       @map("product_id")
+  product     Product   @relation("ProductListItems", fields: [productId], references: [id], onDelete: Cascade)
+  quantity    Int       @default(1)
+
+  @@unique([listId, productId])
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String     @id @default(uuid())
+  email     String     @unique
   password  String
   name      String?
-  createdAt DateTime @default(now()) @map("created_at")
+  lists     UserList[]
+  reports   PriceReport[]
+  createdAt DateTime   @default(now()) @map("created_at")
 }
 
 model ScraperLog {
@@ -102,4 +119,18 @@ model ScraperLog {
   errorMessage String?  @map("error_message")
   startedAt    DateTime @map("started_at")
   finishedAt   DateTime @default(now()) @map("finished_at")
+}
+
+model PriceReport {
+  id            Int         @id @default(autoincrement())
+  productId     Int         @map("product_id")
+  supermarketId String      @map("supermarket_id")
+  reportedPrice Float       @map("reported_price")
+  userId        String?     @map("user_id") // Anonymous allowed
+  status        String      @default("PENDING") // PENDING, RESOLVED, REJECTED
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  product       Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  supermarket   Supermarket @relation(fields: [supermarketId], references: [id], onDelete: Cascade)
+  user          User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
 }

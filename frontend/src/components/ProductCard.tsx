@@ -1,19 +1,23 @@
 import { useState, lazy, Suspense, memo } from 'react';
-import { Award, TrendingUp } from 'lucide-react';
+import { Award, TrendingUp, AlertTriangle, Scale } from 'lucide-react';
 import type { Product } from '../types';
-import { useSupermarketStore, getCheapest } from '../store';
+import { useSupermarketStore, getCheapest, useComparisonStore } from '../store';
 
 const ProductHistoryChart = lazy(() => import('./ProductHistoryChart').then(m => ({ default: m.ProductHistoryChart })));
 
 interface Props {
     product: Product;
     onAddToCart: (p: Product) => void;
+    onReportPrice: () => void;
 }
 
-export const ProductCard = memo<Props>(({ product, onAddToCart }) => {
+export const ProductCard = memo<Props>(({ product, onAddToCart, onReportPrice }) => {
     const getSupermarket = useSupermarketStore(state => state.getSupermarket);
+    const { comparedProducts, toggleCompare } = useComparisonStore();
     const [showHistory, setShowHistory] = useState(false);
     const cheapest = getCheapest(product.prices);
+
+    const isCompared = comparedProducts.some(p => p.id === product.id);
 
     if (!cheapest) return null;
 
@@ -34,7 +38,17 @@ export const ProductCard = memo<Props>(({ product, onAddToCart }) => {
                 <div className="badge-best-price"><Award size={14} /> Mejor Precio</div>
             </div>
             <div className="product-info">
-                <span className="product-category">{product.category}</span>
+                <div className="flex justify-between items-start">
+                    <span className="product-category">{product.category}</span>
+                    <button 
+                        onClick={onReportPrice}
+                        className="text-text-muted hover:text-orange-500 transition-colors p-1"
+                        title="Reportar precio erróneo en góndola"
+                        aria-label={`Reportar precio de ${product.name}`}
+                    >
+                        <AlertTriangle size={16} />
+                    </button>
+                </div>
                 <h4 className="product-name">{product.name}</h4>
                 {product.brand && <span className="product-brand">{product.brand} {product.weight || ''}</span>}
                 <div className="price-comparison">
@@ -74,11 +88,20 @@ export const ProductCard = memo<Props>(({ product, onAddToCart }) => {
                 
                 <div className="flex gap-2">
                     <button 
+                        className={`flex-1 py-3 border border-[var(--border-color)] text-[var(--text-primary)] rounded-[12px] font-semibold text-[14px] flex items-center justify-center gap-2 hover:bg-[var(--bg-color)] transition-colors ${isCompared ? 'bg-primary/20 border-primary' : 'bg-[var(--paper-bg)]'}`}
+                        onClick={() => toggleCompare(product)}
+                        aria-label={`Comparar ${product.name}`}
+                        title="Añadir a comparativa"
+                    >
+                        <Scale size={16} className={isCompared ? 'text-primary' : ''} />
+                    </button>
+                    <button 
                         className="flex-1 py-3 bg-[var(--paper-bg)] border border-[var(--border-color)] text-[var(--text-primary)] rounded-[12px] font-semibold text-[14px] flex items-center justify-center gap-2 hover:bg-[var(--bg-color)] transition-colors"
                         onClick={() => setShowHistory(!showHistory)}
                         aria-label={`Ver historial de ${product.name}`}
+                        title="Historial de Precios"
                     >
-                        <TrendingUp size={16} /> Historial
+                        <TrendingUp size={16} />
                     </button>
                     <button 
                         className="flex-[2] add-to-cart-btn m-0" 

@@ -6,7 +6,10 @@ import { CategoryController } from '../controllers/CategoryController';
 import { ScraperController } from '../controllers/ScraperController';
 import { AuthController } from '../controllers/AuthController';
 import { BrandController } from '../controllers/BrandController';
-import { authenticateToken } from '../middleware/authMiddleware';
+import { UserListController } from '../controllers/UserListController';
+import { ReportController } from '../controllers/ReportController';
+import { AnalyticsController } from '../controllers/AnalyticsController';
+import { authenticateToken, optionalAuthenticateToken } from '../middleware/authMiddleware';
 
 const router = Router();
 
@@ -83,6 +86,89 @@ router.post('/auth/login', AuthController.login);
  *         description: Token inválido o expirado
  */
 router.get('/auth/me', authenticateToken, AuthController.getMe);
+
+// ── Lists Routes (protected) ────────────────────────────────────────────────
+
+/**
+ * @openapi
+ * /api/lists:
+ *   get:
+ *     summary: Obtiene las listas guardadas del usuario
+ *     tags: [Lists]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get('/lists', authenticateToken, UserListController.getAll);
+
+/**
+ * @openapi
+ * /api/lists/{id}:
+ *   get:
+ *     summary: Obtiene una lista específica
+ *     tags: [Lists]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get('/lists/:id', authenticateToken, UserListController.getById);
+
+/**
+ * @openapi
+ * /api/lists:
+ *   post:
+ *     summary: Crea una nueva lista (Max 3)
+ *     tags: [Lists]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post('/lists', authenticateToken, UserListController.create);
+
+/**
+ * @openapi
+ * /api/lists/{id}:
+ *   put:
+ *     summary: Actualiza una lista existente
+ *     tags: [Lists]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.put('/lists/:id', authenticateToken, UserListController.update);
+
+/**
+ * @openapi
+ * /api/lists/{id}:
+ *   delete:
+ *     summary: Elimina una lista
+ *     tags: [Lists]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.delete('/lists/:id', authenticateToken, UserListController.delete);
+
+// ── Analytics Routes (protected) ────────────────────────────────────────────
+
+/**
+ * @openapi
+ * /api/analytics/me:
+ *   get:
+ *     summary: Obtiene métricas e insignias del usuario
+ *     tags: [Analytics]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get('/analytics/me', authenticateToken, AnalyticsController.getMyAnalytics);
+
+// ── Reports Routes (public / optional auth) ─────────────────────────────────
+
+/**
+ * @openapi
+ * /api/reports:
+ *   post:
+ *     summary: Reporta un precio erróneo en góndola
+ *     tags: [Reports]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post('/reports', optionalAuthenticateToken, ReportController.createReport);
 
 /**
  * @openapi

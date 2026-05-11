@@ -37,3 +37,28 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
         return;
     }
 };
+
+/**
+ * Middleware opcional que verifica el token JWT si está presente.
+ * Si es válido, adjunta userId. Si no está o es inválido, continúa sin error.
+ */
+export const optionalAuthenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return next();
+    }
+    
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+        return next();
+    }
+
+    try {
+        const decoded = AuthService.verifyToken(token);
+        req.userId = decoded.sub;
+        req.userEmail = decoded.email;
+    } catch (error) {
+        // Ignorar token inválido para peticiones públicas
+    }
+    next();
+};

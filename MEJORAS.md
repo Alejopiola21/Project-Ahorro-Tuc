@@ -797,13 +797,13 @@ scraper.on('close', (code) => {
 ### 13.2 Geolocalización de Rentabilidad (⬜ PENDIENTE)
 - **Concepto:** Integración con Google Maps u OSM. Calcula la ruta lógica al supermercado recomendado y contrarresta el delta de ahorro obtenido versus el costo (combustible/pasaje) y tiempo de desplazamiento.
 
-### 13.3 Auditoría Ciudadana o Crowdsourcing (⬜ PENDIENTE)
+### 13.3 Auditoría Ciudadana o Crowdsourcing (✅ COMPLETADO)
 - **Concepto:** Botón "Reportar Precio en Tienda" en la Product Card para que los usuarios físicos validen desviaciones entre el precio extraído y la góndola real, ajustando de forma dinámica la prioridad del reclamo para el Scraper.
 
-### 13.4 Analítica de Consumo Personal y Gamificación (⬜ PENDIENTE)
+### 13.4 Analítica de Consumo Personal y Gamificación (✅ COMPLETADO)
 - **Concepto:** Panel de usuario individual desglosando el flujo de gasto proyectado basado en listas históricas guardadas. Otorgar insignias ("Smart Saver") por hitos de economía generada frente al costo base.
 
-### 13.5 Comparativas Visuales Superpuestas (⬜ PENDIENTE)
+### 13.5 Comparativas Visuales Superpuestas (✅ COMPLETADO)
 - **Concepto:** Gráficos multilineales en React (Recharts) permitiendo seleccionar dos o más productos idénticos/semejantes para monitorizar sus tendencias simultáneamente.
 
 ### 13.6 Sistema de Recetas a Menor Costo (⬜ PENDIENTE)

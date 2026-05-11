@@ -3,7 +3,9 @@ import { X, ShoppingCart, Trash2, TrendingDown, Award, ArrowRight, Plus, Minus, 
 import { formatCartShareMessage, shareToWhatsApp, copyToClipboard } from '../utils/shareUtils';
 import { generateCartPDF } from '../utils/pdfGenerator';
 import type { CartTotals } from '../types';
-import { useCartStore, useSupermarketStore } from '../store';
+import { useCartStore, useSupermarketStore, useAuthStore } from '../store';
+import { SavedListsModal } from './SavedListsModal';
+import { DownloadCloud } from 'lucide-react';
 
 interface Props {
     isOpen: boolean;
@@ -18,10 +20,12 @@ export const CartSidebar: React.FC<Props> = ({ isOpen, onClose, cartTotals, isOp
     const updateQuantity = useCartStore(state => state.updateQuantity);
     const clearCart = useCartStore(state => state.clearCart);
     const getSupermarket = useSupermarketStore(state => state.getSupermarket);
+    const user = useAuthStore(state => state.user);
 
     const sidebarRef = useRef<HTMLElement>(null);
     const [optMode, setOptMode] = useState<'single' | 'hybrid'>('single');
     const [copied, setCopied] = useState(false);
+    const [isSavedListsOpen, setIsSavedListsOpen] = useState(false);
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
     // Cerrar con Escape (a11y)
@@ -89,7 +93,18 @@ export const CartSidebar: React.FC<Props> = ({ isOpen, onClose, cartTotals, isOp
             >
                 <div className="cart-header">
                     <h3>🛒 Mi Lista Inteligente</h3>
-                    <button className="close-btn" onClick={onClose} aria-label="Cerrar carrito"><X size={24} /></button>
+                    <div className="flex items-center gap-2">
+                        {user && (
+                            <button 
+                                onClick={() => setIsSavedListsOpen(true)}
+                                className="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors"
+                                title="Guardar/Cargar en la nube"
+                            >
+                                <DownloadCloud size={20} />
+                            </button>
+                        )}
+                        <button className="close-btn" onClick={onClose} aria-label="Cerrar carrito"><X size={24} /></button>
+                    </div>
                 </div>
 
                 <div className="cart-body">
@@ -300,6 +315,7 @@ export const CartSidebar: React.FC<Props> = ({ isOpen, onClose, cartTotals, isOp
                     </div>
                 )}
             </aside>
+            <SavedListsModal isOpen={isSavedListsOpen} onClose={() => setIsSavedListsOpen(false)} />
         </>
     );
 };

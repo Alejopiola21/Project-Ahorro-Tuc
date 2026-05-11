@@ -50,6 +50,22 @@ export interface User {
     name: string | null;
 }
 
+export interface UserListItem {
+    id: number;
+    productId: number;
+    quantity: number;
+    product: Product;
+}
+
+export interface UserList {
+    id: number;
+    name: string;
+    userId: string;
+    createdAt: string;
+    updatedAt: string;
+    items: UserListItem[];
+}
+
 export interface AuthResponse {
     user: User;
     token: string;

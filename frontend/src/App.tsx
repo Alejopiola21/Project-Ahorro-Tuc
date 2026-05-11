@@ -10,6 +10,7 @@ import { CategoryNav } from './components/CategoryNav';
 import { ProductGrid } from './components/ProductGrid';
 import { CartSidebar } from './components/CartSidebar';
 import { Footer } from './components/Footer';
+import { ComparisonDrawer } from './components/ComparisonDrawer';
 
 // Hooks & Store
 import { api } from './api';
@@ -139,6 +140,7 @@ export default function App() {
         isOptimizing={isOptimizing}
       />
 
+      <ComparisonDrawer />
       <Footer />
     </div>
   );

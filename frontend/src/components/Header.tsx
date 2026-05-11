@@ -1,8 +1,9 @@
 import React, { useState, lazy, Suspense } from 'react';
-import { TrendingDown, MapPin, ShoppingCart, Sun, Moon, LogIn, LogOut, UserCircle } from 'lucide-react';
+import { TrendingDown, MapPin, ShoppingCart, Sun, Moon, LogIn, LogOut, UserCircle, User as UserIcon } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useAuthStore } from '../store/authStore';
 import { toast } from 'sonner';
+import { UserProfileModal } from './UserProfileModal';
 
 const AuthModal = lazy(() => import('./AuthModal').then(m => ({ default: m.AuthModal })));
 
@@ -15,6 +16,7 @@ export const Header: React.FC<Props> = ({ cartCount, onOpenCart }) => {
     const { isDark, toggleTheme } = useTheme();
     const { user, isAuthenticated, logout } = useAuthStore();
     const [authModalOpen, setAuthModalOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     const handleLogout = () => {
         logout();
@@ -39,10 +41,14 @@ export const Header: React.FC<Props> = ({ cartCount, onOpenCart }) => {
 
                         {isAuthenticated && user ? (
                             <div className="auth-user-menu">
-                                <span className="user-greeting" aria-label={`Sesión activa como ${user.email}`}>
-                                    <UserCircle size={18} />
-                                    <span className="user-name">{user.name || user.email}</span>
-                                </span>
+                                <button 
+                                    onClick={() => setIsProfileOpen(true)}
+                                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium border border-border rounded-xl"
+                                    title="Mi Perfil"
+                                >
+                                    <UserIcon size={18} />
+                                    <span className="user-name">{user.name?.split(' ')[0] || 'Perfil'}</span>
+                                </button>
                                 <button className="logout-btn" onClick={handleLogout} aria-label="Cerrar sesión">
                                     <LogOut size={18} />
                                 </button>
@@ -64,6 +70,7 @@ export const Header: React.FC<Props> = ({ cartCount, onOpenCart }) => {
 
             <Suspense fallback={null}>
                 <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+                <UserProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
             </Suspense>
         </>
     );

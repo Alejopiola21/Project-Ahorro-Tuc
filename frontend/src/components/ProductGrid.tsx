@@ -2,6 +2,7 @@ import React from 'react';
 import { ProductCard } from './ProductCard';
 import { EmptyState } from './EmptyState';
 import { FilterBar } from './FilterBar';
+import { ReportPriceModal } from './ReportPriceModal';
 import type { Product } from '../types';
 import type { SearchFilters } from '../hooks/useProductSearch';
 
@@ -32,6 +33,8 @@ const ProductSkeleton = () => (
 export const ProductGrid: React.FC<Props> = ({
     loading, products, debouncedQuery, filters, onFilterChange, onClearCache, onAddToCart, hasMore, loadMore
 }) => {
+    const [reportingProduct, setReportingProduct] = React.useState<Product | null>(null);
+
     return (
         <main className="main-content" role="main">
             <div className="section-header">
@@ -65,6 +68,7 @@ export const ProductGrid: React.FC<Props> = ({
                                 key={product.id}
                                 product={product}
                                 onAddToCart={onAddToCart}
+                                onReportPrice={() => setReportingProduct(product)}
                             />
                         ))}
                     </div>
@@ -82,6 +86,12 @@ export const ProductGrid: React.FC<Props> = ({
                     )}
                 </div>
             )}
+
+            <ReportPriceModal 
+                isOpen={!!reportingProduct} 
+                onClose={() => setReportingProduct(null)} 
+                product={reportingProduct} 
+            />
         </main>
     );
 };

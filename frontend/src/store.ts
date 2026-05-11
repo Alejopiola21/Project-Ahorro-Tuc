@@ -8,6 +8,7 @@ interface CartState {
     removeFromCart: (productId: number) => void;
     updateQuantity: (productId: number, quantity: number) => void;
     clearCart: () => void;
+    mergeWithCart: (items: { product: Product, quantity: number }[]) => void;
     hasSeenPersistenceWarning: boolean;
     setHasSeenPersistenceWarning: (val: boolean) => void;
 }
@@ -16,6 +17,12 @@ interface SupermarketState {
     supermarkets: Supermarket[];
     setSupermarkets: (supermarkets: Supermarket[]) => void;
     getSupermarket: (id: string) => Supermarket | undefined;
+}
+
+interface ComparisonState {
+    comparedProducts: Product[];
+    toggleCompare: (product: Product) => void;
+    clearComparison: () => void;
 }
 
 // ── Cart Store ─────────────────────────────────────────────────────────────────
@@ -49,6 +56,21 @@ export const useCartStore = create<CartState>()(
                     )
             })),
             clearCart: () => set({ cart: [] }),
+            mergeWithCart: (items) => set((state) => {
+                const newCart = [...state.cart];
+                for (const item of items) {
+                    const existingIndex = newCart.findIndex(i => i.product.id === item.product.id);
+                    if (existingIndex >= 0) {
+                        newCart[existingIndex] = {
+                            ...newCart[existingIndex],
+                            quantity: newCart[existingIndex].quantity + item.quantity
+                        };
+                    } else {
+                        newCart.push(item);
+                    }
+                }
+                return { cart: newCart };
+            }),
             hasSeenPersistenceWarning: false,
             setHasSeenPersistenceWarning: (val) => set({ hasSeenPersistenceWarning: val }),
         }),
@@ -63,6 +85,22 @@ export const useSupermarketStore = create<SupermarketState>()((set, get) => ({
     supermarkets: [],
     setSupermarkets: (supermarkets) => set({ supermarkets }),
     getSupermarket: (id) => get().supermarkets.find(s => s.id === id),
+}));
+
+// ── Comparison Store ───────────────────────────────────────────────────────────
+export const useComparisonStore = create<ComparisonState>()((set) => ({
+    comparedProducts: [],
+    toggleCompare: (product) => set((state) => {
+        const isSelected = state.comparedProducts.find(p => p.id === product.id);
+        if (isSelected) {
+            return { comparedProducts: state.comparedProducts.filter(p => p.id !== product.id) };
+        }
+        if (state.comparedProducts.length >= 4) {
+            return state; // Límite de 4 productos
+        }
+        return { comparedProducts: [...state.comparedProducts, product] };
+    }),
+    clearComparison: () => set({ comparedProducts: [] })
 }));
 
 // ── Helpers reutilizables ──────────────────────────────────────────────────────
