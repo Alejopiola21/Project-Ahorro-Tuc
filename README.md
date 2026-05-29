@@ -18,6 +18,8 @@ En un contexto de constante variación de precios, saber dónde comprar puede si
 | 🎛️ **Filtros Avanzados** | Panel de filtros colapsable: rango de precio, marcas, solo con stock, ordenamiento por precio/marca/nombre. |
 | 🥇 **Indicador de Mejor Precio** | Resalta automáticamente el súper más barato. Ahora incluye **Precio por Unidad** ($/Kg, $/L). |
 | 🛒 **Carrito Híbrido** | El optimizador te dice si conviene dividir tu compra en dos locales para ahorrar el máximo posible. |
+| 💡 **Sustitución Heurística** | Sugiere reducciones volumétricas más convenientes (ej. 2x 500g en lugar de 1x 1kg) en el carrito interactivo. |
+| 🔑 **Magic Links** | Inicio de sesión rápido y registro sin contraseña mediante links de un solo uso. |
 | 📱 **Compartir Lista** | Exportá tu lista optimizada directamente a WhatsApp, copiala al portapapeles o descargala como **PDF profesional**. |
 | 📄 **Ticket PDF** | Generá un comprobante formal de tu lista con precios, totales y ahorros para imprimir o guardar. |
 | 💰 **Cálculo de Ahorro** | Visualizá cuánto dinero ahorrás eligiendo la opción ganadora vs la más cara. |
@@ -32,8 +34,11 @@ En un contexto de constante variación de precios, saber dónde comprar puede si
 
 | Feature | Descripción |
 |---------|-------------|
+| 🔑 **Autenticación sin contraseña (Magic Links)** | Acceso inmediato y registro mediante enlaces temporales de 15 min logueados en la terminal. |
+| 💡 **Sugeridor de Sustitución Inteligente** | Algoritmo heurístico para sugerir reducciones volumétricas rentables del mismo producto en el carrito. |
+| 🛡️ **Pool de Proxies Residenciales** | Rotación dinámica de IPs en el cliente HTTP (`fetcher.ts`) para mitigar bloqueos WAF (Anti-Ban). |
 | 🎛️ **Filtros Avanzados de Búsqueda** | Panel de filtros con precio, marcas, stock y ordenamiento. Backend con query params avanzados. |
-| 📄 **Generación de Ticket PDF** | PDF profesional descargable desde el carrito con lista, precios y totales optimizados. |
+| 📄 **Ticket PDF** | Generación de PDF profesional descargable desde el carrito con lista, precios y totales. |
 | 📱 **WhatsApp Share Mejorado** | Mensaje formateado con emojis, estructura profesional y soporte para carrito híbrido. |
 | 🚀 **Arquitectura 7.3** | Integración de **Redis** (Caché L2), **BullMQ** (Colas de Scraping) y **MeiliSearch**. |
 | ⚖️ **Normalización de Unidades** | Cálculo automático de precio por Kg/L para comparaciones justas entre envases. |
@@ -156,7 +161,8 @@ cd frontend && npm run dev
 | 12.1 | Filtros Avanzados de Búsqueda | ✅ Completada |
 | 12.2 | WhatsApp Share Mejorado | ✅ Completada |
 | 12.3 | Generación de Ticket PDF | ✅ Completada |
-| 8.0 | Gestión de Sesiones y Expansión Global | 🔧 En Progreso |
+| 8.0 | Gestión de Sesiones (JWT + Magic Links) | ✅ Completada |
+| 13.1 | Sustitución Heurística de Formato | ✅ Completada |
 
 
 > 📋 Ver [PLANNING.md](./PLANNING.md) para detalles completos de cada fase.
