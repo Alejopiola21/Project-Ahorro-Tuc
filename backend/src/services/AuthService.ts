@@ -104,6 +104,75 @@ export class AuthService {
         return user;
     }
 
+    static async requestMagicLink(email: string): Promise<string> {
+        const cleanEmail = email.toLowerCase();
+        let user = await prisma.user.findUnique({
+            where: { email: cleanEmail }
+        });
+
+        // Registrar usuario con contraseña aleatoria si no existe
+        if (!user) {
+            const randomPassword = Math.random().toString(36).slice(-10);
+            const hashedPassword = await bcrypt.hash(randomPassword, BCRYPT_SALT_ROUNDS);
+            user = await prisma.user.create({
+                data: {
+                    email: cleanEmail,
+                    password: hashedPassword,
+                    name: null
+                }
+            });
+        }
+
+        const tempToken = jwt.sign(
+            { email: cleanEmail, type: 'magic-link' },
+            JWT_SECRET,
+            { expiresIn: '15m' }
+        );
+
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        const magicLink = `${frontendUrl}/?magicToken=${tempToken}`;
+
+        // Simulación de envío de correo por consola
+        console.log('\n======================================================================');
+        console.log(`✉️ [EMAIL SIMULATION] Para: ${cleanEmail}`);
+        console.log(`🔗 Haz clic en el siguiente enlace para iniciar sesión:`);
+        console.log(`👉 ${magicLink}`);
+        console.log('======================================================================\n');
+
+        return magicLink;
+    }
+
+    static async loginWithMagicLink(token: string): Promise<AuthResponse> {
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET) as { email: string; type: string };
+            if (decoded.type !== 'magic-link') {
+                throw new ApiError('Token de enlace mágico inválido', 400);
+            }
+
+            const user = await prisma.user.findUnique({
+                where: { email: decoded.email }
+            });
+
+            if (!user) {
+                throw new ApiError('El usuario asociado a este enlace no existe', 404);
+            }
+
+            const authToken = this.generateToken(user.id, user.email);
+
+            return {
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                },
+                token: authToken,
+            };
+        } catch (error: any) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError('El enlace es inválido o ha expirado', 401);
+        }
+    }
+
     private static generateToken(userId: string, email: string): string {
         return jwt.sign(
             { sub: userId, email },

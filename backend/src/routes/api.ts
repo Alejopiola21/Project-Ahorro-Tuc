@@ -86,6 +86,8 @@ router.post('/auth/login', AuthController.login);
  *         description: Token inválido o expirado
  */
 router.get('/auth/me', authenticateToken, AuthController.getMe);
+router.post('/auth/magic-request', AuthController.requestMagicLink);
+router.post('/auth/magic-login', AuthController.magicLogin);
 
 // ── Lists Routes (protected) ────────────────────────────────────────────────
 

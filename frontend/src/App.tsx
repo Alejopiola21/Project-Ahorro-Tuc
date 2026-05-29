@@ -45,6 +45,30 @@ export default function App() {
 
   // Verificar auth y persistencia al montar la app
   useEffect(() => {
+    // Verificar si viene un token de enlace mágico
+    const params = new URLSearchParams(window.location.search);
+    const magicToken = params.get('magicToken');
+
+    if (magicToken) {
+      toast.promise(
+        api.post('/auth/magic-login', { token: magicToken })
+          .then((r) => {
+            const { user, token } = r.data;
+            useAuthStore.getState().login(user, token);
+            window.history.replaceState({}, document.title, window.location.pathname);
+            return user;
+          }),
+        {
+          loading: 'Verificando enlace de acceso...',
+          success: (u: any) => `¡Sesión iniciada con éxito! Bienvenido, ${u.name || u.email}`,
+          error: (err: any) => {
+            console.error(err);
+            return err.response?.data?.error || 'El enlace de acceso ha expirado o es inválido.';
+          }
+        }
+      );
+    }
+
     checkAuth();
 
     // 1. Verificar si localStorage está disponible y funcional

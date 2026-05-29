@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const AuthModal: React.FC<Props> = ({ isOpen, onClose }) => {
-    const [mode, setMode] = useState<'login' | 'register'>('login');
+    const [mode, setMode] = useState<'login' | 'register' | 'magic'>('login');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
@@ -24,6 +24,19 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose }) => {
         setLoading(true);
 
         try {
+            if (mode === 'magic') {
+                const response = await api.post('/auth/magic-request', { email });
+                toast.success('¡Enlace de acceso enviado! Revisá tu consola del backend.');
+                
+                if (response.data.link) {
+                    console.log('Magic Link Dev Bypass:', response.data.link);
+                }
+
+                resetForm();
+                onClose();
+                return;
+            }
+
             const endpoint = mode === 'login' ? '/auth/login' : '/auth/register';
             const body: Record<string, string> = { email, password };
             if (mode === 'register' && name) body.name = name;
@@ -58,17 +71,19 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="auth-modal-overlay" onClick={handleClose} role="dialog" aria-modal="true" aria-label={mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}>
+        <div className="auth-modal-overlay" onClick={handleClose} role="dialog" aria-modal="true" aria-label={mode === 'login' ? 'Iniciar sesión' : mode === 'register' ? 'Crear cuenta' : 'Ingresar sin contraseña'}>
             <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
                 <button className="auth-modal-close" onClick={handleClose} aria-label="Cerrar">
                     <X size={24} />
                 </button>
 
                 <div className="auth-modal-header">
-                    <h2>{mode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}</h2>
+                    <h2>{mode === 'login' ? 'Iniciar Sesión' : mode === 'register' ? 'Crear Cuenta' : 'Enlace de Acceso'}</h2>
                     <p>{mode === 'login'
                         ? 'Accedé para guardar tus listas y comparar precios'
-                        : 'Registrate gratis para guardar tus carritos'
+                        : mode === 'register'
+                        ? 'Registrate gratis para guardar tus carritos'
+                        : 'Ingresá tu email para recibir un enlace de acceso rápido'
                     }</p>
                 </div>
 
@@ -98,19 +113,21 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose }) => {
                         />
                     </div>
 
-                    <div className="auth-input-group">
-                        <Lock size={18} className="auth-input-icon" />
-                        <input
-                            type="password"
-                            placeholder="Contraseña"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            minLength={6}
-                            maxLength={128}
-                            autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                        />
-                    </div>
+                    {mode !== 'magic' && (
+                        <div className="auth-input-group">
+                            <Lock size={18} className="auth-input-icon" />
+                            <input
+                                type="password"
+                                placeholder="Contraseña"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                minLength={6}
+                                maxLength={128}
+                                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                            />
+                        </div>
+                    )}
 
                     <button type="submit" className="auth-submit-btn" disabled={loading}>
                         {loading ? (
@@ -118,16 +135,28 @@ export const AuthModal: React.FC<Props> = ({ isOpen, onClose }) => {
                                 <span className="spinner-dot" /> Procesando...
                             </span>
                         ) : (
-                            mode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'
+                            mode === 'login' ? 'Iniciar Sesión' : mode === 'register' ? 'Crear Cuenta' : 'Enviar Enlace Mágico'
                         )}
                     </button>
                 </form>
 
                 <div className="auth-modal-footer">
                     {mode === 'login' ? (
-                        <p>¿No tenés cuenta? <button onClick={() => setMode('register')}>Registrate</button></p>
+                        <>
+                            <p>¿No tenés cuenta? <button onClick={() => setMode('register')}>Registrate</button></p>
+                            <p style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>
+                                <button onClick={() => setMode('magic')}>Ingresar sin contraseña (Magic Link)</button>
+                            </p>
+                        </>
+                    ) : mode === 'register' ? (
+                        <>
+                            <p>¿Ya tenés cuenta? <button onClick={() => setMode('login')}>Iniciá sesión</button></p>
+                            <p style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>
+                                <button onClick={() => setMode('magic')}>Ingresar sin contraseña (Magic Link)</button>
+                            </p>
+                        </>
                     ) : (
-                        <p>¿Ya tenés cuenta? <button onClick={() => setMode('login')}>Iniciá sesión</button></p>
+                        <p>Volver a <button onClick={() => setMode('login')}>Iniciar Sesión</button></p>
                     )}
                 </div>
             </div>

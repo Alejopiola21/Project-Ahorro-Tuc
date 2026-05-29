@@ -496,13 +496,13 @@ La auditoría inicial (Cats 1-6) está 100% completada, dejando el proyecto list
 ### 🛒 7.1 UX y Experiencia del Usuario (✅ COMPLETADO)
 * **Gráficos de Inflación / Historial de Precios (`Recharts`):** Implementado el componente `ProductHistoryChart` que visualiza la tendencia de precios consumiendo el historial de la DB.
 * **"Rutas de Compra" (Carrito Híbrido):** El optimizador ahora calcula y muestra el ahorro adicional al dividir la compra entre los dos mejores supermercados.
-* **Sesiones Clientes Compartidas (Magic Links):** (Pendiente para Fase 8) Implementar Auth ligera sin contraseñas.
+* **Sesiones Clientes Compartidas (Magic Links) (✅ COMPLETADO):** Implementada autenticación ligera sin contraseña. El servidor genera enlaces temporales (15 min) y procesa el inicio de sesión automático. En desarrollo, el enlace de acceso se imprime directamente en la consola del backend.
 
 ### ⚙️ 7.2 Motor de Scraping y Sistema Anti-Ban
 * **Expansión de Términos de Búsqueda (✅ COMPLETADO — 10/04/2026):** Los 11 scrapers existentes pasaron de 4-8 términos a **34 términos** organizados en 10 categorías (Lácteos, Almacén, Limpieza, Bebidas, Carnes, Panadería, Mascotas, Perfumería, Verdulería, Congelados). Impacto estimado: **x5-x7** más productos por cadena.
 * **Maxiconsumo (✅ COMPLETADO — 10/04/2026):** Nuevo scraper VTEX Classic añadido. 12° cadena. Color naranja `#ff8c00`.
 * **La Anónima (✅ COMPLETADO — 10/04/2026):** Nuevo scraper VTEX Classic añadido. 13° cadena. Color navy `#1a5276`.
-* **Proxies Residenciales Rotativos:** Escalar el `fetchWithRetry` actual (User-Agents + delay aleatorio) hacia un pool de proxys (BrightData/Oxylabs) para prevenir baneos de IP por parte de los WAF (Cloudflare/Akamai) desplegados por las cadenas grandes como Coto o Jumbo.
+* **Proxies Residenciales Rotativos (✅ COMPLETADO):** Implementado pool de proxies rotativos a través de la variable de entorno `PROXY_LIST` con selección aleatoria por intento de request. Falback tolerante a fallos.
 * **Alertas Inteligentes (Webhooks):** Conectar el nuevo endpoint `/api/scraper/status` con Discord, Slack o Telegram para notificar al equipo técnico en tiempo real si un proveedor de datos cae u obtiene 0 `itemsScraped`, previniendo que la plataforma se quede estancada por días.
 
 ### 🧱 7.3 Arquitectura Backend y DevOps (✅ COMPLETADO — 11/04/2026)
@@ -559,16 +559,12 @@ La auditoría inicial (Cats 1-6) está 100% completada, dejando el proyecto list
 
 ---
 
-### 8.4 pgAdmin expuesto con credenciales por defecto (⬜ PENDIENTE)
+### 8.4 pgAdmin expuesto con credenciales por defecto (✅ COMPLETADO)
 - **Archivo:** `backend/docker-compose.yml`
 - **Problema:** pgAdmin se expone en puerto `5050` con credenciales `admin/admin`. Si se despliega en producción sin cambiar esto, cualquiera accede a la base de datos.
-- **Fix:**
-```yaml
-environment:
-  PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@ahorrotuc.local}
-  PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-cambiar_en_produccion}
-```
-- Y documentar que estas credenciales deben rotarse en producción.
+- **Implementado:**
+  - ✅ Configurada inyección dinámica mediante variables de entorno `${PGADMIN_EMAIL}` y `${PGADMIN_PASSWORD}` en `docker-compose.yml`.
+  - ✅ Documentada la existencia y necesidad de rotación de credenciales en `backend/.env.example`.
 
 ---
 
@@ -761,20 +757,13 @@ const scrapeStats: ScrapeStat[] = [];
 
 ---
 
-### 11.4 Sin timeout en proceso scraper del cron (⬜ PENDIENTE)
+### 11.4 Sin timeout en proceso scraper del cron (✅ COMPLETADO)
 - **Archivo:** `backend/src/scraper/cron.ts`
 - **Problema:** El `spawn()` del scraper no tiene timeout. Si un provider se cuelga indefinidamente, el proceso cron nunca termina y el siguiente cron se superpone.
-- **Mejora:**
-```ts
-const scraper = spawn('node', ['dist/scraper/index.js'], { timeout: 30 * 60 * 1000 }); // 30 min max
-scraper.on('error', (err) => { /* handle */ });
-scraper.on('close', (code) => {
-    if (code === null) {
-        console.error('Scraper process timed out after 30 minutes');
-        // send alert webhook
-    }
-});
-```
+- **Implementado:**
+  - ✅ Variable de entorno `CRON_TIMEOUT_MS` configurada (30 minutos por defecto).
+  - ✅ Opciones de `spawn` inyectadas con propiedad `timeout`.
+  - ✅ Destrucción de subprocesos huérfanos con `taskkill` y `process.kill`.
 
 ---
 
@@ -791,8 +780,13 @@ scraper.on('close', (code) => {
 
 ## 🔮 Categoría 13: Futuras y Sugerencias Radicales (Roadmap Visionario)
 
-### 13.1 Sugeridor de Sustitución Inteligente (⬜ PENDIENTE)
-- **Concepto:** Módulo heurístico que analiza el carrito e indica cambios de marca o presentación paramétrica (e.g. comprar formato 1L vs 500ml) para maximizar el margen absoluto de ahorro sin que el usuario lo solicite explícitamente.
+### 13.1 Sugeridor de Sustitución Inteligente (✅ COMPLETADO)
+- **Concepto:** Módulo heurístico que analiza el carrito e indica cambios de presentación paramétrica (reducciones volumétricas rentables, e.g. comprar 2x 500g en lugar de 1x 1kg) para maximizar el margen de ahorro.
+- **Implementado:**
+  - ✅ Creado `SubstitutionService` en el backend para calcular equivalencias de volumen y ahorro por supermercado para productos de la misma marca y categoría.
+  - ✅ Integrado en el endpoint de optimización de carrito `/api/optimize-cart`.
+  - ✅ Actualizada UI de `CartSidebar` para mostrar sugerencias contextualmente y permitir aplicar la sustitución de forma interactiva con un botón.
+  - ✅ Estilos adaptados en `index.css` con soporte para responsive y modo oscuro.
 
 ### 13.2 Geolocalización de Rentabilidad (✅ COMPLETADO — 29/05/2026)
 - **Implementado:**

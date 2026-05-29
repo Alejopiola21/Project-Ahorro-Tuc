@@ -21,6 +21,7 @@ export const CartSidebar: React.FC<Props> = ({ isOpen, onClose, cartTotals, isOp
     const removeFromCart = useCartStore(state => state.removeFromCart);
     const updateQuantity = useCartStore(state => state.updateQuantity);
     const clearCart = useCartStore(state => state.clearCart);
+    const mergeWithCart = useCartStore(state => state.mergeWithCart);
     const getSupermarket = useSupermarketStore(state => state.getSupermarket);
     const user = useAuthStore((state) => state.user);
 
@@ -83,6 +84,11 @@ export const CartSidebar: React.FC<Props> = ({ isOpen, onClose, cartTotals, isOp
         });
     };
 
+    const handleApplySubstitution = (suggestion: any) => {
+        removeFromCart(suggestion.originalProductId);
+        mergeWithCart([{ product: suggestion.suggestedProduct, quantity: suggestion.suggestedQuantity }]);
+    };
+
     return (
         <>
             {isOpen && <div className="cart-overlay" onClick={onClose}></div>}
@@ -119,35 +125,58 @@ export const CartSidebar: React.FC<Props> = ({ isOpen, onClose, cartTotals, isOp
                     ) : (
                         <>
                             <div className="cart-items">
-                                {cart.map((item) => (
-                                    <div key={item.product.id} className="cart-item">
-                                        <img src={item.product.image} alt={item.product.name} />
-                                        <div className="cart-item-info">
-                                            <span className="item-name">{item.product.name}</span>
-                                            <span className="item-category">{item.product.category}</span>
-                                            <div className="quantity-controls">
-                                                <button
-                                                    className="qty-btn"
-                                                    onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                                                    aria-label="Reducir cantidad"
-                                                >
-                                                    <Minus size={14} />
-                                                </button>
-                                                <span className="qty-value">{item.quantity}</span>
-                                                <button
-                                                    className="qty-btn"
-                                                    onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                                                    aria-label="Aumentar cantidad"
-                                                >
-                                                    <Plus size={14} />
-                                                </button>
+                                {cart.map((item) => {
+                                    const suggestion = cartTotals?.suggestions?.find(
+                                        s => s.originalProductId === item.product.id
+                                    );
+                                    return (
+                                        <div key={item.product.id} className="cart-item">
+                                            <img src={item.product.image} alt={item.product.name} />
+                                            <div className="cart-item-info">
+                                                <span className="item-name">{item.product.name}</span>
+                                                <span className="item-category">{item.product.category}</span>
+                                                <div className="quantity-controls">
+                                                    <button
+                                                        className="qty-btn"
+                                                        onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                                                        aria-label="Reducir cantidad"
+                                                    >
+                                                        <Minus size={14} />
+                                                    </button>
+                                                    <span className="qty-value">{item.quantity}</span>
+                                                    <button
+                                                        className="qty-btn"
+                                                        onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                                                        aria-label="Aumentar cantidad"
+                                                    >
+                                                        <Plus size={14} />
+                                                    </button>
+                                                </div>
                                             </div>
+                                            <button className="remove-btn" onClick={() => removeFromCart(item.product.id)} aria-label={`Eliminar ${item.product.name}`}>
+                                                <Trash2 size={18} />
+                                            </button>
+
+                                            {suggestion && (
+                                                <div className="cart-item-suggestion">
+                                                    <div className="cart-item-suggestion-title">
+                                                        <TrendingDown size={14} />
+                                                        <span>Alternativa más barata</span>
+                                                    </div>
+                                                    <span className="cart-item-suggestion-text">
+                                                        Llevá <strong>{suggestion.suggestedQuantity}x {suggestion.suggestedProduct.name}</strong> y ahorrá hasta <strong>${suggestion.savings.toLocaleString('es-AR')}</strong>.
+                                                    </span>
+                                                    <button
+                                                        className="apply-suggestion-btn"
+                                                        onClick={() => handleApplySubstitution(suggestion)}
+                                                    >
+                                                        Aplicar alternativa
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
-                                        <button className="remove-btn" onClick={() => removeFromCart(item.product.id)} aria-label={`Eliminar ${item.product.name}`}>
-                                            <Trash2 size={18} />
-                                        </button>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
 
                             <div className="cart-summary">

@@ -37,11 +37,22 @@ export interface HybridOptimization {
     }[]>;
 }
 
+export interface SubstitutionSuggestion {
+    originalProductId: number;
+    originalName: string;
+    originalQuantity: number;
+    suggestedProduct: Product;
+    suggestedQuantity: number;
+    savings: number;
+    savingsBySupermarket: Record<string, number>;
+}
+
 export interface CartTotals {
     sortedTotals: [string, number][];
     maxSavings: number;
     incompleteSupermarkets?: { id: string; name: string; missingProducts: number }[];
     hybridOptimization?: HybridOptimization | null;
+    suggestions?: SubstitutionSuggestion[];
 }
 
 export interface User {

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '../db/client';
+import { prisma } from '../db/client';
 import { asyncHandler } from '../middleware/asyncHandler';
 
 export class AnalyticsController {
@@ -30,7 +30,7 @@ export class AnalyticsController {
                 totalItemsSaved += item.quantity;
 
                 if (item.product.currentPrices.length > 0) {
-                    const prices = item.product.currentPrices.map(p => p.price);
+                    const prices = item.product.currentPrices.map((p: any) => p.price);
                     const minPrice = Math.min(...prices);
                     const maxPrice = Math.max(...prices);
 

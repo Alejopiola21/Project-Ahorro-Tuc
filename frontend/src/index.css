@@ -740,6 +740,7 @@ body {
 .cart-item {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
   background: var(--bg-color);
   padding: 0.8rem;
@@ -2031,4 +2032,59 @@ body {
   .geo-closest-badge span {
     display: none;
   }
+}
+
+/* ── Sugerencias de Sustitución Volumétrica ── */
+.cart-item-suggestion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: rgba(245, 158, 11, 0.05);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-top: 0.75rem;
+  width: 100%;
+}
+
+.cart-item-suggestion-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #d97706; /* Amber-600 */
+}
+
+.cart-item-suggestion-text {
+  font-size: 0.8rem;
+  color: var(--text-main);
+  line-height: 1.3;
+}
+
+.apply-suggestion-btn {
+  background: #f59e0b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-align: center;
+  width: 100%;
+}
+
+.apply-suggestion-btn:hover {
+  background: #d97706;
+}
+
+.dark .cart-item-suggestion {
+  background: rgba(245, 158, 11, 0.03);
+  border-color: rgba(245, 158, 11, 0.15);
+}
+
+.dark .cart-item-suggestion-title {
+  color: #fbbf24; /* Amber-400 */
 }

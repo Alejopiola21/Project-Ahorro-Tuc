@@ -30,10 +30,10 @@ const withCurrentPrices = {
 } satisfies Prisma.ProductInclude;
 
 // Tipo inferido de Prisma para Product con precios incluidos
-type ProductWithPricesPayload = Prisma.ProductGetPayload<{ include: typeof withCurrentPrices }>;
+export type ProductWithPricesPayload = Prisma.ProductGetPayload<{ include: typeof withCurrentPrices }>;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function buildProductWithPrices(product: ProductWithPricesPayload): ProductWithPrices {
+export function buildProductWithPrices(product: ProductWithPricesPayload): ProductWithPrices {
     const prices: Record<string, number> = {};
     const unitPrices: Record<string, number | null> = {};
     if (product.currentPrices) {

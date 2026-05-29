@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import prisma from '../db/client';
+import { Prisma } from '@prisma/client';
+import { prisma } from '../db/client';
 import { ApiError } from '../utils/ApiError';
 import { asyncHandler } from '../middleware/asyncHandler';
 
@@ -29,7 +30,7 @@ export class UserListController {
 
     static getById = asyncHandler(async (req: Request, res: Response) => {
         const userId = (req as any).user.id;
-        const listId = parseInt(req.params.id);
+        const listId = parseInt(req.params.id as string);
 
         if (isNaN(listId)) throw new ApiError('ID inválido', 400);
 
@@ -77,7 +78,7 @@ export class UserListController {
 
     static update = asyncHandler(async (req: Request, res: Response) => {
         const userId = (req as any).user.id;
-        const listId = parseInt(req.params.id);
+        const listId = parseInt(req.params.id as string);
         const data = listSchema.parse(req.body);
 
         if (isNaN(listId)) throw new ApiError('ID inválido', 400);
@@ -87,7 +88,7 @@ export class UserListController {
         if (!list) throw new ApiError('Lista no encontrada', 404);
 
         // Update list and items using a transaction
-        const updatedList = await prisma.$transaction(async (tx) => {
+        const updatedList = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
             // Eliminar items actuales si se pasan nuevos
             if (data.items) {
                 await tx.userListItem.deleteMany({ where: { listId } });
@@ -115,7 +116,7 @@ export class UserListController {
 
     static delete = asyncHandler(async (req: Request, res: Response) => {
         const userId = (req as any).user.id;
-        const listId = parseInt(req.params.id);
+        const listId = parseInt(req.params.id as string);
 
         if (isNaN(listId)) throw new ApiError('ID inválido', 400);
 

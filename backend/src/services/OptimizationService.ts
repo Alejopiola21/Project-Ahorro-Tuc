@@ -1,4 +1,5 @@
 import { ProductRepository, SupermarketRepository } from '../repositories';
+import { SubstitutionService } from './SubstitutionService';
 
 interface HybridSplitItem {
     productId: number;
@@ -15,11 +16,12 @@ interface HybridResult {
 }
 
 export class OptimizationService {
-    static async optimizeCart(cartItems: { productId: number, quantity: number }[]) {
+    static async optimizeCart(cartItems: { productId: number; quantity: number }[]) {
         const productIds = cartItems.map(item => item.productId);
-        const [products, supermarkets] = await Promise.all([
+        const [products, supermarkets, suggestions] = await Promise.all([
             ProductRepository.findByIds(productIds),
             SupermarketRepository.findAll(),
+            SubstitutionService.getSuggestions(cartItems)
         ]);
 
         const totals: Record<string, number> = {};
@@ -147,7 +149,8 @@ export class OptimizationService {
             sortedTotals,
             maxSavings,
             incompleteSupermarkets,
-            hybridOptimization
+            hybridOptimization,
+            suggestions
         };
     }
 }

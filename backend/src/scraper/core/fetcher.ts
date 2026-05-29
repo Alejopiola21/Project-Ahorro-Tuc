@@ -33,10 +33,35 @@ export async function fetchWithRetry<T = any>(url: string, options: FetchOptions
                 ...headers
             };
 
+            // Configurar proxy si se define PROXY_LIST en el entorno
+            const proxyEnv = process.env.PROXY_LIST;
+            const proxies = proxyEnv ? proxyEnv.split(',').map(p => p.trim()).filter(Boolean) : [];
+            let proxyConfig = undefined;
+
+            if (proxies.length > 0) {
+                const randomProxy = proxies[Math.floor(Math.random() * proxies.length)];
+                try {
+                    const parsedUrl = new URL(randomProxy);
+                    proxyConfig = {
+                        protocol: parsedUrl.protocol.replace(':', ''),
+                        host: parsedUrl.hostname,
+                        port: Number(parsedUrl.port) || (parsedUrl.protocol === 'https:' ? 443 : 80),
+                        auth: parsedUrl.username ? {
+                            username: decodeURIComponent(parsedUrl.username),
+                            password: decodeURIComponent(parsedUrl.password)
+                        } : undefined
+                    };
+                    console.log(`[Fetcher] Usando proxy rotativo: ${parsedUrl.hostname}:${parsedUrl.port}`);
+                } catch (e: any) {
+                    console.warn(`[Fetcher] Error al procesar proxy "${randomProxy}": ${e.message}`);
+                }
+            }
+
             const response: AxiosResponse<T> = await axios(url, {
                 ...axiosOpts,
                 headers: finalHeaders,
-                timeout: 10000 // 10s max
+                timeout: 10000, // 10s max
+                proxy: proxyConfig
             });
 
             return response.data;

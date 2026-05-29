@@ -105,7 +105,7 @@
 - [x] **Autenticación JWT**: AuthService con bcrypt + jsonwebtoken. Middleware `authenticateToken`. Endpoints `/api/auth/register`, `/api/auth/login`, `/api/auth/me`.
 - [x] **Frontend Auth**: AuthModal (Login ↔ Register), useAuthStore (Zustand + persist), Axios 401 interceptor, Header con login/logout.
 - [x] **Scraper Health Persistence**: Modelo `ScraperLog` con logs por proveedor y resumen global. Endpoint `/api/scraper/status` consulta DB (sobrevive reinicios). Nuevo `/api/scraper/logs`.
-- [ ] **Magic Links (Auth sin contraseña)**: Alternativa opcional — envío de email con token de un solo uso.
+- [x] **Magic Links (Auth sin contraseña)**: Alternativa opcional — envío de email con token de un solo uso.
 - [ ] **CRUD de Listas de Usuario**: Endpoints protegidos para guardar/carritos entre dispositivos.
 - [ ] **Favoritos de Productos**: Modelo `UserFavorite` (`userId`, `productId`).
 - [ ] **Alertas Discord/Slack**: Webhook `DISCORD_WEBHOOK_URL` al fallar un provider.

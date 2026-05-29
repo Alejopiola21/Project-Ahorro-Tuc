@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import prisma from '../db/client';
+import { prisma } from '../db/client';
 import { ApiError } from '../utils/ApiError';
 import { asyncHandler } from '../middleware/asyncHandler';
 
