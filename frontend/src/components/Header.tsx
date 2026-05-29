@@ -1,5 +1,5 @@
 import React, { useState, lazy, Suspense } from 'react';
-import { TrendingDown, MapPin, ShoppingCart, Sun, Moon, LogIn, LogOut, UserCircle, User as UserIcon } from 'lucide-react';
+import { MapPin, ShoppingCart, Sun, Moon, LogIn, LogOut, User as UserIcon } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useAuthStore } from '../store/authStore';
 import { toast } from 'sonner';

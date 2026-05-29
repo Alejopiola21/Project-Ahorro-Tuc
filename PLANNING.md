@@ -61,7 +61,7 @@
 - [x] **Seed con Prisma**: `db/seed.ts` migrado para crear supermercados, productos, precios e historial usando PrismaClient.
 - [x] **Base de Datos Cloud**: Transición a PostgreSQL Serverless con Neon.tech realizada exitosamente.
 - [x] **Migraciones generadas**: Archivos SQL de migración aplicados directamente a esquema de base de datos nube (`prisma db push`).
-- [x] **Ejecución de Migración**: Conectados a Neon.tech mediante variables de entorno, esquema sincronizado y base de datos con seeding inicial.
+- [x] **Geolocalización de Rentabilidad (Completada ✅):** Distancia aérea (Haversine) a la sucursal más cercana de cada cadena desde la posición GPS del usuario. Panel `GeoRankingPanel` integrado en el carrito. 17 sucursales hard-codeadas de 9 cadenas con coordenadas verificadas. Cadenas sin presencia física en Tucumán (Coto, Jumbo, Disco, Día) marcadas correctamente. 100% frontend, sin cambios en backend ni esquema Prisma.
 
 ### FASE 5: Actualizador de Precios & Extractores Stealth (Completada ✅)
 - [x] **Arquitectura Segura y Orquestador**: Script independiente en `/src/scraper` que no contamina el servidor Express usando `node-cron` a medianoche.

@@ -3,9 +3,11 @@ import { X, ShoppingCart, Trash2, TrendingDown, Award, ArrowRight, Plus, Minus, 
 import { formatCartShareMessage, shareToWhatsApp, copyToClipboard } from '../utils/shareUtils';
 import { generateCartPDF } from '../utils/pdfGenerator';
 import type { CartTotals } from '../types';
-import { useCartStore, useSupermarketStore, useAuthStore } from '../store';
+import { useCartStore, useSupermarketStore } from '../store';
+import { useAuthStore } from '../store/authStore';
 import { SavedListsModal } from './SavedListsModal';
 import { DownloadCloud } from 'lucide-react';
+import { GeoRankingPanel } from './GeoRankingPanel';
 
 interface Props {
     isOpen: boolean;
@@ -20,7 +22,7 @@ export const CartSidebar: React.FC<Props> = ({ isOpen, onClose, cartTotals, isOp
     const updateQuantity = useCartStore(state => state.updateQuantity);
     const clearCart = useCartStore(state => state.clearCart);
     const getSupermarket = useSupermarketStore(state => state.getSupermarket);
-    const user = useAuthStore(state => state.user);
+    const user = useAuthStore((state) => state.user);
 
     const sidebarRef = useRef<HTMLElement>(null);
     const [optMode, setOptMode] = useState<'single' | 'hybrid'>('single');
@@ -255,6 +257,10 @@ export const CartSidebar: React.FC<Props> = ({ isOpen, onClose, cartTotals, isOp
                                             )}
                                         </>
                                     )
+                                )}
+
+                                {!isOptimizing && cartTotals && optMode === 'single' && (
+                                    <GeoRankingPanel cartTotals={cartTotals} />
                                 )}
 
                                 {!isOptimizing && cartTotals && cartTotals.maxSavings > 0 && optMode === 'single' && (

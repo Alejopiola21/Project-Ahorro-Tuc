@@ -1775,3 +1775,260 @@ body {
     max-width: 100%;
   }
 }
+
+/* ==========================================================================
+   GeoRankingPanel — Distancia a sucursales
+   ========================================================================== */
+
+.geo-ranking-panel {
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1.25rem;
+}
+
+.geo-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.geo-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.geo-pin-icon {
+  color: var(--primary);
+}
+
+.geo-reset-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0.25rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.geo-reset-btn:hover {
+  color: var(--accent);
+  background: var(--bg-color);
+}
+
+/* ── Request Button ── */
+.geo-request-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  border: 1.5px dashed var(--border);
+  background: transparent;
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.geo-request-btn:hover {
+  background: rgba(67, 97, 238, 0.06);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+/* ── Status States ── */
+.geo-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+}
+
+.geo-status--loading {
+  color: var(--text-muted);
+  background: var(--bg-color);
+}
+
+.geo-status--error {
+  color: #e63946;
+  background: rgba(230, 57, 70, 0.08);
+  border-left: 3px solid #e63946;
+  flex-wrap: wrap;
+}
+
+.geo-retry-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  text-decoration: underline;
+  padding: 0;
+}
+
+/* ── Results ── */
+.geo-results-caption {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0 0 0.75rem;
+}
+
+.geo-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.geo-result-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: border-color 0.2s ease;
+  gap: 0.5rem;
+}
+
+.geo-result-row--closest {
+  border-color: var(--primary);
+  background: rgba(67, 97, 238, 0.04);
+}
+
+.geo-result-row--no-store {
+  opacity: 0.5;
+}
+
+.geo-result-sup {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.geo-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.geo-sup-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.geo-closest-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  background: var(--primary);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.4rem;
+  border-radius: 100px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.geo-result-dist {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+  flex-shrink: 0;
+}
+
+.geo-dist-km {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.geo-branch-name {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.geo-no-store {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.geo-disclaimer {
+  margin-top: 0.6rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+  font-style: italic;
+  text-align: right;
+}
+
+/* ── Dark Mode ── */
+.dark .geo-request-btn {
+  border-color: var(--border);
+  color: var(--primary);
+}
+
+.dark .geo-request-btn:hover {
+  background: rgba(67, 97, 238, 0.1);
+}
+
+.dark .geo-result-row {
+  background: var(--bg-color);
+}
+
+.dark .geo-result-row--closest {
+  background: rgba(67, 97, 238, 0.08);
+}
+
+.dark .geo-status--loading {
+  background: var(--border);
+}
+
+/* ── Responsive ── */
+@media (max-width: 380px) {
+  .geo-branch-name {
+    display: none;
+  }
+  .geo-closest-badge span {
+    display: none;
+  }
+}

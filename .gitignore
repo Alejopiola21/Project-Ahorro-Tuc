@@ -5,7 +5,7 @@ build/
 .env
 
 # SQLite
-data/
+/data/
 *.db
 *.db-journal
 *.db-wal

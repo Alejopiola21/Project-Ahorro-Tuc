@@ -794,8 +794,15 @@ scraper.on('close', (code) => {
 ### 13.1 Sugeridor de Sustitución Inteligente (⬜ PENDIENTE)
 - **Concepto:** Módulo heurístico que analiza el carrito e indica cambios de marca o presentación paramétrica (e.g. comprar formato 1L vs 500ml) para maximizar el margen absoluto de ahorro sin que el usuario lo solicite explícitamente.
 
-### 13.2 Geolocalización de Rentabilidad (⬜ PENDIENTE)
-- **Concepto:** Integración con Google Maps u OSM. Calcula la ruta lógica al supermercado recomendado y contrarresta el delta de ahorro obtenido versus el costo (combustible/pasaje) y tiempo de desplazamiento.
+### 13.2 Geolocalización de Rentabilidad (✅ COMPLETADO — 29/05/2026)
+- **Implementado:**
+  - ✅ `frontend/src/data/supermarketBranches.ts`: 17 sucursales de 9 cadenas en Tucumán capital con coordenadas WGS-84 verificadas (Nominatim/OSM, maptons.com, hiperlibertad.com.ar, maxiconsumo.com). Cadenas sin presencia física (Coto, Jumbo, Disco, Día) marcadas con `CHAINS_WITHOUT_BRANCHES`.
+  - ✅ `frontend/src/utils/geoUtils.ts`: Fórmula Haversine, `getNearestBranch()`, `buildGeoAdjustedTotals()`, `formatDistance()`.
+  - ✅ `frontend/src/hooks/useGeolocation.ts`: Hook con lazy-permission — el browser NO pide GPS hasta que el usuario presiona explícitamente el botón.
+  - ✅ `frontend/src/components/GeoRankingPanel.tsx`: Panel con 4 estados (idle / loading / error / success), badge "Más cerca", dirección de sucursal truncada, y disclaimer de fuente de datos.
+  - ✅ Integrado en `CartSidebar.tsx` debajo del ranking de precios, solo visible en modo "Un solo Súper".
+  - ✅ CSS completo con light/dark mode y responsive ≤380px.
+  - ✅ Build de producción limpio (`tsc -b && vite build` sin errores).
 
 ### 13.3 Auditoría Ciudadana o Crowdsourcing (✅ COMPLETADO)
 - **Concepto:** Botón "Reportar Precio en Tienda" en la Product Card para que los usuarios físicos validen desviaciones entre el precio extraído y la góndola real, ajustando de forma dinámica la prioridad del reclamo para el Scraper.
