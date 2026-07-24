@@ -1,5 +1,27 @@
 # Changelog - Ahorro Tuc
 
+## [1.6.0] - 2026-07-24
+### Rediseño Completo de Interfaz (Skills Impeccable & Ponytail)
+* **Sistema de Diseño y Tokens CSS (Fase 1)**:
+    - Paleta HSL/OKLCH curada con Índigo vibrante (`--primary`), Esmeralda (`--savings` para destacar ahorros/ganadores) y Carmesí (`--accent`).
+    - Superficies slate profundas (`#0b0f19` y `#131b2e`) para un Modo Oscuro moderno sin grises neutros planos.
+    - Elevaciones y sombras multi-capa con resplandor (`--shadow-glow`, `--shadow-savings`).
+    - Carga de Outfit + Plus Jakarta Sans para máxima legibilidad de precios y ofertas.
+* **Navegación, Header y Hero (Fase 2)**:
+    - Navbar sticky traslúcida con desenfoque de 16px (`backdrop-filter`).
+    - Botones redondeados de tema, ubicación ("San Miguel de Tucumán") y perfil/login.
+    - Indicador de carrito con badge de notificación pulsante animado (`pulseBadge`).
+    - Hero interactivo con máscara de degradado de marca y caja de búsqueda con anillo de enfoque resplandeciente (`--shadow-glow`).
+    - Fichas tipo píldora para el carrusel de categorías (`CategoryNav`) y barra de supermercados (`SupermarketsBar`).
+* **Tarjetas de Productos y Listados (Fase 3)**:
+    - Grid de productos (`.product-card`) con esquinas redondeadas (`--radius-lg`), animación spring al hacer hover y sombras elevadas.
+    - Badge "Mejor Precio" con fondo esmeralda y resplandor.
+    - Caja de precio ganador (`best-price-box`), precios secundarios estilizados y botón de agregar al carrito con degradado de marca.
+* **Sidebar de Carrito y Resumen de Ahorros (Fase 4)**:
+    - Overlay traslúcido glassmorphic y drawer flotante con borde sutil.
+    - Filas de productos en el carrito (`cart-item`) con controles de cantidad e indicador de eliminación.
+    - Resalte de supermercado ganador (`total-row.winner`), alerta de ahorro total y barra de compartir/descargar (WhatsApp, PDF, Copiar).
+
 ## [1.5.0] - 2026-04-13
 ### Mejoras de Scraping y Catálogo Dinámico (Fase 13)
 * **Endpoint HTTP para Trigger Manual**:

@@ -6,6 +6,21 @@
 
 **Ahorro Tuc** es una plataforma web inteligente diseñada específicamente para los habitantes de San Miguel de Tucumán y alrededores. Nuestra misión es ayudar a las familias tucumanas a combatir la inflación y ahorrar dinero en sus compras cotidianas comparando precios en tiempo real entre **13 cadenas de supermercados**.
 
+---
+
+## 🖼️ Capturas de Pantalla
+
+### 🔍 Buscador e Interfaz Principal (Hero & Categorías)
+![Buscador y Hero Section](./docs/screenshots/hero-preview.png)
+
+### 🏷️ Listado de Productos e Indicadores de Mejor Precio
+![Listado de Productos y Comparativa](./docs/screenshots/product-grid.png)
+
+### 🛒 Mi Lista Inteligente & Optimizador de Compra
+![Mi Lista Inteligente y Carrito Optimizador](./docs/screenshots/cart-sidebar.png)
+
+---
+
 ## 🌟 ¿Por qué Ahorro Tuc?
 
 En un contexto de constante variación de precios, saber dónde comprar puede significar un ahorro de miles de pesos al mes. **Ahorro Tuc** centraliza la información de las principales cadenas de supermercados de la provincia para que no tengas que recorrerlos físicamente.
@@ -14,45 +29,40 @@ En un contexto de constante variación de precios, saber dónde comprar puede si
 
 | Feature | Descripción |
 |---------|-------------|
+| 🎨 **Rediseño Premium Impeccable** | Interfaz moderna con vidrio traslúcido (Glassmorphism), contraste HSL, animaciones spring y modo oscuro profundo. |
 | 🔍 **Buscador Pro** | Búsqueda con filtros avanzados: texto, categoría, precio, marca y stock. |
 | 🎛️ **Filtros Avanzados** | Panel de filtros colapsable: rango de precio, marcas, solo con stock, ordenamiento por precio/marca/nombre. |
-| 🥇 **Indicador de Mejor Precio** | Resalta automáticamente el súper más barato. Ahora incluye **Precio por Unidad** ($/Kg, $/L). |
+| 🥇 **Indicador de Mejor Precio** | Resalta automáticamente el súper más barato. Incluye **Precio por Unidad** ($/Kg, $/L). |
 | 🛒 **Carrito Híbrido** | El optimizador te dice si conviene dividir tu compra en dos locales para ahorrar el máximo posible. |
 | 💡 **Sustitución Heurística** | Sugiere reducciones volumétricas más convenientes (ej. 2x 500g en lugar de 1x 1kg) en el carrito interactivo. |
 | 🔑 **Magic Links** | Inicio de sesión rápido y registro sin contraseña mediante links de un solo uso. |
 | 📱 **Compartir Lista** | Exportá tu lista optimizada directamente a WhatsApp, copiala al portapapeles o descargala como **PDF profesional**. |
 | 📄 **Ticket PDF** | Generá un comprobante formal de tu lista con precios, totales y ahorros para imprimir o guardar. |
 | 💰 **Cálculo de Ahorro** | Visualizá cuánto dinero ahorrás eligiendo la opción ganadora vs la más cara. |
-| 🌙 **Modo Oscuro** | Toggle de tema claro/oscuro con persistencia local. |
+| 🌙 **Modo Oscuro Profundo** | Toggle de tema claro/oscuro con paleta Slate/Indigo persistente. |
 | 📱 **PWA Instalable** | Instalá la app en tu celular o PC como una app nativa offline-ready. |
 
 ## 🏪 Supermercados Incluidos
 
 `Coto` · `Carrefour` · `Jumbo` · `Vea` · `Disco` · `Día` · `Gómez Pardo` · `ChangoMás` · `Libertad` · `Comodín` · `Maxiconsumo` · `La Anónima` · `Makro`
 
-## 🆕 Novedades Recientes (13/04/2026)
+## 🆕 Novedades Recientes
 
-| Feature | Descripción |
-|---------|-------------|
-| 🔑 **Autenticación sin contraseña (Magic Links)** | Acceso inmediato y registro mediante enlaces temporales de 15 min logueados en la terminal. |
-| 💡 **Sugeridor de Sustitución Inteligente** | Algoritmo heurístico para sugerir reducciones volumétricas rentables del mismo producto en el carrito. |
-| 🛡️ **Pool de Proxies Residenciales** | Rotación dinámica de IPs en el cliente HTTP (`fetcher.ts`) para mitigar bloqueos WAF (Anti-Ban). |
-| 🎛️ **Filtros Avanzados de Búsqueda** | Panel de filtros con precio, marcas, stock y ordenamiento. Backend con query params avanzados. |
-| 📄 **Ticket PDF** | Generación de PDF profesional descargable desde el carrito con lista, precios y totales. |
-| 📱 **WhatsApp Share Mejorado** | Mensaje formateado con emojis, estructura profesional y soporte para carrito híbrido. |
-| 🚀 **Arquitectura 7.3** | Integración de **Redis** (Caché L2), **BullMQ** (Colas de Scraping) y **MeiliSearch**. |
-| ⚖️ **Normalización de Unidades** | Cálculo automático de precio por Kg/L para comparaciones justas entre envases. |
-| 🔐 **Autenticación JWT** | Registro, login y perfil de usuario con sesión persistente. |
-| 📊 **Scraper de 13 Cadenas** | Makro, Maxiconsumo y La Anónima añadidos. Más de 34 categorías de productos por cadena. |
-| 💡 **Aviso de Persistencia** | Alertas inteligentes al usar modo incógnito para evitar pérdida accidental del carrito. |
-| 🧠 **Scraper en Lotes Paralelos** | Orquestador optimizado mediante `Chunks` configurables blindando la tolerancia a bloqueos anti-bot. |
-| 📱 **UX Móvil Responsiva** | Compresión de listas en botones dinámicos deslizables liberando espacio crítico visual en Mobile. |
+| Fecha | Novedad | Descripción |
+|-------|---------|-------------|
+| **24/07/2026** | 🎨 **Rediseño Completo UI/UX v1.6** | Implementación del sistema de diseño **Impeccable & Ponytail**: Tokens CSS HSL, glassmorphic navbar, hero resplandeciente, tarjetas de productos con elevación y drawer de carrito optimizado. |
+| **13/04/2026** | 🔑 **Magic Links** | Acceso inmediato y registro mediante enlaces temporales de 15 min. |
+| **13/04/2026** | 💡 **Sustitución Inteligente** | Algoritmo heurístico para sugerir reducciones volumétricas rentables del mismo producto en el carrito. |
+| **13/04/2026** | 🛡️ **Pool de Proxies Residenciales** | Rotación dinámica de IPs en el cliente HTTP (`fetcher.ts`) para mitigar bloqueos WAF (Anti-Ban). |
+| **13/04/2026** | 🎛️ **Filtros Avanzados de Búsqueda** | Panel de filtros con precio, marcas, stock y ordenamiento. |
+| **13/04/2026** | 📄 **Ticket PDF** | Generación de PDF profesional descargable desde el carrito con lista, precios y totales. |
+| **13/04/2026** | 🚀 **Arquitectura 7.3** | Integración de **Redis** (Caché L2), **BullMQ** (Colas de Scraping) y **MeiliSearch**. |
 
 ## 🛠️ Stack Tecnológico
 
 ### Frontend
 - **React 19** + **TypeScript** + **Vite 7**
-- **CSS Vanilla** con sistema de variables (Glassmorphism, animaciones, dark mode)
+- **CSS Vanilla (Design Tokens System)**: Variables HSL/OKLCH, Glassmorphism, animaciones spring, modo oscuro profundo
 - **Zustand** para estado global del carrito (persistido en localStorage)
 - **Axios** con interceptores globales + **Sonner** para toast notifications
 - **Lucide React** para iconografía consistente
@@ -70,48 +80,15 @@ En un contexto de constante variación de precios, saber dónde comprar puede si
 ### Base de Datos
 - **PostgreSQL 15** con extensión `pg_trgm` para búsqueda difusa ultrarrápida
 - Schema relacional con 6 modelos: `Supermarket`, `Product`, `Price`, `PriceHistory`, `ProductAlias`, `UserList`
-- Soporte para código de barras (EAN), marcas y pesos para matching exacto
-- **Neon.tech** como proveedor Serverless (100% en la nube, sin dependencias locales)
+- **Neon.tech** como proveedor Serverless (100% en la nube)
 
-### DevOps & Testing
-- **GitHub Actions** CI/CD pipeline automático
-- **Vitest** para tests unitarios del backend
-- **Playwright** para tests E2E del flujo crítico
-- **ESLint** + **TypeScript** strict mode
-
-## 📦 Estructura del Proyecto
-
-```
-ahorro-tuc/
-├── frontend/                # React + Vite + TypeScript
-│   ├── src/
-│   │   ├── components/      # Header, Hero, ProductCard, ProductGrid, CartSidebar, FilterBar, SupermarketsBar
-│   │   ├── hooks/           # useTheme (dark mode), useProductSearch, useCartOptimizer
-│   │   ├── utils/           # shareUtils.ts, pdfGenerator.ts
-│   │   ├── api.ts           # Axios instance + interceptores
-│   │   ├── store.ts         # Zustand cart store
-│   │   ├── types.ts         # TypeScript interfaces
-│   │   └── index.css        # Sistema de diseño completo
-│   └── tests/               # Playwright E2E
-├── backend/
-│   ├── src/
-│   │   ├── controllers/     # ProductController, SupermarketController, OptimizationController, BrandController
-│   │   ├── services/        # OptimizationService, CacheService, SearchService
-│   │   ├── repositories/    # Data access layer (PrismaClient)
-│   │   ├── routes/          # Express routes con Swagger docs
-│   │   └── db/              # Prisma client singleton + seed
-│   ├── prisma/
-│   │   ├── schema.prisma    # Modelos de base de datos
-│   │   └── migrations/      # Migraciones SQL
-│   └── tests/               # Vitest unit tests
-└── .github/workflows/       # CI/CD pipeline
-```
+---
 
 ## ⚡ Inicio Rápido
 
 ### Prerrequisitos
 - Node.js 18+
-- Una cuenta gratuita en [Neon.tech](https://neon.tech/) para la base de datos
+- Una cuenta en [Neon.tech](https://neon.tech/) para la base de datos PostgreSQL
 
 ### 1. Clonar e instalar
 ```bash
@@ -122,13 +99,12 @@ cd Project-Ahorro-Tuc
 cd frontend && npm install && cd ..
 cd backend && npm install && cd ..
 
-# Configurar variables de entorno (copiar de los de ejemplo)
+# Configurar variables de entorno
 cp frontend/.env.example frontend/.env
 cp backend/.env.example backend/.env
 ```
 
-### 2. Configurar la base de datos (Neon.tech)
-Asegurate de pegar tu `DATABASE_URL` (proveída por Neon) en el archivo `backend/.env`. Luego corre:
+### 2. Configurar la base de datos
 ```bash
 cd backend
 npx prisma db push
@@ -149,24 +125,22 @@ cd frontend && npm run dev
 - **Backend API**: http://localhost:3001/api
 - **Swagger Docs**: http://localhost:3001/api/docs
 
+---
+
 ## 🏗️ Estado del Proyecto
 
 | Fase | Nombre | Estado |
 |------|--------|--------|
-| ... | ... | ... |
+| 1.0 | Sistema de Tokens y Diseño Visual Impeccable | ✅ Completada |
+| 2.0 | Rediseño Navbar Glassmorphic y Hero Interactivo | ✅ Completada |
+| 3.0 | Rediseño Tarjetas de Productos e Indicadores | ✅ Completada |
+| 4.0 | Rediseño Sidebar de Carrito y Resumen de Ahorro | ✅ Completada |
 | 7.3 | Arquitectura Escalable (Redis + BullMQ + MeiliSearch) | ✅ Completada |
 | 10.3 | Normalización de Precios por Unidad ($/Kg, $/L) | ✅ Completada |
-| 10.4 | Generador de Listas Compartibles (WhatsApp) | ✅ Completada |
-| 10.5 | Avisos de Persistencia (UX) | ✅ Completada |
-| 12.1 | Filtros Avanzados de Búsqueda | ✅ Completada |
-| 12.2 | WhatsApp Share Mejorado | ✅ Completada |
-| 12.3 | Generación de Ticket PDF | ✅ Completada |
-| 8.0 | Gestión de Sesiones (JWT + Magic Links) | ✅ Completada |
+| 12.3 | Generación de Ticket PDF y Compartir WhatsApp | ✅ Completada |
 | 13.1 | Sustitución Heurística de Formato | ✅ Completada |
 
-
-> 📋 Ver [PLANNING.md](./PLANNING.md) para detalles completos de cada fase.
-> 📝 Ver [CHANGELOG.md](./CHANGELOG.md) para el historial de cambios detallado.
+---
 
 ## 📄 Licencia
 

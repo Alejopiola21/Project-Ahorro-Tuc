@@ -4,8 +4,7 @@ description: Índice Maestro de Skills y Convenciones de Ahorro Tuc
 
 # Skill Registry (Catálogo de Habilidades)
 
-Este registro es el índice central de todas las reglas de código, patrones y convenciones estrictas (Skills) adoptadas en el desarrollo de **Ahorro Tuc**. 
-Cada vez que el agente inicie una fase de "Implementación", consultará automáticamente las convenciones pertinentes mapeadas a continuación:
+Este registro es el índice central de todas las reglas de código, patrones y convenciones estrictas (Skills) adoptadas en el desarrollo de **Ahorro Tuc**.
 
 ### 1. Arquitectura de Backend y Base de Datos
 - **Ruta:** `.agents/skills/backend-prisma.md`
@@ -22,4 +21,12 @@ Cada vez que el agente inicie una fase de "Implementación", consultará automá
 - **Área:** React 19, componentes de interfaz de usuario (`src/components/`), Tailwind CSS, Zustand, Axios.
 - **Uso:** Implementación del frontend del PWA, consumo de APIs y manejo state management unificado.
 
-> Nota para el agente: Si se crea una nueva tecnología importante (por ejemplo, una integración de caching con Redis), crea un nuevo archivo de skill en `.agents/skills/` y regístralo aquí.
+### 4. Excelencia en Diseño Visual y UX (Impeccable)
+- **Ruta:** `.agents/skills/impeccable.md`
+- **Área:** Diseño UI/UX, jerarquía visual, contraste HSL, animaciones fluidas, prevención de anti-patrones (SaaS slop).
+- **Uso:** Rediseño de interfaz, componentes visuales, estados vacíos, feedback táctil y estética premium.
+
+### 5. Disciplina y Minimalismo Senior (Ponytail)
+- **Ruta:** `.agents/skills/ponytail.md`
+- **Área:** Escalera de eficiencia de 7 peldaños (YAGNI, reutilización, APIs nativas, diffs mínimos).
+- **Uso:** Mantener la arquitectura ligera, código libre de abstracciones innecesarias y máxima mantenibilidad.
